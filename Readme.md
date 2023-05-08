@@ -1,7 +1,7 @@
 # Личный проект «Шесть городов (простой)»
 
-* Студент: [Дмитрий Щеклеин](https://up.htmlacademy.ru/nodejs-api/4/user/160701).
-* Наставник: `Неизвестно`.
+- Студент: [Дмитрий Щеклеин](https://up.htmlacademy.ru/nodejs-api/4/user/160701).
+- Наставник: [Глеб Клецков](https://htmlacademy.ru/profile/id1487865).
 
 ---
 

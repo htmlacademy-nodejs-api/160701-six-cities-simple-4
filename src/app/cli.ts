@@ -1,0 +1,15 @@
+import { CliCommandInterface } from '../core/cli-command/cli-command.interface';
+
+export default class CLIApplication {
+  private commands: {
+    [propertyName: string]: CliCommandInterface;
+  } = {};
+
+  public registerCommands(commandList: CliCommandInterface[]) {
+    commandList.reduce((acc, command) => {
+      const cliCommand = command;
+      acc[cliCommand.name] = cliCommand;
+      return acc;
+    }, this.commands);
+  }
+}

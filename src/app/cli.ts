@@ -7,6 +7,8 @@ export default class CLIApplication {
     [propertyName: string]: CliCommandInterface;
   } = {};
 
+  private defaultCommand = '--help';
+
   public registerCommands(commandList: CliCommandInterface[]) {
     commandList.reduce((acc, command) => {
       const cliCommand = command;
@@ -30,5 +32,17 @@ export default class CLIApplication {
 
       return acc;
     }, parseCommand);
+  }
+
+  public getCommand(commandName: string): CliCommandInterface {
+    return this.commands[commandName] ?? this.commands[this.defaultCommand];
+  }
+
+  public processCommand(argv: string[]): void {
+    const parsedCommand = this.parseCommand(argv);
+    const [commandName] = Object.keys(parsedCommand);
+    const command = this.getCommand(commandName);
+    const commandArguuments = parsedCommand[commandName] ?? [];
+    command.execute(...commandArguuments);
   }
 }

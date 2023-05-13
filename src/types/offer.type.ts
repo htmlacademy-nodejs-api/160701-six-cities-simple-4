@@ -28,5 +28,6 @@ export type Offer = {
   price: number;
   features: OfferFeatures[];
   author: User;
+  commentsCount: number;
   coordinates: Coordinates;
 };

@@ -42,7 +42,7 @@ export default class CLIApplication {
     const parsedCommand = this.parseCommand(argv);
     const [commandName] = Object.keys(parsedCommand);
     const command = this.getCommand(commandName);
-    const commandArguuments = parsedCommand[commandName] ?? [];
-    command.execute(...commandArguuments);
+    const commandArguments = parsedCommand[commandName] ?? [];
+    command.execute(...commandArguments);
   }
 }

@@ -1,7 +1,20 @@
+import TSVFileReader from '../file-reader/file-reader.js';
 import { CliCommandInterface } from './cli-command.interface.js';
 
 export default class ImportCommand implements CliCommandInterface {
   public readonly name = '--import';
 
-  execute(filename: string): void {}
+  execute(filename: string): void {
+    const fileReader = new TSVFileReader(filename.trim());
+
+    try {
+      fileReader.read();
+      console.log(fileReader.toArray());
+    } catch (err) {
+      if (!(err instanceof Error)) {
+        throw err;
+      }
+      console.log(`Не удалось импортировать данные из файла по причине: «${err.message}»`);
+    }
+  }
 }

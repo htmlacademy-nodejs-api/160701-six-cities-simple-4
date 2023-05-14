@@ -23,6 +23,23 @@
       "photo3.jpg",
       "photo4.jpg"
     ],
+    "offerFeatures" :[
+       "Breakfast",
+       "Air conditioning",
+       "Laptop friendly",
+       "Workspace",
+       "Baby seat",
+       "Washer",
+       "Towels",
+       "Fridge"
+    ],
+    "cities": [
+      "Paris",
+      "Cologne",
+      "Brussels",
+      "Amsterdam",
+      "Hamburg"
+    ],
     "users": [
       "Иван Иванов",
       "Олег Сидоров",
@@ -47,12 +64,16 @@
       "kujo-fan@story.local"
     ],
     "avatars": [
-      "user.jpg",
-      "photo.jpg",
+      "user1.jpg",
+      "photo2.jpg",
       "awesome-avatar.jpg",
       "roland.jpg",
       "smite.jpg",
-      "coffee.jpg"
+      "-"
+    ],
+    "passwords": [
+      "qwerty",
+      "123456"
     ]
   }
 }

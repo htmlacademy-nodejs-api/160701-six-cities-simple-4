@@ -15,7 +15,7 @@ export default class CLIApplication {
     }, this.commands);
   }
 
-  public parseCommand(cliArguments: string[]): ParsedCommand {
+  private parseCommand(cliArguments: string[]): ParsedCommand {
     const parseCommand: ParsedCommand = {};
 
     let command = '';

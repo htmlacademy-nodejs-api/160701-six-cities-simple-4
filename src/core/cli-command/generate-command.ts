@@ -1,8 +1,8 @@
-import { appendFile } from 'node:fs/promises';
 import OfferGenerator from '../../modules/offer-generator/offer-generator.js';
 import { MockData } from '../../types/mock-data.type.js';
 import { CliCommandInterface } from './cli-command.interface.js';
 import got from 'got';
+import TSVFileWriter from '../file-writer/tsv-file-writer.js';
 
 export default class GenerateCommand implements CliCommandInterface {
   public readonly name = '--generate';
@@ -19,9 +19,10 @@ export default class GenerateCommand implements CliCommandInterface {
     }
 
     const offerGenerator = new OfferGenerator(this.initialData);
+    const tsvFileWriter = new TSVFileWriter(filepath);
 
     for (let i = 0; i < offerCount; i++) {
-      await appendFile(filepath, `${offerGenerator.generate()}\n`, 'utf-8');
+      await tsvFileWriter.write(offerGenerator.generate());
     }
 
     console.log(`File ${filepath} was created!`);

@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { FileReaderInterface } from './file-reader.interface.js';
-import { Offer, OfferFeatures, OfferType } from '../../types/offer.type.js';
+import { Offer, OfferFeatures, OfferVariant } from '../../types/offer.type.js';
 import { UserRole } from '../../types/user.type.js';
 
 export default class TSVFileReader implements FileReaderInterface {
@@ -55,7 +55,7 @@ export default class TSVFileReader implements FileReaderInterface {
         images: this.parseGroup(images),
         isPremium: !this.isEmpty(isPremium),
         rating: Number(rating),
-        type: type as OfferType,
+        type: type as OfferVariant,
         rooms: Number(rooms),
         guests: Number(guests),
         price: Number(price),

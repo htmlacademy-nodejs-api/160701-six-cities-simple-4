@@ -1,7 +1,13 @@
 import { Coordinates } from './coordinates.type.js';
 import { User } from './user.type.js';
 
-export type OfferType = 'apartment' | 'house' | 'room' | 'hotel';
+export enum OfferVariant {
+  'Apartment' = 'apartment',
+  'House' = 'house',
+  'Room' = 'room',
+  'Hotel' = 'hotel',
+}
+
 export enum OfferFeatures {
   Breakfast = 'Breakfast',
   AirConditioning = 'Air conditioning',
@@ -22,7 +28,7 @@ export type Offer = {
   images: string[];
   isPremium: boolean;
   rating: number;
-  type: OfferType;
+  type: OfferVariant;
   rooms: number;
   guests: number;
   price: number;

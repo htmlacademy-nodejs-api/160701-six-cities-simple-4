@@ -3,9 +3,12 @@ const mockKeys = [
   'descriptions',
   'offerPreview',
   'offerImages',
+  'offerFeatures',
+  'cities',
   'users',
   'emails',
   'avatars',
+  'passwords',
 ] as const;
 export type MockKeys = (typeof mockKeys)[number];
 

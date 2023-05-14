@@ -1,18 +1,36 @@
 import { CliCommandInterface } from './cli-command.interface';
+import chalk from 'chalk';
 
 export default class HelpCommand implements CliCommandInterface {
   public readonly name = '--help';
+  private commands = [
+    {
+      name: '--version',
+      description: 'выводит номер версии',
+    },
+    {
+      name: '--help',
+      description: 'печатает этот текст',
+    },
+    {
+      name: '--import <path>',
+      description: 'импортирует данные из TSV',
+    },
+    {
+      name: '--generate <n> <path> <url>',
+      description: 'генерирует произвольное количество тестовых данных',
+    },
+  ];
 
   public async execute(): Promise<void> {
     console.log(`
-    Программа для подготовки данных для REST API сервера.
+    ${chalk.blue.bgRed.bold('Программа для подготовки данных для REST API сервера.')}
+
     Пример:
-        main.js --<command> [--arguments]
+        ${chalk.inverse('main.js --<command> [--arguments]')}
+
     Команды:
-        --version:                   # выводит номер версии
-        --help:                      # печатает этот текст
-        --import <path>:             # импортирует данные из TSV
-        --generate <n> <path> <url>  # генерирует произвольное количество тестовых данных
+    ${this.commands.map(({ name, description }) => `\t${chalk.inverse(name)}  # ${description}`).join('\n')}
     `);
   }
 }

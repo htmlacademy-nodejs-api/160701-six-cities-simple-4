@@ -1,4 +1,12 @@
 # Get mock data from fake server
-GET http://localhost:3123/api HTTP/1.1
+@hostname = http://localhost
+@port = 3123
+@host = {{hostname}}:{{port}}
+@parentPath = api
+@filmId = 642b1884aef7575bbadb851a
+@filmDeleteId = 643040d4926ca3e9c11ebc88
+@contentType = application/json
+@userId = 6442c65bfafc34b1e2fa8b49
 
-###
+GET {{host}}/{{parentPath}} HTTP/1.1
+

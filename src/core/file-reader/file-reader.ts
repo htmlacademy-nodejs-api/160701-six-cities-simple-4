@@ -1,86 +1,36 @@
-import { readFileSync } from 'node:fs';
 import { FileReaderInterface } from './file-reader.interface.js';
-import { Offer, OfferFeatures, OfferType } from '../../types/offer.type.js';
-import { UserRole } from '../../types/user.type.js';
+import EventEmitter from 'node:events';
+import { createReadStream } from 'node:fs';
 
-export default class TSVFileReader implements FileReaderInterface {
-  private rawData = '';
+const KB16 = 2 ** 14;
 
-  constructor(public filename: string) {}
-
-  public read(): void {
-    this.rawData = readFileSync(this.filename, { encoding: 'utf-8' });
+export default class TSVFileReader extends EventEmitter implements FileReaderInterface {
+  constructor(public filename: string) {
+    super();
   }
 
-  public toArray(): Offer[] {
-    if (!this.rawData) {
-      return [];
-    }
-    const lines = this.rawData
-      .split('\n')
-      .filter((row) => row.trim() !== '')
-      .map((line) => line.split('\t'));
-
-    return lines.map((data) => {
-      const [
-        title,
-        description,
-        createdDate,
-        city,
-        preview,
-        images,
-        isPremium,
-        rating,
-        type,
-        rooms,
-        guests,
-        price,
-        features,
-        firstName,
-        email,
-        avatarPath,
-        password,
-        userType,
-        commentsCount,
-        coordinates,
-      ] = data;
-      const [latitude = null, longitude = null] = this.parseGroup(coordinates);
-
-      return {
-        title,
-        description,
-        createdAt: new Date(createdDate),
-        city,
-        preview,
-        images: this.parseGroup(images),
-        isPremium: !this.isEmpty(isPremium),
-        rating: Number(rating),
-        type: type as OfferType,
-        rooms: Number(rooms),
-        guests: Number(guests),
-        price: Number(price),
-        features: this.parseGroup(features) as OfferFeatures[],
-        author: {
-          firstName,
-          email,
-          avatarPath: this.isEmpty(avatarPath) ? undefined : avatarPath,
-          password,
-          type: userType as UserRole,
-        },
-        commentsCount: Number(commentsCount),
-        coordinates: { latitude: Number(latitude), longitude: Number(longitude) },
-      };
+  public async read(): Promise<void> {
+    const stream = createReadStream(this.filename, {
+      highWaterMark: KB16,
+      encoding: 'utf-8',
     });
-  }
+    let remainingData = '';
+    let nextLinePosition = -1;
+    let importedRowCount = 0;
 
-  private isEmpty(field: string): boolean {
-    return field === '-';
-  }
+    for await (const chunk of stream) {
+      remainingData += chunk.toString();
 
-  private parseGroup(str: string): string[] {
-    if (!str) {
-      return [];
+      while ((nextLinePosition = remainingData.indexOf('\n')) >= 0) {
+        const completeRow = remainingData.slice(0, nextLinePosition + 1);
+        remainingData = remainingData.slice(++nextLinePosition);
+
+        importedRowCount++;
+
+        this.emit('readline', completeRow);
+      }
     }
-    return str.split(';');
+
+    this.emit('end', importedRowCount);
   }
 }

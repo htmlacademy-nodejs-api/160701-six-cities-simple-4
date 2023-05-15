@@ -1,0 +1,9 @@
+# Get mock data from fake server
+@hostname = http://localhost
+@port = 3123
+@host = {{hostname}}:{{port}}
+@parentPath = api
+@contentType = application/json
+
+GET {{host}}/{{parentPath}} HTTP/1.1
+

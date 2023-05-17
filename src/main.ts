@@ -10,9 +10,12 @@ import { LoggerInterface } from './core/logger/logger.interface.js';
 
 async function bootstrap() {
   const container = new Container();
-  container.bind<RestApplication>(AppComponent.RestApplication).to(RestApplication);
-  container.bind<ConfigInterface<RestSchema>>(AppComponent.ConfigInterface).to(ConfigService);
-  container.bind<LoggerInterface>(AppComponent.LoggerInterface).to(PinoService);
+  container.bind<RestApplication>(AppComponent.RestApplication).to(RestApplication).inSingletonScope();
+  container
+    .bind<ConfigInterface<RestSchema>>(AppComponent.ConfigInterface)
+    .to(ConfigService)
+    .inSingletonScope();
+  container.bind<LoggerInterface>(AppComponent.LoggerInterface).to(PinoService).inSingletonScope();
 
   const app = container.get<RestApplication>(AppComponent.RestApplication);
   await app.init();

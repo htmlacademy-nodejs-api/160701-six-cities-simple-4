@@ -2,10 +2,14 @@ import { LoggerInterface } from '../logger/logger.interface.js';
 import { ConfigInterface } from './config.interface.js';
 import { config } from 'dotenv';
 import { RestSchema, configRestSchema } from './rest.schema.js';
+import { inject, injectable } from 'inversify';
+import { AppComponent } from '../../types/app-component.enum.js';
+
+@injectable()
 export default class ConfigService implements ConfigInterface<RestSchema> {
   private readonly config: RestSchema;
 
-  constructor(private readonly logger: LoggerInterface) {
+  constructor(@inject(AppComponent.LoggerInterface) private readonly logger: LoggerInterface) {
     const parsedOutput = config();
 
     if (parsedOutput.error) {

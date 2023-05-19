@@ -7,6 +7,8 @@ import { AppComponent } from './types/app-component.enum.js';
 import { ConfigInterface } from './core/config/config.interface.js';
 import { RestSchema } from './core/config/rest.schema.js';
 import { LoggerInterface } from './core/logger/logger.interface.js';
+import MongoClientService from './core/database-client/mongo-client.service.js';
+import { DatabaseClientInterface } from './core/database-client/databese-client.interface.js';
 
 async function bootstrap() {
   const container = new Container();
@@ -16,6 +18,10 @@ async function bootstrap() {
     .to(ConfigService)
     .inSingletonScope();
   container.bind<LoggerInterface>(AppComponent.LoggerInterface).to(PinoService).inSingletonScope();
+  container
+    .bind<DatabaseClientInterface>(AppComponent.DatabaseClientInterface)
+    .to(MongoClientService)
+    .inSingletonScope();
 
   const app = container.get<RestApplication>(AppComponent.RestApplication);
   await app.init();

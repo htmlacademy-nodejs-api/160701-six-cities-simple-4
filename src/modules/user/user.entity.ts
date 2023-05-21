@@ -1,10 +1,10 @@
 import { User, userRoles } from '../../types/user.type.js';
 const [defaultUser] = userRoles;
-import typegoose, { getModelForClass } from '@typegoose/typegoose';
+import typegoose, { defaultClasses, getModelForClass } from '@typegoose/typegoose';
 
 const { prop } = typegoose;
 
-export class UserEntity implements User {
+export class UserEntity extends defaultClasses.TimeStamps implements User {
   @prop({ required: true })
   public firstName = '';
 

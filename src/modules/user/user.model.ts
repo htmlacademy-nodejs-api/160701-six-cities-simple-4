@@ -9,12 +9,22 @@ export interface UserDocument extends User, mongoose.Document {
 
 
 const userSchema = new mongoose.Schema({
-  firstName: String,
+  firstname: {
+    type: String,
+    required: true,
+    minlength: [2, 'Min length for firstname is 2']
+  },
   email: {
     type: String,
-    unique: true
+    unique: true,
+    match: [/^([\w-\\.]+@([\w-]+\.)+[\w-]{2,4})?$/, 'Email is incorrect'],
+    required: true,
   },
-  avatarPath: String,
+  avatarPath: {
+    type: String,
+    required: true,
+    minlength: [5, 'Min length for avatar path is 5'],
+  },
   type: String,
   password: String,
 }, {

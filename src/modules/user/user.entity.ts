@@ -4,6 +4,8 @@ import typegoose, { defaultClasses, getModelForClass } from '@typegoose/typegoos
 
 const { prop } = typegoose;
 
+export interface UserEntity extends defaultClasses.Base {}
+
 export class UserEntity extends defaultClasses.TimeStamps implements User {
   @prop({ required: true })
   public firstName = '';

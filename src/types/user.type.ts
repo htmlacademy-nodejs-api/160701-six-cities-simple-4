@@ -5,5 +5,5 @@ export type User = {
   firstName: string;
   email: string;
   avatarPath: string;
-  type: UserRole;
+  type?: UserRole;
 };

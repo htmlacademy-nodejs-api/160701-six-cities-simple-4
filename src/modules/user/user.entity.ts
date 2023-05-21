@@ -1,8 +1,8 @@
 import { createSHA256 } from '../../core/helpers/common.js';
-import { User, userRoles } from '../../types/user.type.js';
-const [defaultUser] = userRoles;
+import { User, userRoles, UserRole } from '../../types/user.type.js';
 import typegoose, { defaultClasses, getModelForClass } from '@typegoose/typegoose';
 
+const [defaultUser] = userRoles;
 const { prop, modelOptions } = typegoose;
 
 export interface UserEntity extends defaultClasses.Base {}
@@ -25,8 +25,10 @@ export class UserEntity extends defaultClasses.TimeStamps implements User {
   @prop({
     type: () => String,
     enum: userRoles,
+    default: defaultUser,
+    required: false,
   })
-  public type = defaultUser;
+  public type?: UserRole;
 
   @prop({ required: true, default: '' })
   public password?: string;
@@ -37,7 +39,7 @@ export class UserEntity extends defaultClasses.TimeStamps implements User {
     this.email = email;
     this.firstName = firstName;
     this.avatarPath = avatarPath;
-    // this.type = type;
+    this.type = type;
   }
 
   public setPassword(password: string, salt: string) {

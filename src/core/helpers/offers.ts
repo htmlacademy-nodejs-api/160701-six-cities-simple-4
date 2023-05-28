@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Cities } from '../../types/cities.type.js';
 import { Offer, OfferFeatures, OfferVariant } from '../../types/offer.type.js';
 import { UserRole } from '../../types/user.type.js';

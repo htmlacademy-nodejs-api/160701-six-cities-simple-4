@@ -36,18 +36,14 @@ export default class MongoClientService implements DatabaseClientInterface {
     throw new Error('Failed to connect to tah database');
   }
 
-  private async _connect(uri: string): Promise<void> {
-    this.mongooseInstance = await this._connectWithRetry(uri);
-    this.isConnected = true;
-  }
-
   public async connect(uri: string): Promise<void> {
     if (this.isConnected) {
       throw new Error('MongoDB client already connected');
     }
 
     this.logger.info('Trying to connect to MongoDB');
-    await this._connect(uri);
+    this.mongooseInstance = await this._connectWithRetry(uri);
+    this.isConnected = true;
     this.logger.info('Database connection established.');
   }
 
@@ -56,13 +52,9 @@ export default class MongoClientService implements DatabaseClientInterface {
       throw new Error('MongoDB client not connected');
     }
 
-    await this._disconnect();
-    this.logger.info('Database connection closed.');
-  }
-
-  private async _disconnect(): Promise<void> {
     await this.mongooseInstance?.disconnect();
     this.isConnected = false;
     this.mongooseInstance = null;
+    this.logger.info('Database connection closed.');
   }
 }

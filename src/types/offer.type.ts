@@ -1,29 +1,24 @@
+import { Cities } from './cities.type.js';
 import { Coordinates } from './coordinates.type.js';
 import { User } from './user.type.js';
 
-export enum OfferVariant {
-  'Apartment' = 'apartment',
-  'House' = 'house',
-  'Room' = 'room',
-  'Hotel' = 'hotel',
-}
+export type OfferVariant = 'Apartment' | 'House' | 'Room' | 'Hotel';
 
-export enum OfferFeatures {
-  Breakfast = 'Breakfast',
-  AirConditioning = 'Air conditioning',
-  LaptopFriendly = 'Laptop friendly',
-  Workspace = 'Workspace',
-  BabySeat = 'Baby seat',
-  Washer = 'Washer',
-  Towels = 'Towels',
-  Fridge = 'Fridge',
-}
+export type OfferFeatures =
+  | 'Breakfast'
+  | 'Air conditioning'
+  | 'Laptop friendly'
+  | 'Workspace'
+  | 'Baby seat'
+  | 'Washer'
+  | 'Towels'
+  | 'Fridge';
 
 export type Offer = {
   title: string;
   description: string;
   createdAt: Date;
-  city: string;
+  city: Cities;
   preview: string;
   images: string[];
   isPremium: boolean;

@@ -1,3 +1,4 @@
+import { Cities } from '../../types/cities.type.js';
 import { Offer, OfferFeatures, OfferVariant } from '../../types/offer.type.js';
 import { UserRole } from '../../types/user.type.js';
 
@@ -40,7 +41,7 @@ export function createOffer(offerData: string): Offer {
     title,
     description,
     createdAt: new Date(createdDate),
-    city,
+    city: city as Cities,
     preview,
     images: parseGroup(images),
     isPremium: !isEmpty(isPremium),
@@ -53,8 +54,7 @@ export function createOffer(offerData: string): Offer {
     author: {
       firstName,
       email,
-      avatarPath: isEmpty(avatarPath) ? undefined : avatarPath,
-      password,
+      avatarPath: isEmpty(avatarPath) ? '' : avatarPath,
       type: userType as UserRole,
     },
     commentsCount: Number(commentsCount),

@@ -2,7 +2,8 @@ import { Cities } from './cities.type.js';
 import { Coordinates } from './coordinates.type.js';
 import { User } from './user.type.js';
 
-export type OfferVariant = 'Apartment' | 'House' | 'Room' | 'Hotel';
+export const OfferVariants = ['Apartment', 'House', 'Room', 'Hotel'] as const;
+export type OfferVariant = (typeof OfferVariants)[number];
 
 export type OfferFeatures =
   | 'Breakfast'

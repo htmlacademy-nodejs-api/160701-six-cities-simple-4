@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { Cities } from '../../types/cities.type.js';
-import { Offer, OfferFeatures, OfferVariant } from '../../types/offer.type.js';
+import { TCities } from '../../types/cities.type.js';
+import { Offer, TOfferFeatures, TOfferVariants } from '../../types/offer.type.js';
 import { UserRole } from '../../types/user.type.js';
 
 export function createOffer(offerData: string): Offer {
@@ -42,16 +42,16 @@ export function createOffer(offerData: string): Offer {
     title,
     description,
     createdAt: new Date(createdDate),
-    city: city as Cities,
+    city: city as TCities,
     preview,
     images: parseGroup(images),
     isPremium: !isEmpty(isPremium),
     rating: Number(rating),
-    type: type as OfferVariant,
+    type: type as TOfferVariants,
     rooms: Number(rooms),
     guests: Number(guests),
     price: Number(price),
-    features: parseGroup(features) as OfferFeatures[],
+    features: parseGroup(features) as TOfferFeatures[],
     author: {
       firstName,
       email,

@@ -1,6 +1,6 @@
 import { defaultClasses, modelOptions, prop, Ref, getModelForClass } from '@typegoose/typegoose';
-import { Cities } from '../../types/cities.type.js';
-import { OfferFeatures, OfferVariant } from '../../types/offer.type.js';
+import { Cities, TCities } from '../../types/cities.type.js';
+import { OfferFeatures, OfferVariants, TOfferFeatures, TOfferVariants } from '../../types/offer.type.js';
 import { UserEntity } from '../user/user.entity.js';
 import { Coordinates } from '../../types/coordinates.type.js';
 
@@ -20,8 +20,14 @@ export class OfferEntity extends defaultClasses.TimeStamps {
 
   @prop({
     required: true,
+    unique: true,
+    type: () => String,
+    validate: {
+      validator: (item: TCities) => Cities.includes(item),
+      message: `Город не входит в список разрешенных: ${Cities.join(', ')}`,
+    },
   })
-  public city!: Cities;
+  public city!: TCities;
 
   @prop({ required: true })
   public preview!: string;
@@ -37,8 +43,13 @@ export class OfferEntity extends defaultClasses.TimeStamps {
 
   @prop({
     required: true,
+    type: () => String,
+    validate: {
+      validator: (item: TOfferVariants) => OfferVariants.includes(item),
+      message: `Тип жилья не входит в список разрешенных: ${OfferVariants.join(', ')}`,
+    },
   })
-  public type!: OfferVariant;
+  public type!: TOfferVariants;
 
   @prop({ required: true, min: 1, max: 8 })
   public rooms!: number;
@@ -51,8 +62,13 @@ export class OfferEntity extends defaultClasses.TimeStamps {
 
   @prop({
     required: true,
+    type: () => String,
+    validate: {
+      validator: (item: TOfferFeatures[]) => item.every((el) => OfferFeatures.includes(el)),
+      message: `Удобства не входят в список разрешенных: ${OfferFeatures.join(', ')}`,
+    },
   })
-  public features!: OfferFeatures[];
+  public features!: TOfferFeatures[];
 
   @prop({
     ref: UserEntity,

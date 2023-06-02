@@ -79,6 +79,7 @@ export class OfferEntity extends defaultClasses.TimeStamps implements Offer<Ref<
   @prop({
     ref: UserEntity,
     required: true,
+    _id: false,
   })
   public author!: Ref<UserEntity>;
 

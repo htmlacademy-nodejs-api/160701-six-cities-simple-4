@@ -1,6 +1,6 @@
 import { generateRandomValue, getRandomItem, getRandomItems } from '../../core/helpers/index.js';
 import { MockData } from '../../types/mock-data.type.js';
-import { OfferVariant } from '../../types/offer.type.js';
+import { OfferVariants } from '../../types/offer.type.js';
 import { UserRole, userRoles } from '../../types/user.type.js';
 import { OfferGeneratorInterface } from './offer-generator.interface.js';
 import dayjs from 'dayjs';
@@ -36,12 +36,7 @@ export default class OfferGenerator implements OfferGeneratorInterface {
     const images = getRandomItems<string>(this.mockData.offerImages).join(';');
     const isPremium = Boolean(generateRandomValue(0, 1));
     const rating = generateRandomValue(OfferValidation.MIN_RATING, OfferValidation.MAX_RATING, 1);
-    const type = getRandomItem([
-      OfferVariant.Apartment,
-      OfferVariant.Hotel,
-      OfferVariant.House,
-      OfferVariant.Room,
-    ]);
+    const type = getRandomItem([...OfferVariants]);
     const rooms = generateRandomValue(OfferValidation.MIN_ROOMS, OfferValidation.MAX_ROOMS);
     const guests = generateRandomValue(OfferValidation.MIN_GUESTS, OfferValidation.MAX_GUESTS);
     const price = generateRandomValue(OfferValidation.MIN_PRICE, OfferValidation.MAX_PRICE).toString();

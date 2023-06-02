@@ -1,39 +1,36 @@
+import { TCities } from './cities.type.js';
 import { Coordinates } from './coordinates.type.js';
-import { User } from './user.type.js';
 
-export enum OfferVariant {
-  'Apartment' = 'apartment',
-  'House' = 'house',
-  'Room' = 'room',
-  'Hotel' = 'hotel',
-}
+export const OfferVariants = ['Apartment', 'House', 'Room', 'Hotel'] as const;
+export type TOfferVariants = (typeof OfferVariants)[number];
 
-export enum OfferFeatures {
-  Breakfast = 'Breakfast',
-  AirConditioning = 'Air conditioning',
-  LaptopFriendly = 'Laptop friendly',
-  Workspace = 'Workspace',
-  BabySeat = 'Baby seat',
-  Washer = 'Washer',
-  Towels = 'Towels',
-  Fridge = 'Fridge',
-}
+export const OfferFeatures = [
+  'Breakfast',
+  'Air conditioning',
+  'Laptop friendly workspace',
+  'Workspace',
+  'Baby seat',
+  'Washer',
+  'Towels',
+  'Fridge',
+] as const;
+export type TOfferFeatures = (typeof OfferFeatures)[number];
 
-export type Offer = {
+export type Offer<T> = {
   title: string;
   description: string;
-  createdAt: Date;
-  city: string;
+  createdAt?: Date;
+  city: TCities;
   preview: string;
   images: string[];
   isPremium: boolean;
   rating: number;
-  type: OfferVariant;
+  type: TOfferVariants;
   rooms: number;
   guests: number;
   price: number;
-  features: OfferFeatures[];
-  author: User;
+  features: TOfferFeatures[];
+  author: T;
   commentsCount: number;
   coordinates: Coordinates;
 };

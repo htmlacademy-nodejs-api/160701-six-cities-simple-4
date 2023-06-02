@@ -83,6 +83,14 @@ export class OfferEntity extends defaultClasses.TimeStamps {
 
   @prop({
     required: true,
+    validate: {
+      validator: (item: Coordinates) => {
+        const values = Object.values(item);
+
+        return values.every((el) => !Number.isNaN(Number(el)));
+      },
+      message: 'Координаты должны быть заданы числом',
+    },
   })
   public coordinates!: Coordinates;
 }

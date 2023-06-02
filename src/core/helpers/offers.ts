@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { TCities } from '../../types/cities.type.js';
 import { Offer, TOfferFeatures, TOfferVariants } from '../../types/offer.type.js';
-import { UserRole } from '../../types/user.type.js';
+import { UserRole, User } from '../../types/user.type.js';
 
-export function createOffer(offerData: string): Offer {
+export function createOffer(offerData: string): Offer<User> {
   const [
     title,
     description,
@@ -57,6 +57,7 @@ export function createOffer(offerData: string): Offer {
       email,
       avatarPath: isEmpty(avatarPath) ? '' : avatarPath,
       type: userType as UserRole,
+      password,
     },
     commentsCount: Number(commentsCount),
     coordinates: { latitude: Number(latitude), longitude: Number(longitude) },

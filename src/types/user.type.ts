@@ -6,4 +6,7 @@ export type User = {
   email: string;
   avatarPath: string;
   type?: UserRole;
+  password: string;
 };
+
+export type UserWithoutPassword = Omit<User, 'password'>;

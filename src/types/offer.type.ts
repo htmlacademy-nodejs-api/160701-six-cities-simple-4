@@ -1,6 +1,5 @@
 import { TCities } from './cities.type.js';
 import { Coordinates } from './coordinates.type.js';
-import { User } from './user.type.js';
 
 export const OfferVariants = ['Apartment', 'House', 'Room', 'Hotel'] as const;
 export type TOfferVariants = (typeof OfferVariants)[number];
@@ -17,7 +16,7 @@ export const OfferFeatures = [
 ] as const;
 export type TOfferFeatures = (typeof OfferFeatures)[number];
 
-export type Offer = {
+export type Offer<T> = {
   title: string;
   description: string;
   createdAt: Date;
@@ -31,7 +30,7 @@ export type Offer = {
   guests: number;
   price: number;
   features: TOfferFeatures[];
-  author: User;
+  author: T;
   commentsCount: number;
   coordinates: Coordinates;
 };

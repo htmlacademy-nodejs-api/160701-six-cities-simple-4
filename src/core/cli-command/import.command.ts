@@ -5,6 +5,7 @@ import { UserServiceInterface } from '../../modules/user/user-service.interface.
 import { UserModel } from '../../modules/user/user.entity.js';
 import UserService from '../../modules/user/user.service.js';
 import { Offer } from '../../types/offer.type.js';
+import { User } from '../../types/user.type.js';
 import { DatabaseClientInterface } from '../database-client/databese-client.interface.js';
 import MongoClientService from '../database-client/mongo-client.service.js';
 import TSVFileReader from '../file-reader/file-reader.js';
@@ -36,11 +37,11 @@ export default class ImportCommand implements CliCommandInterface {
     this.databaseService = new MongoClientService(this.logger);
   }
 
-  private async saveOffer(offer: Offer) {
+  private async saveOffer(offer: Offer<User>) {
     const user = await this.userService.findOrCreate(
       {
         ...offer.author,
-        password: Default.USER_PASSWORD,
+        password: offer.author.password || Default.USER_PASSWORD,
       },
       this.salt,
     );

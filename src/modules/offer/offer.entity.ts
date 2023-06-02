@@ -1,6 +1,12 @@
 import { defaultClasses, modelOptions, prop, Ref, getModelForClass } from '@typegoose/typegoose';
 import { Cities, TCities } from '../../types/cities.type.js';
-import { OfferFeatures, OfferVariants, TOfferFeatures, TOfferVariants } from '../../types/offer.type.js';
+import {
+  Offer,
+  OfferFeatures,
+  OfferVariants,
+  TOfferFeatures,
+  TOfferVariants,
+} from '../../types/offer.type.js';
 import { UserEntity } from '../user/user.entity.js';
 import { Coordinates } from '../../types/coordinates.type.js';
 
@@ -11,7 +17,7 @@ export interface OfferEntity extends defaultClasses.Base {}
     collection: 'offers',
   },
 })
-export class OfferEntity extends defaultClasses.TimeStamps {
+export class OfferEntity extends defaultClasses.TimeStamps implements Offer<Ref<UserEntity>> {
   @prop({ trim: true, required: true })
   public title!: string;
 
@@ -79,7 +85,7 @@ export class OfferEntity extends defaultClasses.TimeStamps {
   @prop({
     default: 0,
   })
-  public commentCount!: number;
+  public commentsCount!: number;
 
   @prop({
     required: true,

@@ -19,7 +19,7 @@ export type TOfferFeatures = (typeof OfferFeatures)[number];
 export type Offer<T> = {
   title: string;
   description: string;
-  createdAt: Date;
+  createdAt?: Date;
   city: TCities;
   preview: string;
   images: string[];

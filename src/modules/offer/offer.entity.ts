@@ -9,6 +9,14 @@ import {
 } from '../../types/offer.type.js';
 import { UserEntity } from '../user/user.entity.js';
 import { Coordinates } from '../../types/coordinates.type.js';
+import {
+  OfferDescription,
+  OfferGuests,
+  OfferPrice,
+  OfferRating,
+  OfferRooms,
+  OfferTitle,
+} from '../../const/validation.js';
 
 export interface OfferEntity extends defaultClasses.Base {}
 
@@ -18,10 +26,10 @@ export interface OfferEntity extends defaultClasses.Base {}
   },
 })
 export class OfferEntity extends defaultClasses.TimeStamps implements Offer<Ref<UserEntity>> {
-  @prop({ trim: true, required: true })
+  @prop({ trim: true, required: true, minlength: OfferTitle.Min, maxlength: OfferTitle.Max })
   public title!: string;
 
-  @prop({ trim: true, required: true })
+  @prop({ trim: true, required: true, minlength: OfferDescription.Min, maxlength: OfferDescription.Max })
   public description!: string;
 
   @prop({
@@ -44,7 +52,7 @@ export class OfferEntity extends defaultClasses.TimeStamps implements Offer<Ref<
   @prop({ required: true, default: false })
   public isPremium!: boolean;
 
-  @prop({ required: true, min: 1, max: 5 })
+  @prop({ required: true, min: OfferRating.Min, max: OfferRating.Max })
   public rating!: number;
 
   @prop({
@@ -57,13 +65,13 @@ export class OfferEntity extends defaultClasses.TimeStamps implements Offer<Ref<
   })
   public type!: TOfferVariants;
 
-  @prop({ required: true, min: 1, max: 8 })
+  @prop({ required: true, min: OfferRooms.Min, max: OfferRooms.Max })
   public rooms!: number;
 
-  @prop({ required: true, min: 1, max: 10 })
+  @prop({ required: true, min: OfferGuests.Min, max: OfferGuests.Max })
   public guests!: number;
 
-  @prop({ required: true, min: 100, max: 100000 })
+  @prop({ required: true, min: OfferPrice.Min, max: OfferPrice.Max })
   public price!: number;
 
   @prop({

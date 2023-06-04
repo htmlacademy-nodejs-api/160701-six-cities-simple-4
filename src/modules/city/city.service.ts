@@ -55,6 +55,12 @@ export default class CityService implements CityServiceInterface {
             as: 'offers',
           },
         },
+        {
+          $addFields: {
+            id: { $toString: '$_id' },
+            offerCount: { $size: '$offers' },
+          },
+        },
       ])
       .exec();
   }

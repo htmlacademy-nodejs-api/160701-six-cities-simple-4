@@ -6,6 +6,7 @@ import { Container } from 'inversify';
 import { createUserContainer } from './modules/user/user.container.js';
 import { createOfferContainer } from './modules/offer/offer.container.js';
 import { createCommentContainer } from './modules/comment/comment.container.js';
+import { createCityContainer } from './modules/city/city.container.js';
 
 async function bootstrap() {
   const mainContainer = Container.merge(
@@ -13,6 +14,7 @@ async function bootstrap() {
     createUserContainer(),
     createOfferContainer(),
     createCommentContainer(),
+    createCityContainer(),
   );
   const app = mainContainer.get<ApiApplication>(AppComponent.RestApplication);
   await app.init();

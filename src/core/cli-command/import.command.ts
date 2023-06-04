@@ -1,9 +1,13 @@
+import { CityServiceInterface } from '../../modules/city/city-service.interface.js';
+import { CityModel } from '../../modules/city/city.entity.js';
+import CityService from '../../modules/city/city.service.js';
 import { OfferServiceInterface } from '../../modules/offer/offer-service.interface.js';
 import { OfferModel } from '../../modules/offer/offer.entity.js';
 import OfferService from '../../modules/offer/offer.service.js';
 import { UserServiceInterface } from '../../modules/user/user-service.interface.js';
 import { UserModel } from '../../modules/user/user.entity.js';
 import UserService from '../../modules/user/user.service.js';
+import { TCities } from '../../types/cities.type.js';
 import { Offer } from '../../types/offer.type.js';
 import { User } from '../../types/user.type.js';
 import { DatabaseClientInterface } from '../database-client/databese-client.interface.js';
@@ -23,6 +27,7 @@ export default class ImportCommand implements CliCommandInterface {
   public readonly name = '--import';
   private userService!: UserServiceInterface;
   private offerService!: OfferServiceInterface;
+  private cityService!: CityServiceInterface;
   private databaseService!: DatabaseClientInterface;
   private logger: LoggerInterface;
   private salt!: string;
@@ -33,11 +38,12 @@ export default class ImportCommand implements CliCommandInterface {
 
     this.logger = new ConsoleLoggerService();
     this.offerService = new OfferService(this.logger, OfferModel);
+    this.cityService = new CityService(this.logger, CityModel);
     this.userService = new UserService(this.logger, UserModel);
     this.databaseService = new MongoClientService(this.logger);
   }
 
-  private async saveOffer(offer: Offer<User>) {
+  private async saveOffer(offer: Offer<User, TCities>) {
     const user = await this.userService.findOrCreate(
       {
         ...offer.author,
@@ -45,9 +51,11 @@ export default class ImportCommand implements CliCommandInterface {
       },
       this.salt,
     );
+    const city = await this.cityService.findByCityNameOrCreate(offer.city, { name: offer.city });
 
     await this.offerService.create({
       ...offer,
+      city: city.id,
       author: user.id,
     });
   }

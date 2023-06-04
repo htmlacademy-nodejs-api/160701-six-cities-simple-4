@@ -1,5 +1,4 @@
 import { defaultClasses, modelOptions, prop, Ref, getModelForClass } from '@typegoose/typegoose';
-import { Cities, TCities } from '../../types/cities.type.js';
 import {
   Offer,
   OfferFeatures,
@@ -17,6 +16,7 @@ import {
   OfferRooms,
   OfferTitle,
 } from '../../const/validation.js';
+import { CityEntity } from '../city/city.entity.js';
 
 export interface OfferEntity extends defaultClasses.Base {}
 
@@ -25,8 +25,16 @@ export interface OfferEntity extends defaultClasses.Base {}
     collection: 'offers',
   },
 })
-export class OfferEntity extends defaultClasses.TimeStamps implements Offer<Ref<UserEntity>> {
-  @prop({ trim: true, required: true, minlength: OfferTitle.Min, maxlength: OfferTitle.Max })
+export class OfferEntity
+  extends defaultClasses.TimeStamps
+  implements Offer<Ref<UserEntity>, Ref<CityEntity>>
+{
+  @prop({
+    trim: true,
+    required: true,
+    minlength: OfferTitle.Min,
+    maxlength: OfferTitle.Max,
+  })
   public title!: string;
 
   @prop({ trim: true, required: true, minlength: OfferDescription.Min, maxlength: OfferDescription.Max })
@@ -34,14 +42,10 @@ export class OfferEntity extends defaultClasses.TimeStamps implements Offer<Ref<
 
   @prop({
     required: true,
-    unique: true,
-    type: () => String,
-    validate: {
-      validator: (item: TCities) => Cities.includes(item),
-      message: `Город не входит в список разрешенных: ${Cities.join(', ')}`,
-    },
+    ref: CityEntity,
+    _id: false,
   })
-  public city!: TCities;
+  public city!: Ref<CityEntity>;
 
   @prop({ required: true })
   public preview!: string;

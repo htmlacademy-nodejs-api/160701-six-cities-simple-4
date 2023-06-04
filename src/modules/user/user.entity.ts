@@ -31,7 +31,7 @@ export class UserEntity extends defaultClasses.TimeStamps implements UserWithout
   })
   public type?: UserRole;
 
-  @prop({ required: true, default: '', minlength: UserPasswordLength.Min, maxlength: UserPasswordLength.Max })
+  @prop({ required: true, default: '' })
   private password?: string;
 
   constructor({ email, firstName, avatarPath, type }: UserWithoutPassword) {

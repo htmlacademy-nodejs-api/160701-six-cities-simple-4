@@ -27,17 +27,21 @@ export default class OfferService implements OfferServiceInterface {
   }
 
   public async updateById(id: string, dto: UpdateOfferDto): Promise<types.DocumentType<OfferEntity> | null> {
-    return this.offerModel.findByIdAndUpdate(id, dto, { new: true }).populate(['author']).exec();
+    return this.offerModel.findByIdAndUpdate(id, dto, { new: true }).populate(['author', 'city']).exec();
   }
 
   public async findById(id: string): Promise<types.DocumentType<OfferEntity> | null> {
-    return this.offerModel.findById(id).populate(['author']).exec();
+    return this.offerModel.findById(id).populate(['author', 'city']).exec();
   }
 
   public async find(count?: number): Promise<types.DocumentType<OfferEntity>[]> {
     const limit = count ?? DEFAULT_OFFER_COUNT;
 
-    return this.offerModel.find({}, {}, { limit }).sort(DEFAULT_OFFER_SORT).populate(['author']).exec();
+    return this.offerModel
+      .find({}, {}, { limit })
+      .sort(DEFAULT_OFFER_SORT)
+      .populate(['author', 'city'])
+      .exec();
   }
 
   public async findByCityId(cityId: string, count?: number): Promise<types.DocumentType<OfferEntity>[]> {
@@ -46,7 +50,7 @@ export default class OfferService implements OfferServiceInterface {
     return this.offerModel
       .find({ city: cityId }, {}, { limit })
       .sort(DEFAULT_OFFER_SORT)
-      .populate(['author'])
+      .populate(['author', 'city'])
       .exec();
   }
 
@@ -65,7 +69,7 @@ export default class OfferService implements OfferServiceInterface {
   public async findPremium(): Promise<types.DocumentType<OfferEntity>[]> {
     return this.offerModel
       .find({ isPremium: true }, {}, { DEFAULT_OFFER_PREMIUM_COUNT })
-      .populate(['author'])
+      .populate(['author', 'city'])
       .exec();
   }
 
@@ -75,7 +79,7 @@ export default class OfferService implements OfferServiceInterface {
     return this.offerModel
       .find({ isFavorite: true }, { limit })
       .sort(DEFAULT_OFFER_SORT)
-      .populate(['author'])
+      .populate(['author', 'city'])
       .exec();
   }
 }

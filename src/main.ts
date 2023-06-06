@@ -1,18 +1,22 @@
 import 'reflect-metadata';
-import RestApplication from './app/rest.js';
+import ApiApplication from './app/api.js';
 import { AppComponent } from './types/app-component.enum.js';
-import { createRestApplicationContainer } from './app/rest.container.js';
+import { createApiApplicationContainer } from './app/api.container.js';
 import { Container } from 'inversify';
 import { createUserContainer } from './modules/user/user.container.js';
 import { createOfferContainer } from './modules/offer/offer.container.js';
+import { createCommentContainer } from './modules/comment/comment.container.js';
+import { createCityContainer } from './modules/city/city.container.js';
 
 async function bootstrap() {
   const mainContainer = Container.merge(
-    createRestApplicationContainer(),
+    createApiApplicationContainer(),
     createUserContainer(),
     createOfferContainer(),
+    createCommentContainer(),
+    createCityContainer(),
   );
-  const app = mainContainer.get<RestApplication>(AppComponent.RestApplication);
+  const app = mainContainer.get<ApiApplication>(AppComponent.RestApplication);
   await app.init();
 }
 bootstrap();

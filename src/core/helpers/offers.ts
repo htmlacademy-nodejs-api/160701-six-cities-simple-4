@@ -3,7 +3,7 @@ import { TCities } from '../../types/cities.type.js';
 import { Offer, TOfferFeatures, TOfferVariants } from '../../types/offer.type.js';
 import { UserRole, User } from '../../types/user.type.js';
 
-export function createOffer(offerData: string): Offer<User> {
+export function createOffer(offerData: string): Offer<User, TCities> {
   const [
     title,
     description,

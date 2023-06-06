@@ -7,27 +7,23 @@ import { DatabaseClientInterface } from '../core/database-client/databese-client
 import ConfigService from '../core/config/config.service.js';
 import PinoService from '../core/logger/pino.service.js';
 import { AppComponent } from '../types/app-component.enum.js';
-import RestApplication from './rest.js';
+import ApiApplication from './api.js';
 
-export function createRestApplicationContainer() {
-  const restApplicationContainer = new Container();
+export function createApiApplicationContainer() {
+  const ApiApplicationContainer = new Container();
 
-  restApplicationContainer
-    .bind<RestApplication>(AppComponent.RestApplication)
-    .to(RestApplication)
+  ApiApplicationContainer.bind<ApiApplication>(AppComponent.RestApplication)
+    .to(ApiApplication)
     .inSingletonScope();
-  restApplicationContainer
-    .bind<ConfigInterface<RestSchema>>(AppComponent.ConfigInterface)
+  ApiApplicationContainer.bind<ConfigInterface<RestSchema>>(AppComponent.ConfigInterface)
     .to(ConfigService)
     .inSingletonScope();
-  restApplicationContainer
-    .bind<LoggerInterface>(AppComponent.LoggerInterface)
+  ApiApplicationContainer.bind<LoggerInterface>(AppComponent.LoggerInterface)
     .to(PinoService)
     .inSingletonScope();
-  restApplicationContainer
-    .bind<DatabaseClientInterface>(AppComponent.DatabaseClientInterface)
+  ApiApplicationContainer.bind<DatabaseClientInterface>(AppComponent.DatabaseClientInterface)
     .to(MongoClientService)
     .inSingletonScope();
 
-  return restApplicationContainer;
+  return ApiApplicationContainer;
 }

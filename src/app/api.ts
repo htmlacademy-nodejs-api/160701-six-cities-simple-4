@@ -7,7 +7,7 @@ import { DatabaseClientInterface } from '../core/database-client/databese-client
 import { getMongoURI } from '../core/helpers/db.js';
 
 @injectable()
-export default class RestApplication {
+export default class ApiApplication {
   constructor(
     @inject(AppComponent.LoggerInterface) private readonly logger: LoggerInterface,
     @inject(AppComponent.ConfigInterface) private readonly config: ConfigInterface<RestSchema>,

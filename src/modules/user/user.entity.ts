@@ -1,4 +1,4 @@
-import { UserNameLength, UserPasswordLength } from '../../const/validation.js';
+import { UserNameLength } from '../../const/validation.js';
 import { createSHA256 } from '../../core/helpers/common.js';
 import { userRoles, UserRole, UserWithoutPassword } from '../../types/user.type.js';
 import typegoose, { defaultClasses, getModelForClass } from '@typegoose/typegoose';
@@ -31,7 +31,7 @@ export class UserEntity extends defaultClasses.TimeStamps implements UserWithout
   })
   public type?: UserRole;
 
-  @prop({ required: true, default: '', minlength: UserPasswordLength.Min, maxlength: UserPasswordLength.Max })
+  @prop({ required: true, default: '' })
   private password?: string;
 
   constructor({ email, firstName, avatarPath, type }: UserWithoutPassword) {

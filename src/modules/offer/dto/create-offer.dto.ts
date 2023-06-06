@@ -1,18 +1,18 @@
-import { Cities } from '../../../types/cities.type.js';
+import { TCities } from '../../../types/cities.type.js';
 import { Coordinates } from '../../../types/coordinates.type.js';
-import { OfferFeatures, OfferVariant } from '../../../types/offer.type.js';
+import { TOfferFeatures, TOfferVariants } from '../../../types/offer.type.js';
 
 export default class CreateOfferDto {
   title!: string;
   description!: string;
-  city!: Cities;
+  city!: TCities;
   preview!: string;
   images!: string[];
-  type!: OfferVariant;
+  type!: TOfferVariants;
   rooms!: number;
   guests!: number;
   price!: number;
-  features!: OfferFeatures[];
+  features!: TOfferFeatures[];
   author!: string;
   coordinates!: Coordinates;
 }

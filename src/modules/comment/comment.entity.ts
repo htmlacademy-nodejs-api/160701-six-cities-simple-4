@@ -2,6 +2,7 @@ import typegoose, { defaultClasses, getModelForClass, Ref } from '@typegoose/typ
 import { OfferEntity } from '../offer/offer.entity.js';
 import { UserEntity } from '../user/user.entity.js';
 import { Comment } from '../../types/comment.type.js';
+import { OfferRating } from '../../const/validation.js';
 
 const { prop, modelOptions } = typegoose;
 
@@ -14,7 +15,8 @@ export interface CommentEntity extends defaultClasses.Base {}
 })
 export class CommentEntity
   extends defaultClasses.TimeStamps
-  implements Comment<Ref<OfferEntity>, Ref<UserEntity>> {
+  implements Comment<Ref<OfferEntity>, Ref<UserEntity>>
+{
   @prop({ trim: true, required: true })
   public text!: string;
 
@@ -29,6 +31,9 @@ export class CommentEntity
     required: true,
   })
   public userId!: Ref<UserEntity>;
+
+  @prop({ required: true, min: OfferRating.Min, max: OfferRating.Max })
+  public rating!: number;
 }
 
 export const CommentModel = getModelForClass(CommentEntity);

@@ -58,12 +58,27 @@ export default class OfferService implements OfferServiceInterface {
     return (await this.offerModel.exists({ _id: documentId })) !== null;
   }
 
-  public async incCommentCount(id: string): Promise<types.DocumentType<OfferEntity> | null> {
-    return this.offerModel.findByIdAndUpdate(id, {
-      $inc: {
-        commentsCount: 1,
-      },
-    });
+  public async incCommentCount(id: string, rating: number): Promise<types.DocumentType<OfferEntity> | null> {
+    const existOffer = await this.findById(id);
+
+    if (!existOffer) {
+      throw new Error(`The offer with id: ${id} doesn't exist`);
+    }
+    const newRating = (
+      (existOffer.rating * existOffer.commentsCount + rating) /
+      (existOffer.commentsCount + 1)
+    ).toFixed(1);
+
+    return this.offerModel
+      .findByIdAndUpdate(id, {
+        $inc: {
+          commentsCount: 1,
+        },
+        $set: {
+          rating: newRating,
+        },
+      })
+      .exec();
   }
 
   public async findPremium(): Promise<types.DocumentType<OfferEntity>[]> {

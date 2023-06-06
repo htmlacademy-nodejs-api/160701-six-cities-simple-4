@@ -1,4 +1,9 @@
+import { Ref } from '@typegoose/typegoose';
+import { UserEntity } from '../modules/user/user.entity.js';
 import { Coordinates } from './coordinates.type.js';
+import { User } from './user.type.js';
+import { TCities } from './cities.type.js';
+import { CityEntity } from '../modules/city/city.entity.js';
 
 export const OfferVariants = ['Apartment', 'House', 'Room', 'Hotel'] as const;
 export type TOfferVariants = (typeof OfferVariants)[number];
@@ -15,7 +20,7 @@ export const OfferFeatures = [
 ] as const;
 export type TOfferFeatures = (typeof OfferFeatures)[number];
 
-export type Offer<T, C> = {
+export type Offer<T extends User | Ref<UserEntity>, C extends TCities | Ref<CityEntity>> = {
   title: string;
   description: string;
   createdAt?: Date;

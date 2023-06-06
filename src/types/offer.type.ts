@@ -28,7 +28,6 @@ export type Offer<T extends User | Ref<UserEntity>, C extends TCities | Ref<City
   preview: string;
   images: string[];
   isPremium: boolean;
-  isFavorite?: boolean;
   rating: number;
   type: TOfferVariants;
   rooms: number;

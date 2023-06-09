@@ -50,10 +50,17 @@ export default class ApiApplication {
     this.logger.info('Controller initialization completed');
   }
 
+  public async _initMiddleWare() {
+    this.logger.info('Global middleware initialization…');
+    this.expressApplication.use(express.json());
+    this.logger.info('Global middleware initialization completed');
+  }
+
   public async init() {
     this.logger.info('Application initialization…');
 
     await this._initDb();
+    await this._initMiddleWare();
     await this._initRoutes();
     await this._initServer();
   }

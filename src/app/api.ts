@@ -6,6 +6,7 @@ import { AppComponent } from '../types/app-component.enum.js';
 import { DatabaseClientInterface } from '../core/database-client/databese-client.interface.js';
 import { getMongoURI } from '../core/helpers/db.js';
 import express, { Express } from 'express';
+import { ControllerInterface } from '../core/controller/controller.interface.js';
 
 @injectable()
 export default class ApiApplication {
@@ -15,6 +16,7 @@ export default class ApiApplication {
     @inject(AppComponent.LoggerInterface) private readonly logger: LoggerInterface,
     @inject(AppComponent.ConfigInterface) private readonly config: ConfigInterface<RestSchema>,
     @inject(AppComponent.DatabaseClientInterface) private readonly databaseClient: DatabaseClientInterface,
+    @inject(AppComponent.CityController) private readonly cityController: ControllerInterface,
   ) {
     this.expressApplication = express();
   }
@@ -42,10 +44,17 @@ export default class ApiApplication {
     this.logger.info(`🚀Server started on http://localhost:${this.config.get('PORT')}`);
   }
 
+  public async _initRoutes() {
+    this.logger.info('Controller initialization…');
+    this.expressApplication.use('/cities', this.cityController.router);
+    this.logger.info('Controller initialization completed');
+  }
+
   public async init() {
     this.logger.info('Application initialization…');
 
     await this._initDb();
+    await this._initRoutes();
     await this._initServer();
   }
 }

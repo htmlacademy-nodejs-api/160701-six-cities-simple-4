@@ -5,6 +5,8 @@ import { LoggerInterface } from '../../core/logger/logger.interface';
 import { HttpMethod } from '../../types/http-method.enum.js';
 import { Request, Response } from 'express';
 import { CityServiceInterface } from './city-service.interface';
+import { fillDTO } from '../../core/helpers/index.js';
+import CityRdo from './rdo/city.rdo.js';
 
 @injectable()
 export default class CityController extends Controller {
@@ -21,6 +23,6 @@ export default class CityController extends Controller {
   public async index(_req: Request, res: Response): Promise<void> {
     const cities = await this.cityService.find();
 
-    this.ok(res, cities);
+    this.ok(res, fillDTO(CityRdo, cities));
   }
 }

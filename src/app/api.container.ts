@@ -8,22 +8,27 @@ import ConfigService from '../core/config/config.service.js';
 import PinoService from '../core/logger/pino.service.js';
 import { AppComponent } from '../types/app-component.enum.js';
 import ApiApplication from './api.js';
+import ExceptionFilter from '../core/exception-filters/exception-filter.js';
+import { ExceptionFilterInterface } from '../core/exception-filters/exception-filter.interface.js';
 
 export function createApiApplicationContainer() {
-  const ApiApplicationContainer = new Container();
+  const apiApplicationContainer = new Container();
 
-  ApiApplicationContainer.bind<ApiApplication>(AppComponent.RestApplication)
+  apiApplicationContainer.bind<ApiApplication>(AppComponent.RestApplication)
     .to(ApiApplication)
     .inSingletonScope();
-  ApiApplicationContainer.bind<ConfigInterface<RestSchema>>(AppComponent.ConfigInterface)
+  apiApplicationContainer.bind<ConfigInterface<RestSchema>>(AppComponent.ConfigInterface)
     .to(ConfigService)
     .inSingletonScope();
-  ApiApplicationContainer.bind<LoggerInterface>(AppComponent.LoggerInterface)
+  apiApplicationContainer.bind<LoggerInterface>(AppComponent.LoggerInterface)
     .to(PinoService)
     .inSingletonScope();
-  ApiApplicationContainer.bind<DatabaseClientInterface>(AppComponent.DatabaseClientInterface)
+  apiApplicationContainer.bind<DatabaseClientInterface>(AppComponent.DatabaseClientInterface)
     .to(MongoClientService)
     .inSingletonScope();
+  apiApplicationContainer.bind<ExceptionFilterInterface>(AppComponent.ExceptionFilterInterface)
+    .to(ExceptionFilter)
+    .inSingletonScope();
 
-  return ApiApplicationContainer;
+  return apiApplicationContainer;
 }

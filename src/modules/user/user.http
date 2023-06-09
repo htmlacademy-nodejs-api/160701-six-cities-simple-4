@@ -1,0 +1,19 @@
+# Города
+@hostname = http://localhost
+@port = 7777
+@host = {{hostname}}:{{port}}
+@parentPath = users
+@contentType = application/json
+
+
+
+### Получить список городов
+POST {{host}}/{{parentPath}}/register HTTP/1.1
+
+{
+  "email": "torans@overlook.net",
+  "avatarPath": "torrance.png",
+  "firstname": "Jack",
+  "lastname": "Torrance",
+  "password": "shining"
+}

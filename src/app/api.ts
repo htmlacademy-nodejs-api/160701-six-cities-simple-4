@@ -19,6 +19,7 @@ export default class ApiApplication {
     @inject(AppComponent.DatabaseClientInterface) private readonly databaseClient: DatabaseClientInterface,
     @inject(AppComponent.CityController) private readonly cityController: ControllerInterface,
     @inject(AppComponent.ExceptionFilterInterface) private readonly exceptionFilter: ExceptionFilterInterface,
+    @inject(AppComponent.UserController) private readonly userController: ControllerInterface,
   ) {
     this.expressApplication = express();
   }
@@ -49,6 +50,7 @@ export default class ApiApplication {
   public async _initRoutes() {
     this.logger.info('Controller initialization…');
     this.expressApplication.use('/cities', this.cityController.router);
+    this.expressApplication.use('/users', this.userController.router);
     this.logger.info('Controller initialization completed');
   }
 

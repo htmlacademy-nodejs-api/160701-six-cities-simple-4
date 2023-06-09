@@ -11,4 +11,5 @@ export const AppComponent = {
   OfferServiceInterface: Symbol.for('OfferServiceInterface'),
   CommentServiceInterface: Symbol.for('CommentServiceInterface'),
   CommentModel: Symbol.for('CommentModel'),
+  CityController: Symbol.for('CityController'),
 } as const;

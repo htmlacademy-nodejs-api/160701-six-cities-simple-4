@@ -17,3 +17,17 @@ Content-Type: {{contentType}}
   "firstName": "Jack",
   "password": "shining"
 }
+
+###
+
+## Авторизовать пользователя
+
+POST {{host}}/{{parentPath}}/login HTTP/1.1
+Content-Type: application/json
+
+{
+  "email": "torans@overlook.net",
+  "password": "123456"
+}
+
+###

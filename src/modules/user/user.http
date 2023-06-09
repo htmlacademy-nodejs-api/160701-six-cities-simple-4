@@ -1,4 +1,4 @@
-# Города
+# Пользователь
 @hostname = http://localhost
 @port = 7777
 @host = {{hostname}}:{{port}}
@@ -7,13 +7,13 @@
 
 
 
-### Получить список городов
+### Регистрация пользователя
 POST {{host}}/{{parentPath}}/register HTTP/1.1
+Content-Type: {{contentType}}
 
 {
-  "email": "torans@overlook.net",
+  "email": "torans1@overlook.net",
   "avatarPath": "torrance.png",
-  "firstname": "Jack",
-  "lastname": "Torrance",
+  "firstName": "Jack",
   "password": "shining"
 }

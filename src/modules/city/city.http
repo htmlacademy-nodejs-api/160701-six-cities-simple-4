@@ -1,0 +1,11 @@
+# Города
+@hostname = http://localhost
+@port = 7777
+@host = {{hostname}}:{{port}}
+@parentPath = cities
+@contentType = application/json
+
+
+
+### Получить список городов
+GET {{host}}/{{parentPath}} HTTP/1.1

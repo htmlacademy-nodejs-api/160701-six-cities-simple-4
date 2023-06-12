@@ -5,16 +5,27 @@ import { LoggerInterface } from '../core/logger/logger.interface.js';
 import { AppComponent } from '../types/app-component.enum.js';
 import { DatabaseClientInterface } from '../core/database-client/databese-client.interface.js';
 import { getMongoURI } from '../core/helpers/db.js';
+import express, { Express } from 'express';
+import { ControllerInterface } from '../core/controller/controller.interface.js';
+import { ExceptionFilterInterface } from '../core/exception-filters/exception-filter.interface.js';
 
 @injectable()
 export default class ApiApplication {
+  private expressApplication: Express;
+
   constructor(
     @inject(AppComponent.LoggerInterface) private readonly logger: LoggerInterface,
     @inject(AppComponent.ConfigInterface) private readonly config: ConfigInterface<RestSchema>,
     @inject(AppComponent.DatabaseClientInterface) private readonly databaseClient: DatabaseClientInterface,
-  ) {}
+    @inject(AppComponent.CityController) private readonly cityController: ControllerInterface,
+    @inject(AppComponent.ExceptionFilterInterface) private readonly exceptionFilter: ExceptionFilterInterface,
+    @inject(AppComponent.UserController) private readonly userController: ControllerInterface,
+  ) {
+    this.expressApplication = express();
+  }
 
   private async _initDb() {
+    this.logger.info('Init database…');
     const mongoUri = getMongoURI(
       this.config.get('DB_USER'),
       this.config.get('DB_PASSWORD'),
@@ -23,15 +34,45 @@ export default class ApiApplication {
       this.config.get('DB_NAME'),
     );
 
-    return this.databaseClient.connect(mongoUri);
+    await this.databaseClient.connect(mongoUri);
+    this.logger.info('Init database completed');
+  }
+
+  private async _initServer() {
+    this.logger.info('Try to init server…');
+
+    const port = this.config.get('PORT');
+    this.expressApplication.listen(port);
+
+    this.logger.info(`🚀Server started on http://localhost:${this.config.get('PORT')}`);
+  }
+
+  public async _initRoutes() {
+    this.logger.info('Controller initialization…');
+    this.expressApplication.use('/cities', this.cityController.router);
+    this.expressApplication.use('/users', this.userController.router);
+    this.logger.info('Controller initialization completed');
+  }
+
+  public async _initMiddleWare() {
+    this.logger.info('Global middleware initialization…');
+    this.expressApplication.use(express.json());
+    this.logger.info('Global middleware initialization completed');
+  }
+
+  private async _initExceptionFilters() {
+    this.logger.info('Exception filters initialization');
+    this.expressApplication.use(this.exceptionFilter.catch.bind(this.exceptionFilter));
+    this.logger.info('Exception filters completed');
   }
 
   public async init() {
     this.logger.info('Application initialization…');
-    this.logger.info(`Get value from env $PORT: ${this.config.get('PORT')}`);
 
-    this.logger.info('Init database…');
     await this._initDb();
-    this.logger.info('Init database completed');
+    await this._initMiddleWare();
+    await this._initExceptionFilters();
+    await this._initRoutes();
+    await this._initServer();
   }
 }

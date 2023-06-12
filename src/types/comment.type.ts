@@ -3,4 +3,5 @@ export type Comment<O, U> = {
   offerId: O;
   userId: U;
   createdAt?: Date;
+  rating: number;
 };

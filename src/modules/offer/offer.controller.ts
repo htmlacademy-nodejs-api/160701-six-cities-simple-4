@@ -8,6 +8,8 @@ import { HttpMethod } from '../../types/http-method.enum.js';
 import HttpError from '../../core/errors/http-error.js';
 import { OfferServiceInterface } from './offer-service.interface.js';
 import * as core from 'express-serve-static-core';
+import { fillDTO } from '../../core/helpers/common.js';
+import OfferRdo from './rdo/offer.rdo.js';
 
 type ParamsGetOffer = {
   offerId: string;
@@ -36,6 +38,6 @@ export default class OfferController extends Controller {
       throw new HttpError(StatusCodes.NOT_FOUND, `Offer with id ${offerId} not found.`, 'OfferController');
     }
 
-    this.ok(res, offer);
+    this.ok(res, fillDTO(OfferRdo, offer));
   }
 }

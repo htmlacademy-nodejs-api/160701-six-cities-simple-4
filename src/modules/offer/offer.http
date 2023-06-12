@@ -1,0 +1,11 @@
+# Объявления
+@hostname = http://localhost
+@port = 7777
+@host = {{hostname}}:{{port}}
+@parentPath = offers
+@contentType = application/json
+@offerId = 647cf5d2f10888c3cba79044
+
+
+## Объявление по идентификатору
+GET {{host}}/{{parentPath}}/{{offerId}} HTTP/1.1

@@ -6,6 +6,12 @@
 @contentType = application/json
 @offerId = 647cf5d2f10888c3cba79044
 
+## Список объявлений
+GET {{host}}/{{parentPath}} HTTP/1.1
+###
 
 ## Объявление по идентификатору
 GET {{host}}/{{parentPath}}/{{offerId}} HTTP/1.1
+
+
+

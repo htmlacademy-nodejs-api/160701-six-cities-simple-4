@@ -56,7 +56,7 @@ export class OfferEntity
   @prop({ required: true, default: false })
   public isPremium!: boolean;
 
-  @prop({ required: true, min: OfferRating.Min, max: OfferRating.Max })
+  @prop({ min: OfferRating.Min, max: OfferRating.Max })
   public rating!: number;
 
   @prop({

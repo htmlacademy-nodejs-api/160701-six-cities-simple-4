@@ -10,6 +10,8 @@ import { OfferServiceInterface } from './offer-service.interface.js';
 import * as core from 'express-serve-static-core';
 import { fillDTO } from '../../core/helpers/common.js';
 import OfferRdo from './rdo/offer.rdo.js';
+import CreateOfferDto from './dto/create-offer.dto.js';
+import { log } from 'console';
 
 type ParamsGetOffer = {
   offerId: string;
@@ -26,6 +28,7 @@ export default class OfferController extends Controller {
     this.logger.info('Register routes for OfferController…');
     this.addRoute({ path: '/:offerId', method: HttpMethod.Get, handler: this.show });
     this.addRoute({ path: '/', method: HttpMethod.Get, handler: this.index });
+    this.addRoute({ path: '/', method: HttpMethod.Post, handler: this.create });
   }
 
   public async show(
@@ -45,5 +48,16 @@ export default class OfferController extends Controller {
   public async index(_req: Request, res: Response) {
     const offers = await this.offerService.find();
     this.ok(res, fillDTO(OfferRdo, offers));
+  }
+
+  public async create(
+    { body }: Request<Record<string, unknown>, Record<string, unknown>, CreateOfferDto>,
+    res: Response,
+  ): Promise<void> {
+    console.log(body);
+
+    const result = await this.offerService.create(body);
+    const offer = await this.offerService.findById(result.id);
+    this.created(res, fillDTO(OfferRdo, offer));
   }
 }

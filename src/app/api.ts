@@ -73,8 +73,8 @@ export default class ApiApplication {
 
     await this._initDb();
     await this._initMiddleWare();
-    await this._initExceptionFilters();
     await this._initRoutes();
+    await this._initExceptionFilters();
     await this._initServer();
   }
 }

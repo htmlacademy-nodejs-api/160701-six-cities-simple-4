@@ -20,6 +20,7 @@ export default class ApiApplication {
     @inject(AppComponent.CityController) private readonly cityController: ControllerInterface,
     @inject(AppComponent.ExceptionFilterInterface) private readonly exceptionFilter: ExceptionFilterInterface,
     @inject(AppComponent.UserController) private readonly userController: ControllerInterface,
+    @inject(AppComponent.OfferController) private readonly offerController: ControllerInterface,
   ) {
     this.expressApplication = express();
   }
@@ -51,6 +52,7 @@ export default class ApiApplication {
     this.logger.info('Controller initialization…');
     this.expressApplication.use('/cities', this.cityController.router);
     this.expressApplication.use('/users', this.userController.router);
+    this.expressApplication.use('/offers', this.offerController.router);
     this.logger.info('Controller initialization completed');
   }
 

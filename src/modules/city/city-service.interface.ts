@@ -8,4 +8,5 @@ export interface CityServiceInterface {
   findByCityName(cityName: string): Promise<DocumentType<CityEntity> | null>;
   findByCityNameOrCreate(cityName: string, dto: CreateCityDto): Promise<DocumentType<CityEntity>>;
   find(): Promise<DocumentType<CityEntity>[]>;
+  exists(documentId: string): Promise<boolean>;
 }

@@ -8,14 +8,7 @@ import {
 } from '../../types/offer.type.js';
 import { UserEntity } from '../user/user.entity.js';
 import { Coordinates } from '../../types/coordinates.type.js';
-import {
-  OfferDescription,
-  OfferGuests,
-  OfferPrice,
-  OfferRating,
-  OfferRooms,
-  OfferTitle,
-} from '../../const/validation.js';
+import { OfferV } from '../../const/validation.js';
 import { CityEntity } from '../city/city.entity.js';
 
 export interface OfferEntity extends defaultClasses.Base {}
@@ -32,12 +25,12 @@ export class OfferEntity
   @prop({
     trim: true,
     required: true,
-    minlength: OfferTitle.Min,
-    maxlength: OfferTitle.Max,
+    minlength: OfferV.Title.Min,
+    maxlength: OfferV.Title.Max,
   })
   public title!: string;
 
-  @prop({ trim: true, required: true, minlength: OfferDescription.Min, maxlength: OfferDescription.Max })
+  @prop({ trim: true, required: true, minlength: OfferV.Description.Min, maxlength: OfferV.Description.Max })
   public description!: string;
 
   @prop({
@@ -56,7 +49,7 @@ export class OfferEntity
   @prop({ required: true, default: false })
   public isPremium!: boolean;
 
-  @prop({ required: true, default: 0, min: 0, max: OfferRating.Max })
+  @prop({ required: true, default: 0, min: 0, max: OfferV.Rating.Max })
   public rating!: number;
 
   @prop({
@@ -64,18 +57,18 @@ export class OfferEntity
     type: () => String,
     validate: {
       validator: (item: TOfferVariants) => OfferVariants.includes(item),
-      message: `Тип жилья не входит в список разрешенных: ${OfferVariants.join(', ')}`,
+      message: OfferV.Variants.Message,
     },
   })
   public type!: TOfferVariants;
 
-  @prop({ required: true, min: OfferRooms.Min, max: OfferRooms.Max })
+  @prop({ required: true, min: OfferV.Rooms.Min, max: OfferV.Rooms.Max })
   public rooms!: number;
 
-  @prop({ required: true, min: OfferGuests.Min, max: OfferGuests.Max })
+  @prop({ required: true, min: OfferV.Guests.Min, max: OfferV.Guests.Max })
   public guests!: number;
 
-  @prop({ required: true, min: OfferPrice.Min, max: OfferPrice.Max })
+  @prop({ required: true, min: OfferV.Price.Min, max: OfferV.Price.Max })
   public price!: number;
 
   @prop({
@@ -83,7 +76,7 @@ export class OfferEntity
     type: () => String,
     validate: {
       validator: (item: TOfferFeatures[]) => item.every((el) => OfferFeatures.includes(el)),
-      message: `Удобства не входят в список разрешенных: ${OfferFeatures.join(', ')}`,
+      message: OfferV.Features.Message,
     },
   })
   public features!: TOfferFeatures[];
@@ -108,7 +101,7 @@ export class OfferEntity
 
         return values.every((el) => !Number.isNaN(Number(el)));
       },
-      message: 'Координаты должны быть заданы числом',
+      message: OfferV.Coordinates.Message,
     },
   })
   public coordinates!: Coordinates;

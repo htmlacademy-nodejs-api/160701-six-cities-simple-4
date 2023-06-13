@@ -49,6 +49,9 @@ export default class OfferRdo {
   public rating!: number;
 
   @Expose()
+  public isPremium!: boolean;
+
+  @Expose()
   @Type(() => UserRdo)
   public author!: UserRdo;
 

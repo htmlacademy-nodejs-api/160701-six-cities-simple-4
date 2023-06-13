@@ -80,9 +80,9 @@ export default class OfferService implements OfferServiceInterface {
       .exec();
   }
 
-  public async findPremium(): Promise<types.DocumentType<OfferEntity>[]> {
+  public async findPremium(cityId: string): Promise<types.DocumentType<OfferEntity>[]> {
     return this.offerModel
-      .find({ isPremium: true }, {}, { DEFAULT_OFFER_PREMIUM_COUNT })
+      .find({ city: cityId, isPremium: true }, {}, { DEFAULT_OFFER_PREMIUM_COUNT })
       .populate(['author', 'city'])
       .exec();
   }

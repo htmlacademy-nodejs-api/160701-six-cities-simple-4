@@ -33,6 +33,12 @@ export default class CityController extends Controller {
       handler: this.getOffersFromCity,
       middlewares: [new ValidateObjectIdMiddleware('cityId')],
     });
+    this.addRoute({
+      path: '/:cityId/offers/premium',
+      method: HttpMethod.Get,
+      handler: this.getOffersFromCity,
+      middlewares: [new ValidateObjectIdMiddleware('cityId')],
+    });
   }
 
   public async index(_req: Request, res: Response): Promise<void> {
@@ -46,6 +52,13 @@ export default class CityController extends Controller {
     res: Response,
   ): Promise<void> {
     const offers = await this.offerService.findByCityId(params.cityId, query.limit);
+    this.ok(res, fillDTO(OfferRdo, offers));
+  }
+
+  public async getPremium({ params }: Request<core.ParamsDictionary | ParamsGetCity>, res: Response) {
+    const { cityId } = params;
+    const offers = await this.offerService.findPremium(cityId);
+
     this.ok(res, fillDTO(OfferRdo, offers));
   }
 }

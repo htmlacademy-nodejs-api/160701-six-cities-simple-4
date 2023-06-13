@@ -100,14 +100,11 @@ export default class OfferController extends Controller {
     }: Request<core.ParamsDictionary | ParamsGetOffer, Record<string, unknown>, UpdateOfferDto>,
     res: Response,
   ): Promise<void> {
-    const updatedOffer = await this.offerService.updateById(params.offerId, body);
+    const { offerId } = params;
+    const updatedOffer = await this.offerService.updateById(offerId, body);
 
     if (!updatedOffer) {
-      throw new HttpError(
-        StatusCodes.NOT_FOUND,
-        `Offer with id ${params.offerId} not found.`,
-        'OfferController',
-      );
+      throw new HttpError(StatusCodes.NOT_FOUND, `Offer with id ${offerId} not found.`, 'OfferController');
     }
 
     this.ok(res, fillDTO(OfferRdo, updatedOffer));

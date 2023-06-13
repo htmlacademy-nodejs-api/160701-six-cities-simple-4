@@ -12,6 +12,7 @@ import { fillDTO } from '../../core/helpers/common.js';
 import OfferRdo from './rdo/offer.rdo.js';
 import CreateOfferDto from './dto/create-offer.dto.js';
 import UpdateOfferDto from './dto/update-offer.dto.js';
+import { ValidateObjectIdMiddleware } from '../../common/middlewares/validate-objectid.middleware.js';
 
 export type ParamsGetOffer = {
   offerId: string;
@@ -26,7 +27,12 @@ export default class OfferController extends Controller {
     super(logger);
 
     this.logger.info('Register routes for OfferController…');
-    this.addRoute({ path: '/:offerId', method: HttpMethod.Get, handler: this.show });
+    this.addRoute({
+      path: '/:offerId',
+      method: HttpMethod.Get,
+      handler: this.show,
+      middlewares: [new ValidateObjectIdMiddleware('offerId')],
+    });
     this.addRoute({ path: '/', method: HttpMethod.Get, handler: this.index });
     this.addRoute({ path: '/', method: HttpMethod.Post, handler: this.create });
     this.addRoute({ path: '/:offerId', method: HttpMethod.Delete, handler: this.delete });

@@ -1,7 +1,7 @@
 import { OfferV } from '../../../const/validation.js';
 import { TCities } from '../../../types/cities.type.js';
 import { Coordinates } from '../../../types/coordinates.type.js';
-import { OfferVariants, TOfferFeatures, TOfferVariants } from '../../../types/offer.type.js';
+import { OfferFeatures, OfferVariants, TOfferFeatures, TOfferVariants } from '../../../types/offer.type.js';
 import {
   IsArray,
   IsString,
@@ -56,7 +56,7 @@ export default class CreateOfferDto {
   public price!: number;
 
   @IsArray({ message: 'Field features must be an array' })
-  @IsEnum(OfferVariants, { message: OfferV.Features.Message, each: true })
+  @IsEnum(OfferFeatures, { message: OfferV.Features.Message, each: true })
   public features!: TOfferFeatures[];
 
   @IsMongoId({ message: 'author field must be valid an id' })

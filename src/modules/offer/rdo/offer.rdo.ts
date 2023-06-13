@@ -45,7 +45,10 @@ export default class OfferRdo {
   @Expose()
   public commentCount!: number;
 
-  @Expose({ name: 'author' })
+  @Expose()
+  public rating!: number;
+
+  @Expose()
   @Type(() => UserRdo)
   public author!: UserRdo;
 

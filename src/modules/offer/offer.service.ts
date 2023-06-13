@@ -64,10 +64,9 @@ export default class OfferService implements OfferServiceInterface {
     if (!existOffer) {
       throw new Error(`The offer with id: ${id} doesn't exist`);
     }
-    const newRating = (
-      (existOffer.rating * existOffer.commentsCount + rating) /
-      (existOffer.commentsCount + 1)
-    ).toFixed(1);
+    const { rating: offerRating, commentsCount } = existOffer;
+
+    const newRating = ((offerRating * commentsCount + rating) / (commentsCount + 1)).toFixed(1);
 
     return this.offerModel
       .findByIdAndUpdate(id, {

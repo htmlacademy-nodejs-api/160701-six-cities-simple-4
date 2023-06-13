@@ -13,7 +13,7 @@ import OfferRdo from './rdo/offer.rdo.js';
 import CreateOfferDto from './dto/create-offer.dto.js';
 import UpdateOfferDto from './dto/update-offer.dto.js';
 
-type ParamsGetOffer = {
+export type ParamsGetOffer = {
   offerId: string;
 };
 

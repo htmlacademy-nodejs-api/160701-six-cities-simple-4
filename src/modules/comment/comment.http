@@ -4,7 +4,7 @@
 @host = {{hostname}}:{{port}}
 @parentPath = comments
 @contentType = application/json
-@offerId = 64878247de892784994580e0
+@offerId = 647f0adebc49a7eb82cd23c3
 @cityId = 647cf5d2f10888c3cba79042
 @userId = 647cf5d2f10888c3cba7903f
 

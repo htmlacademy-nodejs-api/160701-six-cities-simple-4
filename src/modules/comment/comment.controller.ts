@@ -11,6 +11,8 @@ import HttpError from '../../core/errors/http-error.js';
 import { StatusCodes } from 'http-status-codes';
 import { fillDTO } from '../../core/helpers/common.js';
 import CommentRdo from './rdo/comment.rdo.js';
+import * as core from 'express-serve-static-core';
+import { ParamsGetOffer } from '../offer/offer.controller.js';
 
 @injectable()
 export default class CommentController extends Controller {
@@ -24,6 +26,7 @@ export default class CommentController extends Controller {
 
     this.logger.info('Register routes for CommentController…');
     this.addRoute({ path: '/', method: HttpMethod.Post, handler: this.create });
+    this.addRoute({ path: '/:offerId', method: HttpMethod.Get, handler: this.show });
   }
 
   public async create({ body }: Request<object, object, CreateCommentDto>, res: Response) {
@@ -37,5 +40,11 @@ export default class CommentController extends Controller {
     const comment = await this.commentService.create(body);
     await this.offerService.incCommentCount(offerId, rating);
     this.created(res, fillDTO(CommentRdo, comment));
+  }
+
+  public async show({ params }: Request<core.ParamsDictionary | ParamsGetOffer>, res: Response) {
+    const { offerId } = params;
+    const comments = await this.commentService.findByOfferId(offerId);
+    this.created(res, fillDTO(CommentRdo, comments));
   }
 }

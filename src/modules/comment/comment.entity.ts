@@ -2,7 +2,7 @@ import typegoose, { defaultClasses, getModelForClass, Ref } from '@typegoose/typ
 import { OfferEntity } from '../offer/offer.entity.js';
 import { UserEntity } from '../user/user.entity.js';
 import { Comment } from '../../types/comment.type.js';
-import { OfferRating } from '../../const/validation.js';
+import { OfferV } from '../../const/validation.js';
 
 const { prop, modelOptions } = typegoose;
 
@@ -32,7 +32,7 @@ export class CommentEntity
   })
   public userId!: Ref<UserEntity>;
 
-  @prop({ required: true, min: OfferRating.Min, max: OfferRating.Max })
+  @prop({ required: true, min: OfferV.Rating.Min, max: OfferV.Rating.Max })
   public rating!: number;
 }
 

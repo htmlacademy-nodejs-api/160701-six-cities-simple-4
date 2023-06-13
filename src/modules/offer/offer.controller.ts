@@ -13,6 +13,7 @@ import OfferRdo from './rdo/offer.rdo.js';
 import CreateOfferDto from './dto/create-offer.dto.js';
 import UpdateOfferDto from './dto/update-offer.dto.js';
 import { ValidateObjectIdMiddleware } from '../../common/middlewares/validate-objectid.middleware.js';
+import { CityServiceInterface } from '../city/city-service.interface.js';
 
 export type ParamsGetOffer = {
   offerId: string;
@@ -23,6 +24,7 @@ export default class OfferController extends Controller {
   constructor(
     @inject(AppComponent.LoggerInterface) protected readonly logger: LoggerInterface,
     @inject(AppComponent.OfferServiceInterface) private readonly offerService: OfferServiceInterface,
+    @inject(AppComponent.CityServiceInterface) private readonly cityService: CityServiceInterface,
   ) {
     super(logger);
 
@@ -72,7 +74,11 @@ export default class OfferController extends Controller {
     { body }: Request<Record<string, unknown>, Record<string, unknown>, CreateOfferDto>,
     res: Response,
   ): Promise<void> {
-    console.log(body);
+    const city = await this.cityService.exists(body.city);
+
+    if (!city) {
+      throw new HttpError(StatusCodes.NOT_FOUND, `City with id ${body.city} not found.`, 'OfferController');
+    }
 
     const result = await this.offerService.create(body);
     const offer = await this.offerService.findById(result.id);

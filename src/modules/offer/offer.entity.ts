@@ -75,6 +75,7 @@ export class OfferEntity
     required: true,
     type: () => String,
     validate: {
+      //TODO: уникальный каждый элемент массива
       validator: (item: TOfferFeatures[]) => item.every((el) => OfferFeatures.includes(el)),
       message: OfferV.Features.Message,
     },

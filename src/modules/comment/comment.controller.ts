@@ -13,6 +13,7 @@ import { fillDTO } from '../../core/helpers/common.js';
 import CommentRdo from './rdo/comment.rdo.js';
 import * as core from 'express-serve-static-core';
 import { ParamsGetOffer } from '../offer/offer.controller.js';
+import { ValidateObjectIdMiddleware } from '../../common/middlewares/validate-objectid.middleware.js';
 
 @injectable()
 export default class CommentController extends Controller {
@@ -26,7 +27,12 @@ export default class CommentController extends Controller {
 
     this.logger.info('Register routes for CommentController…');
     this.addRoute({ path: '/', method: HttpMethod.Post, handler: this.create });
-    this.addRoute({ path: '/:offerId', method: HttpMethod.Get, handler: this.show });
+    this.addRoute({
+      path: '/:offerId',
+      method: HttpMethod.Get,
+      handler: this.show,
+      middlewares: [new ValidateObjectIdMiddleware('offerId')],
+    });
   }
 
   public async create({ body }: Request<object, object, CreateCommentDto>, res: Response) {

@@ -11,6 +11,7 @@ import { OfferServiceInterface } from '../offer/offer-service.interface.js';
 import * as core from 'express-serve-static-core';
 import { RequestQuery } from '../../types/request-query.type.js';
 import OfferRdo from '../offer/rdo/offer.rdo.js';
+import { ValidateObjectIdMiddleware } from '../../common/middlewares/validate-objectid.middleware.js';
 
 type ParamsGetCity = {
   cityId: string;
@@ -26,7 +27,12 @@ export default class CityController extends Controller {
     this.logger.info('Register routes for CityController');
 
     this.addRoute({ path: '/', method: HttpMethod.Get, handler: this.index });
-    this.addRoute({ path: '/:cityId/offers', method: HttpMethod.Get, handler: this.getOffersFromCity });
+    this.addRoute({
+      path: '/:cityId/offers',
+      method: HttpMethod.Get,
+      handler: this.getOffersFromCity,
+      middlewares: [new ValidateObjectIdMiddleware('cityId')],
+    });
   }
 
   public async index(_req: Request, res: Response): Promise<void> {

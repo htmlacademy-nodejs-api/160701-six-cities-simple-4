@@ -45,3 +45,15 @@ export const OfferV = {
     Message: 'Координаты должны быть заданы числом',
   },
 } as const;
+
+export const CommentV = {
+  Text: {
+    Min: 5,
+    Max: 1024,
+  },
+
+  Rating: {
+    Min: OfferV.Rating.Min,
+    Max: OfferV.Rating.Max,
+  },
+} as const;

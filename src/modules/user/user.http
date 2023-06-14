@@ -4,7 +4,7 @@
 @host = {{hostname}}:{{port}}
 @parentPath = users
 @contentType = application/json
-
+@userId= 647f0adebc49a7eb82cd23be
 
 
 ### Регистрация пользователя
@@ -31,3 +31,16 @@ Content-Type: {{contentType}}
 }
 
 ###
+
+###
+## Отправка аватарки пользователю
+
+POST {{host}}/{{parentPath}}/{{userId}}/avatar HTTP/1.1
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="avatar"; filename="man.png"
+Content-Type: image/png
+
+< /Users/dmitrij/Documents/man.png
+------WebKitFormBoundary7MA4YWxkTrZu0gW--

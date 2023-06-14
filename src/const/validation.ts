@@ -28,7 +28,7 @@ export const OfferV = {
     Max: 10,
   },
   Price: {
-    Min: 1,
+    Min: 100,
     Max: 100_000,
   },
   Rating: {

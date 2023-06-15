@@ -1,4 +1,4 @@
-import { IsEmail, IsEnum, IsString, Length } from 'class-validator';
+import { IsEmail, IsEnum, IsOptional, IsString, Length } from 'class-validator';
 import { UserV } from '../../../const/validation.js';
 import { UserRole, userRoles } from '../../../types/user.type.js';
 
@@ -21,6 +21,7 @@ export default class CreateUserDto {
   })
   public password!: string;
 
+  @IsOptional()
   @IsEnum(userRoles, { message: UserV.Type.Message })
   public type?: UserRole;
 }

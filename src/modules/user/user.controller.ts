@@ -45,7 +45,13 @@ export default class UserController extends Controller {
       handler: this.uploadAvatar,
       middlewares: [
         new ValidateObjectIdMiddleware('userId'),
-        new UploadFileMiddleware(this.configService.get('UPLOAD_DIRECTORY'), 'avatar'),
+        new UploadFileMiddleware({
+          fieldName: 'avatar',
+          uploadDirectory: `${this.configService.get('UPLOAD_DIRECTORY')}/users`,
+          param: 'userId',
+          postFixDirectory: 'avatar',
+          fileType: 'image',
+        }),
       ],
     });
   }

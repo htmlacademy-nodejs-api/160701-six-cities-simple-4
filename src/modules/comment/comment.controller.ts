@@ -13,6 +13,7 @@ import * as core from 'express-serve-static-core';
 import { ParamsGetOffer } from '../offer/offer.controller.js';
 import { ValidateObjectIdMiddleware } from '../../common/middlewares/validate-objectid.middleware.js';
 import { ValidateDtoMiddleware } from '../../common/middlewares/validate-dto.middleware.js';
+import { PrivateRouteMiddleware } from '../../common/middlewares/private-route.middleware.js';
 
 @injectable()
 export default class CommentController extends Controller {
@@ -29,7 +30,11 @@ export default class CommentController extends Controller {
       path: '/:offerId',
       method: HttpMethod.Post,
       handler: this.create,
-      middlewares: [new ValidateDtoMiddleware(CreateCommentDto), new ValidateObjectIdMiddleware('offerId')],
+      middlewares: [
+        new PrivateRouteMiddleware(),
+        new ValidateDtoMiddleware(CreateCommentDto),
+        new ValidateObjectIdMiddleware('offerId'),
+      ],
     });
     this.addRoute({
       path: '/:offerId',

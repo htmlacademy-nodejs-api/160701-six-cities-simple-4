@@ -1,13 +1,14 @@
-import { IsEmail, IsString, Length } from 'class-validator';
-import { UserNameLength, UserPasswordLength } from '../../../const/validation.js';
+import { IsEmail, IsEnum, IsString, Length } from 'class-validator';
+import { UserV } from '../../../const/validation.js';
+import { UserRole, userRoles } from '../../../types/user.type.js';
 
 export default class CreateUserDto {
   @IsEmail({}, { message: 'email must be valid address' })
   public email!: string;
 
   @IsString({ message: 'firstname is required' })
-  @Length(UserNameLength.Min, UserNameLength.Max, {
-    message: `Min length is ${UserNameLength.Min}, max is ${UserNameLength.Max}`,
+  @Length(UserV.Name.Min, UserV.Name.Max, {
+    message: `Min length is ${UserV.Name.Min}, max is ${UserV.Name.Max}`,
   })
   public firstName!: string;
 
@@ -15,8 +16,11 @@ export default class CreateUserDto {
   public avatarPath!: string;
 
   @IsString({ message: 'password is required' })
-  @Length(UserPasswordLength.Min, UserPasswordLength.Max, {
-    message: `Min length for password is ${UserPasswordLength.Min}, max is ${UserPasswordLength.Max}`,
+  @Length(UserV.Password.Min, UserV.Password.Max, {
+    message: `Min length for password is ${UserV.Password.Min}, max is ${UserV.Password.Max}`,
   })
   public password!: string;
+
+  @IsEnum(userRoles, { message: UserV.Type.Message })
+  public type?: UserRole;
 }

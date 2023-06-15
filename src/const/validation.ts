@@ -1,5 +1,6 @@
 import { Cities } from '../types/cities.type.js';
 import { OfferFeatures, OfferVariants } from '../types/offer.type.js';
+import { userRoles } from '../types/user.type.js';
 
 export const enum UserNameLength {
   Min = 1,
@@ -10,6 +11,20 @@ export const enum UserPasswordLength {
   Min = 6,
   Max = 12,
 }
+
+export const UserV = {
+  Name: {
+    Min: 1,
+    Max: 15,
+  },
+  Password: {
+    Min: 6,
+    Max: 15,
+  },
+  Type: {
+    Message: `Тип пользователя не входит в список разрешенных: ${userRoles.join(', ')}`,
+  },
+};
 
 export const OfferV = {
   Title: {

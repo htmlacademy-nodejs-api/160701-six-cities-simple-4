@@ -59,7 +59,6 @@ export default class CreateOfferDto {
   @IsEnum(OfferFeatures, { message: OfferV.Features.Message, each: true })
   public features!: TOfferFeatures[];
 
-  @IsMongoId({ message: 'author field must be valid an id' })
   public author!: string;
 
   @IsObject({ message: 'Field coordinates must be an object' })

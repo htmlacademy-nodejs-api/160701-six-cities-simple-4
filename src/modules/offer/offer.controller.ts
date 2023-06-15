@@ -38,6 +38,7 @@ export default class OfferController extends Controller {
     super(logger);
     this.uploadDirection = `${this.configService.get('UPLOAD_DIRECTORY')}/offers/`;
     this.logger.info('Register routes for OfferController…');
+
     this.addRoute({
       path: '/:offerId',
       method: HttpMethod.Get,
@@ -128,7 +129,7 @@ export default class OfferController extends Controller {
   }
 
   public async create(
-    { body }: Request<Record<string, unknown>, Record<string, unknown>, CreateOfferDto>,
+    { body, user }: Request<Record<string, unknown>, Record<string, unknown>, CreateOfferDto>,
     res: Response,
   ): Promise<void> {
     const city = await this.cityService.exists(body.city);
@@ -137,7 +138,7 @@ export default class OfferController extends Controller {
       throw new HttpError(StatusCodes.NOT_FOUND, `City with id ${body.city} not found.`, 'OfferController');
     }
 
-    const result = await this.offerService.create(body);
+    const result = await this.offerService.create({ ...body, author: user.id });
     const offer = await this.offerService.findById(result.id);
     this.created(res, fillDTO(OfferRdo, offer));
   }

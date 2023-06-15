@@ -17,6 +17,7 @@ import CreateCityDto from './dto/create-city.dto.js';
 import HttpError from '../../core/errors/http-error.js';
 import { StatusCodes } from 'http-status-codes';
 import { ValidateDtoMiddleware } from '../../common/middlewares/validate-dto.middleware.js';
+import { PrivateRouteMiddleware } from '../../common/middlewares/private-route.middleware.js';
 
 type ParamsGetCity = {
   cityId: string;
@@ -36,7 +37,7 @@ export default class CityController extends Controller {
       path: '/',
       method: HttpMethod.Post,
       handler: this.create,
-      middlewares: [new ValidateDtoMiddleware(CreateCityDto)],
+      middlewares: [new PrivateRouteMiddleware(),new ValidateDtoMiddleware(CreateCityDto)],
     });
     this.addRoute({
       path: '/:cityId/offers',

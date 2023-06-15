@@ -1,4 +1,5 @@
 import * as crypto from 'node:crypto';
+import * as jose from 'jose';
 import { plainToInstance, ClassConstructor } from 'class-transformer';
 
 export function getErrorMessage(error: unknown): string {
@@ -19,4 +20,12 @@ export function createErrorObject(message: string) {
   return {
     error: message,
   };
+}
+
+export async function createJwt(algorith: string, jwtSecret: string, payload: object) {
+  return new jose.SignJWT({ ...payload })
+    .setProtectedHeader({ alg: algorith })
+    .setIssuedAt()
+    .setExpirationTime('2d')
+    .sign(crypto.createSecretKey(jwtSecret, 'utf-8'));
 }

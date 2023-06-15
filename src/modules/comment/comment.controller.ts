@@ -7,8 +7,6 @@ import { Request, Response } from 'express';
 import CreateCommentDto from './dto/create-comment.dto.js';
 import { OfferServiceInterface } from '../offer/offer-service.interface.js';
 import { CommentServiceInterface } from './comment-service.interface.js';
-import HttpError from '../../core/errors/http-error.js';
-import { StatusCodes } from 'http-status-codes';
 import { fillDTO } from '../../core/helpers/common.js';
 import CommentRdo from './rdo/comment.rdo.js';
 import * as core from 'express-serve-static-core';
@@ -28,10 +26,10 @@ export default class CommentController extends Controller {
 
     this.logger.info('Register routes for CommentController…');
     this.addRoute({
-      path: '/',
+      path: '/:offerId',
       method: HttpMethod.Post,
       handler: this.create,
-      middlewares: [new ValidateDtoMiddleware(CreateCommentDto)],
+      middlewares: [new ValidateDtoMiddleware(CreateCommentDto), new ValidateObjectIdMiddleware('offerId')],
     });
     this.addRoute({
       path: '/:offerId',
@@ -41,15 +39,13 @@ export default class CommentController extends Controller {
     });
   }
 
-  public async create({ body }: Request<object, object, CreateCommentDto>, res: Response) {
-    const { offerId, rating } = body;
-    const exists = await this.offerService.exists(offerId);
-
-    if (!exists) {
-      throw new HttpError(StatusCodes.NOT_FOUND, `Offer with id ${offerId} not found.`, 'CommentController');
-    }
-
-    const comment = await this.commentService.create(body);
+  public async create(
+    { body, params }: Request<core.ParamsDictionary | ParamsGetOffer, object, CreateCommentDto>,
+    res: Response,
+  ) {
+    const { rating } = body;
+    const { offerId } = params;
+    const comment = await this.commentService.create({ ...body, offerId });
     await this.offerService.incCommentCount(offerId, rating);
     this.created(res, fillDTO(CommentRdo, comment));
   }

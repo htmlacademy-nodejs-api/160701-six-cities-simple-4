@@ -4,15 +4,15 @@
 @host = {{hostname}}:{{port}}
 @parentPath = users
 @contentType = application/json
-@userId= 647f0adebc49a7eb82cd23be
-
+@userId= 647f0adebc49a7eb82cd23b1
+@token = eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6InRvcmFuczc3N0BvdmVybG9vay5uZXQiLCJpZCI6IjY0OGIzNjFjYzI4MmEyOTU5NTliYmM5MCIsImlhdCI6MTY4Njg0NzgzMiwiZXhwIjoxNjg3MDIwNjMyfQ.jn_DoD5F9sZizHHFaQlNBy25Kb103CopW-vwanzcBzk
 
 ### Регистрация пользователя
 POST {{host}}/{{parentPath}}/register HTTP/1.1
 Content-Type: {{contentType}}
 
 {
-  "email": "torans1@overlook.net",
+  "email": "torans777@overlook.net",
   "avatarPath": "torrance.png",
   "firstName": "Jack",
   "password": "shining"
@@ -26,10 +26,15 @@ POST {{host}}/{{parentPath}}/login HTTP/1.1
 Content-Type: {{contentType}}
 
 {
-  "email": "torans@overlook.net",
-  "password": "123456"
+  "email": "torans777@overlook.net",
+  "password": "shining"
 }
 
+###
+## Проверка авторизации
+
+GET {{host}}/{{parentPath}}/login HTTP/1.1
+Authorization: Bearer {{token}}
 ###
 
 ###

@@ -1,3 +1,4 @@
+import { Cities } from '../types/cities.type.js';
 import { OfferFeatures, OfferVariants } from '../types/offer.type.js';
 
 export const enum UserNameLength {
@@ -55,5 +56,11 @@ export const CommentV = {
   Rating: {
     Min: OfferV.Rating.Min,
     Max: OfferV.Rating.Max,
+  },
+} as const;
+
+export const CityV = {
+  Name: {
+    Message: `Город не входит в список разрешенных: ${Cities.join(', ')}`,
   },
 } as const;

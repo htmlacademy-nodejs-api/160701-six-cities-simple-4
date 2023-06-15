@@ -2,6 +2,7 @@ import { defaultClasses } from '@typegoose/typegoose';
 import typegoose, { getModelForClass } from '@typegoose/typegoose';
 import { City } from '../../types/city.type.js';
 import { Cities, TCities } from '../../types/cities.type.js';
+import { CityV } from '../../const/validation.js';
 
 const { prop, modelOptions } = typegoose;
 
@@ -19,7 +20,7 @@ export class CityEntity extends defaultClasses.TimeStamps implements City {
     type: () => String,
     validate: {
       validator: (item: TCities) => Cities.includes(item),
-      message: `Город не входит в список разрешенных: ${Cities.join(', ')}`,
+      message: CityV.Name.Message,
     },
   })
   public name!: TCities;

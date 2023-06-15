@@ -64,10 +64,9 @@ export default class OfferService implements OfferServiceInterface {
     if (!existOffer) {
       throw new Error(`The offer with id: ${id} doesn't exist`);
     }
-    const newRating = (
-      (existOffer.rating * existOffer.commentsCount + rating) /
-      (existOffer.commentsCount + 1)
-    ).toFixed(1);
+    const { rating: offerRating, commentsCount } = existOffer;
+
+    const newRating = ((offerRating * commentsCount + rating) / (commentsCount + 1)).toFixed(1);
 
     return this.offerModel
       .findByIdAndUpdate(id, {
@@ -81,9 +80,15 @@ export default class OfferService implements OfferServiceInterface {
       .exec();
   }
 
-  public async findPremium(): Promise<types.DocumentType<OfferEntity>[]> {
+  public async findPremium(cityId: string): Promise<types.DocumentType<OfferEntity>[]> {
     return this.offerModel
-      .find({ isPremium: true }, {}, { DEFAULT_OFFER_PREMIUM_COUNT })
+      .find({
+        city: {
+          _id: cityId,
+        },
+        isPremium: true,
+      })
+      .limit(DEFAULT_OFFER_PREMIUM_COUNT)
       .populate(['author', 'city'])
       .exec();
   }

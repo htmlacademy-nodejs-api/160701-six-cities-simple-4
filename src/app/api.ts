@@ -20,6 +20,8 @@ export default class ApiApplication {
     @inject(AppComponent.CityController) private readonly cityController: ControllerInterface,
     @inject(AppComponent.ExceptionFilterInterface) private readonly exceptionFilter: ExceptionFilterInterface,
     @inject(AppComponent.UserController) private readonly userController: ControllerInterface,
+    @inject(AppComponent.OfferController) private readonly offerController: ControllerInterface,
+    @inject(AppComponent.CommentController) private readonly commentController: ControllerInterface,
   ) {
     this.expressApplication = express();
   }
@@ -51,12 +53,15 @@ export default class ApiApplication {
     this.logger.info('Controller initialization…');
     this.expressApplication.use('/cities', this.cityController.router);
     this.expressApplication.use('/users', this.userController.router);
+    this.expressApplication.use('/offers', this.offerController.router);
+    this.expressApplication.use('/comments', this.commentController.router);
     this.logger.info('Controller initialization completed');
   }
 
   public async _initMiddleWare() {
     this.logger.info('Global middleware initialization…');
     this.expressApplication.use(express.json());
+    this.expressApplication.use('/uploads', express.static(this.config.get('UPLOAD_DIRECTORY')));
     this.logger.info('Global middleware initialization completed');
   }
 
@@ -71,8 +76,8 @@ export default class ApiApplication {
 
     await this._initDb();
     await this._initMiddleWare();
-    await this._initExceptionFilters();
     await this._initRoutes();
+    await this._initExceptionFilters();
     await this._initServer();
   }
 }

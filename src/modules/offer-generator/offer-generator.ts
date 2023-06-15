@@ -7,7 +7,7 @@ import dayjs from 'dayjs';
 
 const OfferValidation = {
   MIN_PRICE: 100,
-  MAX_PRICE: 10e4,
+  MAX_PRICE: 100_000,
   MIN_RATING: 1,
   MAX_RATING: 5,
   MIN_ROOMS: 1,

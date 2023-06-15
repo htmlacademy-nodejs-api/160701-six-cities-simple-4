@@ -1,0 +1,26 @@
+# Комментарии
+@hostname = http://localhost
+@port = 7777
+@host = {{hostname}}:{{port}}
+@parentPath = comments
+@contentType = application/json
+@offerId = 647f0adebc49a7eb82cd23c
+@cityId = 647cf5d2f10888c3cba79042
+@userId = 647cf5d2f10888c3cba7903f
+
+
+## Комменты по идентификатору объявления
+GET {{host}}/{{parentPath}}/{{offerId}} HTTP/1.1
+###
+
+## Создание комментария
+
+POST {{host}}/{{parentPath}}/{{offerId}} HTTP/1.1
+Content-Type: {{contentType}}
+
+{
+  "text": "Всё супер111!",
+  "userId": "{{userId}}",
+  "rating": 5
+}
+###

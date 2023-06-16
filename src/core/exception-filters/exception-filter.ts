@@ -13,6 +13,16 @@ export default class ExceptionFilter implements ExceptionFilterInterface {
     this.logger.info('Register ExceptionFilter');
   }
 
+  private handleValidationError(error: Error, _req: Request, res: Response, _next: NextFunction) {
+    this.logger.error(`[ValidationError]: ${error.message}`);
+    res.status(StatusCodes.BAD_REQUEST).json(createErrorObject(error.message));
+  }
+
+  private handleSintaxError(error: SyntaxError, _req: Request, res: Response, _next: NextFunction) {
+    this.logger.error(`[${error.name}]: ${error.message}`);
+    res.status(StatusCodes.BAD_REQUEST).json(createErrorObject(error.message));
+  }
+
   private handleHttpError(error: HttpError, _req: Request, res: Response, _next: NextFunction) {
     this.logger.error(`[${error.detail}]: ${error.httpStatusCode} — ${error.message}`);
     res.status(error.httpStatusCode).json(createErrorObject(error.message));
@@ -24,6 +34,14 @@ export default class ExceptionFilter implements ExceptionFilterInterface {
   }
 
   public catch(error: Error | HttpError, req: Request, res: Response, next: NextFunction): void {
+    if (error.constructor.name === 'ValidationError') {
+      return this.handleValidationError(error, req, res, next);
+    }
+
+    if (error instanceof SyntaxError) {
+      return this.handleSintaxError(error, req, res, next);
+    }
+
     if (error instanceof HttpError) {
       return this.handleHttpError(error, req, res, next);
     }

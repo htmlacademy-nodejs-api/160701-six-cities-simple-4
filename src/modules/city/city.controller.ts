@@ -10,13 +10,13 @@ import CityRdo from './rdo/city.rdo.js';
 import { OfferServiceInterface } from '../offer/offer-service.interface.js';
 import * as core from 'express-serve-static-core';
 import { RequestQuery } from '../../types/request-query.type.js';
-import OfferRdo from '../offer/rdo/offer.rdo.js';
 import { ValidateObjectIdMiddleware } from '../../common/middlewares/validate-objectid.middleware.js';
 import { DocumentExistsMiddleware } from '../../common/middlewares/document-exists.middleware.js';
 import CreateCityDto from './dto/create-city.dto.js';
 import HttpError from '../../core/errors/http-error.js';
 import { StatusCodes } from 'http-status-codes';
 import { ValidateDtoMiddleware } from '../../common/middlewares/validate-dto.middleware.js';
+import OfferRdo from '../offer/rdo/offer.rdo.js';
 
 type ParamsGetCity = {
   cityId: string;

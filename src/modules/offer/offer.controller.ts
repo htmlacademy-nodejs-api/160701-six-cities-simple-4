@@ -9,7 +9,7 @@ import HttpError from '../../core/errors/http-error.js';
 import { OfferServiceInterface } from './offer-service.interface.js';
 import * as core from 'express-serve-static-core';
 import { fillDTO } from '../../core/helpers/common.js';
-import OfferRdo from './rdo/offer.rdo.js';
+import OfferFullRdo from './rdo/offer-full.rdo.js';
 import CreateOfferDto from './dto/create-offer.dto.js';
 import UpdateOfferDto from './dto/update-offer.dto.js';
 import { ValidateObjectIdMiddleware } from '../../common/middlewares/validate-objectid.middleware.js';
@@ -17,6 +17,7 @@ import { CityServiceInterface } from '../city/city-service.interface.js';
 import { ValidateDtoMiddleware } from '../../common/middlewares/validate-dto.middleware.js';
 import { DocumentExistsMiddleware } from '../../common/middlewares/document-exists.middleware.js';
 import { RequestQuery } from '../../types/request-query.type.js';
+import OfferRdo from './rdo/offer.rdo.js';
 
 export type ParamsGetOffer = {
   offerId: string;
@@ -76,7 +77,7 @@ export default class OfferController extends Controller {
     const { offerId } = params;
     const offer = await this.offerService.findById(offerId);
 
-    this.ok(res, fillDTO(OfferRdo, offer));
+    this.ok(res, fillDTO(OfferFullRdo, offer));
   }
 
   public async index(

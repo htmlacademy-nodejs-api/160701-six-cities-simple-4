@@ -58,7 +58,10 @@ export const OfferV = {
     Message: `Удобства не входят в список разрешенных: ${OfferFeatures.join(', ')}`,
   },
   Coordinates: {
-    Message: 'Координаты должны быть заданы числом',
+    Message: {
+      isNumber: 'Координаты должны быть заданы числом',
+      isValid: 'Координаты с невалидными значениями',
+    },
   },
 } as const;
 

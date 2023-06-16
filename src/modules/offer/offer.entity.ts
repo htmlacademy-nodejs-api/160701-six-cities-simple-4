@@ -96,14 +96,26 @@ export class OfferEntity
 
   @prop({
     required: true,
-    validate: {
-      validator: (item: Coordinates) => {
-        const values = Object.values(item);
+    validate: [
+      {
+        validator: (item: Coordinates) => {
+          const values = Object.values(item);
 
-        return values.every((el) => !Number.isNaN(Number(el)));
+          return values.every((el) => !Number.isNaN(Number(el)));
+        },
+        message: OfferV.Coordinates.Message.isNumber,
       },
-      message: OfferV.Coordinates.Message,
-    },
+      {
+        validator: (item: Coordinates) => {
+          const values = Object.values(item);
+          const isValidLength = values.length === 2;
+          const isValidKeys = Object.keys(item).every((key) => key === 'latitude' || key === 'longitude');
+
+          return isValidLength && isValidKeys;
+        },
+        message: OfferV.Coordinates.Message.isValid,
+      },
+    ],
   })
   public coordinates!: Coordinates;
 }

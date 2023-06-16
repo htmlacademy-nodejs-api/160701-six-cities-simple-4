@@ -4,40 +4,25 @@ import { OfferVariants, OfferFeatures, TOfferFeatures, TOfferVariants } from '..
 import {
   IsArray,
   IsString,
-  IsEnum,
   IsInt,
-  IsObject,
   IsMongoId,
   Max,
   MaxLength,
   Min,
   MinLength,
   ArrayUnique,
-  IsNotEmpty,
-  IsDefined,
-  IsNotEmptyObject,
-  IsInstance,
   ValidateNested,
+  IsLatitude,
+  IsLongitude,
+  IsIn,
 } from 'class-validator';
-// import { Coordinates } from '../../../types/coordinates.type.js';
 import { Type } from 'class-transformer';
 
-interface ICoordinates {
-  latitude: number;
-  longitude: number;
-}
-
-class CoordinateDto implements ICoordinates {
-  @IsInt()
-  @IsNotEmpty()
-  @Min(-90)
-  @Max(90)
+class CreateCoordinateDto {
+  @IsLatitude()
   public latitude!: number;
 
-  @IsInt()
-  @IsNotEmpty()
-  @Min(-180)
-  @Max(180)
+  @IsLongitude()
   public longitude!: number;
 }
 export default class CreateOfferDto {
@@ -58,7 +43,7 @@ export default class CreateOfferDto {
   @IsArray()
   public images!: string[];
 
-  @IsEnum(OfferVariants, { message: OfferV.Variants.Message })
+  @IsIn(OfferVariants)
   public type!: TOfferVariants;
 
   @IsInt()
@@ -78,17 +63,13 @@ export default class CreateOfferDto {
 
   @IsArray()
   @ArrayUnique()
-  @IsEnum(OfferFeatures, { message: OfferV.Features.Message, each: true })
+  @IsIn(OfferFeatures, { each: true })
   public features!: TOfferFeatures[];
 
   @IsMongoId()
   public author!: string;
 
-  @IsDefined()
-  @IsNotEmptyObject()
-  @IsObject()
-  @IsInstance(CoordinateDto)
   @ValidateNested()
-  @Type(() => CoordinateDto)
-  public coordinates!: CoordinateDto;
+  @Type(() => CreateCoordinateDto)
+  public coordinates!: CreateCoordinateDto;
 }

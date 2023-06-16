@@ -72,10 +72,10 @@ export class OfferEntity
   public price!: number;
 
   @prop({
+    set: (value: TOfferFeatures[]) => Array.from(new Set([...value])),
     required: true,
     type: () => String,
     validate: {
-      //TODO: уникальный каждый элемент массива
       validator: (item: TOfferFeatures[]) => item.every((el) => OfferFeatures.includes(el)),
       message: OfferV.Features.Message,
     },

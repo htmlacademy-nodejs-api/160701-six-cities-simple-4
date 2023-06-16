@@ -13,9 +13,33 @@ import {
   Min,
   MinLength,
   ArrayUnique,
+  IsNotEmpty,
+  IsDefined,
+  IsNotEmptyObject,
+  IsInstance,
+  ValidateNested,
 } from 'class-validator';
-import { Coordinates } from '../../../types/coordinates.type.js';
+// import { Coordinates } from '../../../types/coordinates.type.js';
+import { Type } from 'class-transformer';
 
+interface ICoordinates {
+  latitude: number;
+  longitude: number;
+}
+
+class CoordinateDto implements ICoordinates {
+  @IsInt()
+  @IsNotEmpty()
+  @Min(-90)
+  @Max(90)
+  public latitude!: number;
+
+  @IsInt()
+  @IsNotEmpty()
+  @Min(-180)
+  @Max(180)
+  public longitude!: number;
+}
 export default class CreateOfferDto {
   @MinLength(OfferV.Title.Min)
   @MaxLength(OfferV.Title.Max)
@@ -60,6 +84,11 @@ export default class CreateOfferDto {
   @IsMongoId()
   public author!: string;
 
+  @IsDefined()
+  @IsNotEmptyObject()
   @IsObject()
-  public coordinates!: Coordinates;
+  @IsInstance(CoordinateDto)
+  @ValidateNested()
+  @Type(() => CoordinateDto)
+  public coordinates!: CoordinateDto;
 }

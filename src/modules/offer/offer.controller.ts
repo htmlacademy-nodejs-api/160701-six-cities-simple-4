@@ -93,13 +93,11 @@ export default class OfferController extends Controller {
     { body }: Request<Record<string, unknown>, Record<string, unknown>, CreateOfferDto>,
     res: Response,
   ): Promise<void> {
-    const city = await this.cityService.exists(body.city);
+    const cityName = body.city;
+    const city = await this.cityService.findByCityNameOrCreate(cityName, { name: cityName });
+    console.log('cityID', city.id);
 
-    if (!city) {
-      throw new HttpError(StatusCodes.NOT_FOUND, `City with id ${body.city} not found.`, 'OfferController');
-    }
-
-    const result = await this.offerService.create(body);
+    const result = await this.offerService.create({ ...body, city: city.id });
     const offer = await this.offerService.findById(result.id);
     this.created(res, fillDTO(OfferRdo, offer));
   }

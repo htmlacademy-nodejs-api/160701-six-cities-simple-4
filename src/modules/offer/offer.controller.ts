@@ -16,6 +16,7 @@ import { ValidateObjectIdMiddleware } from '../../common/middlewares/validate-ob
 import { CityServiceInterface } from '../city/city-service.interface.js';
 import { ValidateDtoMiddleware } from '../../common/middlewares/validate-dto.middleware.js';
 import { DocumentExistsMiddleware } from '../../common/middlewares/document-exists.middleware.js';
+import { RequestQuery } from '../../types/request-query.type.js';
 
 export type ParamsGetOffer = {
   offerId: string;
@@ -78,8 +79,12 @@ export default class OfferController extends Controller {
     this.ok(res, fillDTO(OfferRdo, offer));
   }
 
-  public async index(_req: Request, res: Response) {
-    const offers = await this.offerService.find();
+  public async index(
+    { query }: Request<core.ParamsDictionary, unknown, unknown, RequestQuery>,
+    res: Response,
+  ) {
+    const limit = query.limit;
+    const offers = await this.offerService.find(limit);
     this.ok(res, fillDTO(OfferRdo, offers));
   }
 
@@ -118,6 +123,5 @@ export default class OfferController extends Controller {
     const { offerId } = params;
     const updatedOffer = await this.offerService.updateById(offerId, body);
     this.ok(res, fillDTO(OfferRdo, updatedOffer));
-
   }
 }

@@ -11,6 +11,9 @@
 ## Список объявлений
 GET {{host}}/{{parentPath}} HTTP/1.1
 ###
+## Список объявлений с лимитом
+GET {{host}}/{{parentPath}}?limit=2 HTTP/1.1
+###
 
 ## Объявление по идентификатору
 GET {{host}}/{{parentPath}}/{{offerId}} HTTP/1.1
@@ -23,22 +26,22 @@ Content-Type: {{contentType}}
 {
   "title": "Билли Саммерс",
   "description": "Новый детективный роман от короля ужасов.",
-  "postDate": "2022-05-12T11:56:37.573Z",
   "preview": "billy-summers.png",
   "images": ["img1.png","img2.png"],
   "type": "Apartment",
   "price": 1408,
   "guests": 10,
   "rooms": 1,
-  "features": ["Breakfast","Breakfast"],
+  "features": ["Breakfast"],
   "city": "{{cityId}}",
   "author": "{{userId}}",
   "coordinates":{
     "latitude": 50,
-    "longitude": 51,
-    "sgsgsg": 111
+    "longitude": 0
   }
 }
+###  "sgsgsg": 111,
+###  "10": 10
 ###
 ## Удаление объявления
 

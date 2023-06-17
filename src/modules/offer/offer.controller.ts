@@ -26,6 +26,10 @@ export type ParamsGetOffer = {
   offerId: string;
 };
 
+type ParamsGetCity = {
+  cityId: string;
+};
+
 @injectable()
 export default class OfferController extends Controller {
   private uploadDirection: string;
@@ -107,6 +111,24 @@ export default class OfferController extends Controller {
         new DocumentExistsMiddleware(this.offerService, 'Offer', 'offerId'),
       ],
     });
+    this.addRoute({
+      path: '/city/:cityId',
+      method: HttpMethod.Get,
+      handler: this.getOffersFromCity,
+      middlewares: [
+        new ValidateObjectIdMiddleware('cityId'),
+        new DocumentExistsMiddleware(this.cityService, 'City', 'cityId'),
+      ],
+    });
+    this.addRoute({
+      path: '/premium/city/:cityId',
+      method: HttpMethod.Get,
+      handler: this.getPremium,
+      middlewares: [
+        new ValidateObjectIdMiddleware('cityId'),
+        new DocumentExistsMiddleware(this.cityService, 'City', 'cityId'),
+      ],
+    });
   }
 
   public async show(
@@ -124,7 +146,7 @@ export default class OfferController extends Controller {
     res: Response,
   ) {
     const { limit, sortType } = query;
-    const offers = await this.offerService.find(limit, sortType);
+    const offers = await this.offerService.find({ limit, sortType });
     this.ok(res, fillDTO(OfferRdo, offers));
   }
 
@@ -178,5 +200,25 @@ export default class OfferController extends Controller {
     this.created(res, {
       filepath,
     });
+  }
+
+  public async getOffersFromCity(
+    { params, query }: Request<core.ParamsDictionary | ParamsGetCity, unknown, unknown, RequestQuery>,
+    res: Response,
+  ): Promise<void> {
+    const { limit, sortType } = query;
+    const offers = await this.offerService.findByCityId(params.cityId, { limit, sortType });
+    this.ok(res, fillDTO(OfferRdo, offers));
+  }
+
+  public async getPremium(
+    { params, query }: Request<core.ParamsDictionary | ParamsGetCity, unknown, unknown, RequestQuery>,
+    res: Response,
+  ) {
+    const { sortType } = query;
+    const { cityId } = params;
+    const offers = await this.offerService.findPremium(cityId, { sortType });
+
+    this.ok(res, fillDTO(OfferRdo, offers));
   }
 }

@@ -4,8 +4,8 @@
 @host = {{hostname}}:{{port}}
 @parentPath = offers
 @contentType = application/json
-@offerId = 647cf5d2f10888c3cba79054
-@cityId = 647cf5d2f10888c3cba79042
+@offerId = 648dda7bb6c8ea1c212e4590
+@cityId = 647cf5d2f10888c3cba79052
 @userId = 647cf5d2f10888c3cba7903f
 
 ## Список объявлений
@@ -16,7 +16,13 @@ GET {{host}}/{{parentPath}}?limit=2 HTTP/1.1
 ###
 ## Список объявлений с сортировкой
 # Default | Rated | Popular | PriceTop | PriceDown
-GET {{host}}/{{parentPath}}?sortType=Default HTTP/1.1
+GET {{host}}/{{parentPath}}?sortType=PriceTop HTTP/1.1
+###
+## Список объявлений определённого города
+GET {{host}}/{{parentPath}}/city/{{cityId}}?limit=10 HTTP/1.1
+###
+## Список премиум объявлений
+GET {{host}}/{{parentPath}}/premium/city/{{cityId}}?sortType=Popular HTTP/1.1
 ###
 
 ## Объявление по идентификатору
@@ -28,17 +34,18 @@ POST {{host}}/{{parentPath}} HTTP/1.1
 Content-Type: {{contentType}}
 
 {
-  "title": "Билли Саммерс",
+  "title": "Премиум title",
   "description": "Новый детективный роман от короля ужасов.",
   "preview": "billy-summers.png",
   "images": ["img1.png","img2.png"],
   "type": "Apartment",
-  "price": 1408,
+  "price": 777,
   "guests": 10,
   "rooms": 1,
   "features": ["Breakfast"],
   "city": "{{cityId}}",
   "author": "{{userId}}",
+  "isPremium": true,
   "coordinates":{
     "latitude": 50,
     "longitude": 0
@@ -60,7 +67,8 @@ Content-Type: {{contentType}}
 {
   "title": "Ночной дозор 3",
   "description": "Проверка обновления 1111111",
-  "price": 1
+  "rating": 100,
+  "commentsCount":777
 }
 
 ###

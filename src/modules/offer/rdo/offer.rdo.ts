@@ -1,8 +1,8 @@
 import { Expose, Type } from 'class-transformer';
 import CityRdo from '../../city/rdo/city.rdo.js';
-import { TOfferVariants } from '../../../types/offer.type.js';
+import { OfferMin, TOfferVariants } from '../../../types/offer.type.js';
 
-export default class OfferRdo {
+export default class OfferRdo implements OfferMin {
   @Expose()
   public id!: string;
 
@@ -26,7 +26,7 @@ export default class OfferRdo {
   public price!: number;
 
   @Expose()
-  public commentCount!: number;
+  public commentsCount!: number;
 
   @Expose()
   public rating!: number;

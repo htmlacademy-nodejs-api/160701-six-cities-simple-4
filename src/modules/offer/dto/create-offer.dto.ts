@@ -15,6 +15,8 @@ import {
   IsLatitude,
   IsLongitude,
   IsIn,
+  IsOptional,
+  IsBoolean,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 
@@ -42,6 +44,10 @@ export default class CreateOfferDto {
 
   @IsArray()
   public images!: string[];
+
+  @IsOptional()
+  @IsBoolean()
+  public isPremium!: boolean;
 
   @IsIn(OfferVariants)
   public type!: TOfferVariants;

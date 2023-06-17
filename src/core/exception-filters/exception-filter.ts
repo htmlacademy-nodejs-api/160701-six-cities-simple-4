@@ -6,6 +6,7 @@ import { LoggerInterface } from '../logger/logger.interface.js';
 import { AppComponent } from '../../types/app-component.enum.js';
 import { createErrorObject } from '../helpers/index.js';
 import HttpError from '../errors/http-error.js';
+import mongoose from 'mongoose';
 
 @injectable()
 export default class ExceptionFilter implements ExceptionFilterInterface {
@@ -34,7 +35,7 @@ export default class ExceptionFilter implements ExceptionFilterInterface {
   }
 
   public catch(error: Error | HttpError, req: Request, res: Response, next: NextFunction): void {
-    if (error.constructor.name === 'ValidationError') {
+    if (error instanceof mongoose.Error.ValidationError) {
       return this.handleValidationError(error, req, res, next);
     }
 

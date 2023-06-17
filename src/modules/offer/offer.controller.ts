@@ -18,6 +18,9 @@ import { ValidateDtoMiddleware } from '../../common/middlewares/validate-dto.mid
 import { DocumentExistsMiddleware } from '../../common/middlewares/document-exists.middleware.js';
 import { RequestQuery } from '../../types/request-query.type.js';
 import OfferRdo from './rdo/offer.rdo.js';
+import { UploadFileMiddleware } from '../../common/middlewares/upload-file.middleware.js';
+import { ConfigInterface } from '../../core/config/config.interface.js';
+import { RestSchema } from '../../core/config/rest.schema.js';
 
 export type ParamsGetOffer = {
   offerId: string;
@@ -25,13 +28,16 @@ export type ParamsGetOffer = {
 
 @injectable()
 export default class OfferController extends Controller {
+  private uploadDirection: string;
+
   constructor(
     @inject(AppComponent.LoggerInterface) protected readonly logger: LoggerInterface,
     @inject(AppComponent.OfferServiceInterface) private readonly offerService: OfferServiceInterface,
+    @inject(AppComponent.ConfigInterface) private readonly configService: ConfigInterface<RestSchema>,
     @inject(AppComponent.CityServiceInterface) private readonly cityService: CityServiceInterface,
   ) {
     super(logger);
-
+    this.uploadDirection = `${this.configService.get('UPLOAD_DIRECTORY')}/offers/`;
     this.logger.info('Register routes for OfferController…');
     this.addRoute({
       path: '/:offerId',
@@ -48,6 +54,39 @@ export default class OfferController extends Controller {
       method: HttpMethod.Post,
       handler: this.create,
       middlewares: [new ValidateDtoMiddleware(CreateOfferDto)],
+    });
+    this.addRoute({
+      path: '/:offerId/preview',
+      method: HttpMethod.Post,
+      handler: this.uploadPreview,
+      middlewares: [
+        new ValidateObjectIdMiddleware('offerId'),
+        new DocumentExistsMiddleware(this.offerService, 'Offer', 'offerId'),
+        new UploadFileMiddleware({
+          uploadDirectory: this.uploadDirection,
+          fieldName: 'offer-preview',
+          param: 'offerId',
+          postFixDirectory: 'preview',
+          fileType: 'image',
+        }),
+      ],
+    });
+    this.addRoute({
+      path: '/:offerId/images',
+      method: HttpMethod.Post,
+      handler: this.uploadImages,
+      middlewares: [
+        new ValidateObjectIdMiddleware('offerId'),
+        new DocumentExistsMiddleware(this.offerService, 'Offer', 'offerId'),
+        new UploadFileMiddleware({
+          uploadDirectory: this.uploadDirection,
+          fieldName: 'offer-img',
+          fileType: 'image',
+          param: 'offerId',
+          postFixDirectory: 'images',
+          isMulti: true,
+        }),
+      ],
     });
     this.addRoute({
       path: '/:offerId',
@@ -124,5 +163,20 @@ export default class OfferController extends Controller {
     const { offerId } = params;
     const updatedOffer = await this.offerService.updateById(offerId, body);
     this.ok(res, fillDTO(OfferRdo, updatedOffer));
+  }
+
+  public async uploadPreview(req: Request, res: Response) {
+    this.created(res, {
+      filepath: req.file?.path,
+    });
+  }
+
+  public async uploadImages(req: Request, res: Response) {
+    const files = req.files as Express.Multer.File[];
+    const filepath = files.map((file) => file.path);
+
+    this.created(res, {
+      filepath,
+    });
   }
 }

@@ -58,3 +58,46 @@ Content-Type: {{contentType}}
   "description": "Проверка обновления 1111111",
   "price": 1
 }
+
+###
+## Отправка preview объявления
+
+POST {{host}}/{{parentPath}}/{{offerId}}/preview HTTP/1.1
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="offer-preview"; filename="preview.jpg"
+Content-Type: image/jpeg
+
+< /Users/dmitrij/Documents/preview.jpg
+------WebKitFormBoundary7MA4YWxkTrZu0gW--
+
+###
+## Отправка images объявления
+POST {{host}}/{{parentPath}}/{{offerId}}/images HTTP/1.1
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="offer-img"; filename="preview1.jpg"
+Content-Type: image/jpeg
+
+< /Users/dmitrij/Documents/preview1.jpg
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="offer-img"; filename="preview2.jpg"
+Content-Type: image/jpeg
+
+< /Users/dmitrij/Documents/preview2.jpg
+------WebKitFormBoundary7MA4YWxkTrZu0gW--
+
+###
+## Отправка архива вместо изображения
+
+POST {{host}}/{{parentPath}}/{{offerId}}/preview HTTP/1.1
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="offer-preview"; filename="preview.jpg"
+Content-Type: application/zip
+
+< /Users/dmitrij/Documents/test.zip
+------WebKitFormBoundary7MA4YWxkTrZu0gW--

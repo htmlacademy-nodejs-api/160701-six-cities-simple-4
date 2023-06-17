@@ -7,7 +7,7 @@ import HttpError from '../../core/errors/http-error.js';
 import { StatusCodes } from 'http-status-codes';
 
 const FileMIMETypes = {
-  image: ['image/jpeg', 'image/png', 'image/webp', 'image/gif'],
+  image: ['image/jpeg', 'image/png'],
 };
 const className = 'UploadFileMiddleware';
 export class UploadFileMiddleware implements MiddlewareInterface {

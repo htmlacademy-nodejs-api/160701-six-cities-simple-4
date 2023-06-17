@@ -4,8 +4,8 @@
 @host = {{hostname}}:{{port}}
 @parentPath = offers
 @contentType = application/json
-@offerId = 6489aff58356b1a5dfe38b26
-@cityId = 647f0adebc49a7eb82cd23c1
+@offerId = 647cf5d2f10888c3cba79054
+@cityId = 647cf5d2f10888c3cba79042
 @userId = 647cf5d2f10888c3cba7903f
 
 ## Список объявлений
@@ -13,6 +13,10 @@ GET {{host}}/{{parentPath}} HTTP/1.1
 ###
 ## Список объявлений с лимитом
 GET {{host}}/{{parentPath}}?limit=2 HTTP/1.1
+###
+## Список объявлений с сортировкой
+# Default | Rated | Popular | PriceTop | PriceDown
+GET {{host}}/{{parentPath}}?sortType=Default HTTP/1.1
 ###
 
 ## Объявление по идентификатору

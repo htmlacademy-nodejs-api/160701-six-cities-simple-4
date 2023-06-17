@@ -5,8 +5,14 @@ import { LoggerInterface } from '../../core/logger/logger.interface.js';
 import { types } from '@typegoose/typegoose';
 import { OfferEntity } from './offer.entity.js';
 import CreateOfferDto from './dto/create-offer.dto.js';
-import { DEFAULT_OFFER_COUNT, DEFAULT_OFFER_PREMIUM_COUNT, DEFAULT_OFFER_SORT } from './offer.constant.js';
+import {
+  DEFAULT_MAX_OFFER_COUNT,
+  DEFAULT_OFFER_COUNT,
+  DEFAULT_OFFER_PREMIUM_COUNT,
+  OFFER_SORT,
+} from './offer.constant.js';
 import UpdateOfferDto from './dto/update-offer.dto.js';
+import { SortVariants } from '../../types/request-query.type.js';
 
 @injectable()
 export default class OfferService implements OfferServiceInterface {
@@ -34,12 +40,17 @@ export default class OfferService implements OfferServiceInterface {
     return this.offerModel.findById(id).populate(['author', 'city']).exec();
   }
 
-  public async find(count?: number): Promise<types.DocumentType<OfferEntity>[]> {
-    const limit = count ?? DEFAULT_OFFER_COUNT;
+  public async find(
+    count?: number,
+    sortType: SortVariants = 'Default',
+  ): Promise<types.DocumentType<OfferEntity>[]> {
+    let limit = count ?? DEFAULT_OFFER_COUNT;
+    if (limit >= DEFAULT_MAX_OFFER_COUNT) {
+      limit = DEFAULT_MAX_OFFER_COUNT;
+    }
 
     return this.offerModel
-      .find({}, {}, { limit })
-      .sort(DEFAULT_OFFER_SORT)
+      .find({}, {}, { limit, sort: OFFER_SORT[sortType] })
       .populate(['author', 'city'])
       .exec();
   }
@@ -49,7 +60,7 @@ export default class OfferService implements OfferServiceInterface {
 
     return this.offerModel
       .find({ city: cityId }, {}, { limit })
-      .sort(DEFAULT_OFFER_SORT)
+      .sort(OFFER_SORT.Default)
       .populate(['author', 'city'])
       .exec();
   }
@@ -89,16 +100,6 @@ export default class OfferService implements OfferServiceInterface {
         isPremium: true,
       })
       .limit(DEFAULT_OFFER_PREMIUM_COUNT)
-      .populate(['author', 'city'])
-      .exec();
-  }
-
-  public async findFavorite(count?: number): Promise<types.DocumentType<OfferEntity>[]> {
-    const limit = count ?? DEFAULT_OFFER_COUNT;
-
-    return this.offerModel
-      .find({ isFavorite: true }, { limit })
-      .sort(DEFAULT_OFFER_SORT)
       .populate(['author', 'city'])
       .exec();
   }

@@ -12,7 +12,7 @@ import {
   OFFER_SORT,
 } from './offer.constant.js';
 import UpdateOfferDto from './dto/update-offer.dto.js';
-import { SortVariants } from '../../types/request-query.type.js';
+import { RequestQuery } from '../../types/request-query.type.js';
 
 @injectable()
 export default class OfferService implements OfferServiceInterface {
@@ -41,28 +41,26 @@ export default class OfferService implements OfferServiceInterface {
   }
 
   public async find(
-    count?: number,
-    sortType: SortVariants = 'Default',
+    config: RequestQuery,
+    findParam: Record<string, unknown> = {},
   ): Promise<types.DocumentType<OfferEntity>[]> {
-    let limit = count ?? DEFAULT_OFFER_COUNT;
-    if (limit >= DEFAULT_MAX_OFFER_COUNT) {
-      limit = DEFAULT_MAX_OFFER_COUNT;
+    const { limit, sortType = 'Default' } = config;
+    let limitValue = limit ?? DEFAULT_OFFER_COUNT;
+    if (limitValue >= DEFAULT_MAX_OFFER_COUNT) {
+      limitValue = DEFAULT_MAX_OFFER_COUNT;
     }
 
     return this.offerModel
-      .find({}, {}, { limit, sort: OFFER_SORT[sortType] })
+      .find(findParam, {}, { limit: limitValue, sort: OFFER_SORT[sortType] })
       .populate(['author', 'city'])
       .exec();
   }
 
-  public async findByCityId(cityId: string, count?: number): Promise<types.DocumentType<OfferEntity>[]> {
-    const limit = count ?? DEFAULT_OFFER_COUNT;
-
-    return this.offerModel
-      .find({ city: cityId }, {}, { limit })
-      .sort(OFFER_SORT.Default)
-      .populate(['author', 'city'])
-      .exec();
+  public async findByCityId(
+    cityId: string,
+    config: RequestQuery,
+  ): Promise<types.DocumentType<OfferEntity>[]> {
+    return this.find(config, { city: cityId });
   }
 
   public async exists(documentId: string): Promise<boolean> {
@@ -91,16 +89,15 @@ export default class OfferService implements OfferServiceInterface {
       .exec();
   }
 
-  public async findPremium(cityId: string): Promise<types.DocumentType<OfferEntity>[]> {
-    return this.offerModel
-      .find({
+  public async findPremium(cityId: string, config: RequestQuery): Promise<types.DocumentType<OfferEntity>[]> {
+    return this.find(
+      { ...config, limit: DEFAULT_OFFER_PREMIUM_COUNT },
+      {
         city: {
           _id: cityId,
         },
         isPremium: true,
-      })
-      .limit(DEFAULT_OFFER_PREMIUM_COUNT)
-      .populate(['author', 'city'])
-      .exec();
+      },
+    );
   }
 }

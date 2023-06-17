@@ -82,7 +82,8 @@ export default class CityController extends Controller {
     { params, query }: Request<core.ParamsDictionary | ParamsGetCity, unknown, unknown, RequestQuery>,
     res: Response,
   ): Promise<void> {
-    const offers = await this.offerService.findByCityId(params.cityId, query.limit);
+    const { limit } = query;
+    const offers = await this.offerService.findByCityId(params.cityId, limit);
     this.ok(res, fillDTO(OfferRdo, offers));
   }
 

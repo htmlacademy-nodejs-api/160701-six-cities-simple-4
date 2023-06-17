@@ -84,7 +84,7 @@ export default class OfferController extends Controller {
     { query }: Request<core.ParamsDictionary, unknown, unknown, RequestQuery>,
     res: Response,
   ) {
-    const limit = query.limit;
+    const { limit } = query;
     const offers = await this.offerService.find(limit);
     this.ok(res, fillDTO(OfferRdo, offers));
   }

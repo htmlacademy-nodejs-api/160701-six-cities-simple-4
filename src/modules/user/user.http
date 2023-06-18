@@ -15,7 +15,8 @@ Content-Type: {{contentType}}
   "email": "torans1@overlook.net",
   "avatarPath": "torrance.png",
   "firstName": "Jack",
-  "password": "shining"
+  "password": "shining",
+  "type": "default"
 }
 
 ###

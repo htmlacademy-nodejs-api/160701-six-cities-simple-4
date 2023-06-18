@@ -1,5 +1,5 @@
 import { OfferV } from '../../../const/validation.js';
-import { TCities } from '../../../types/cities.type.js';
+import { Cities, TCities } from '../../../types/cities.type.js';
 import { OfferVariants, OfferFeatures, TOfferFeatures, TOfferVariants } from '../../../types/offer.type.js';
 import {
   IsArray,
@@ -36,7 +36,7 @@ export default class CreateOfferDto {
   @MaxLength(OfferV.Description.Max)
   public description!: string;
 
-  @IsMongoId()
+  // @IsIn(Cities)
   public city!: TCities;
 
   @IsString()

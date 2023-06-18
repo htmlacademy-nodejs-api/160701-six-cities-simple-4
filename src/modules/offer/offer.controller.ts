@@ -155,12 +155,12 @@ export default class OfferController extends Controller {
   }
 
   public async create(
-    { body }: Request<Record<string, unknown>, Record<string, unknown>, CreateOfferDto>,
+    { body, user }: Request<Record<string, unknown>, Record<string, unknown>, CreateOfferDto>,
     res: Response,
   ): Promise<void> {
     const cityName = body.city;
     const city = await this.cityService.findByCityNameOrCreate(cityName, { name: cityName });
-    const result = await this.offerService.create({ ...body, city: city.id });
+    const result = await this.offerService.create({ ...body, city: city.id, author: user.id });
     const offer = await this.offerService.findById(result.id);
     this.created(res, fillDTO(OfferRdo, offer));
   }

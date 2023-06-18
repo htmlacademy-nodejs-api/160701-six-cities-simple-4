@@ -4,7 +4,7 @@
 @host = {{hostname}}:{{port}}
 @parentPath = cities
 # @cityId = 647f0adebc49a7eb82cd23c1
-@cityId = 647f0adebc49a7eb82cd23d2
+@cityId = 647cf5d2f10888c3cba79052
 @contentType = application/json
 @token = eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6InRvcmFuczc3N0BvdmVybG9vay5uZXQiLCJpZCI6IjY0OGIzNjFjYzI4MmEyOTU5NTliYmM5MCIsImlhdCI6MTY4Njg0NzgzMiwiZXhwIjoxNjg3MDIwNjMyfQ.jn_DoD5F9sZizHHFaQlNBy25Kb103CopW-vwanzcBzk
 
@@ -20,10 +20,4 @@ Content-Type: {{contentType}}
 }
 ### Получить список городов
 GET {{host}}/{{parentPath}} HTTP/1.1
-### 
-## Список объявлений определённого города
-GET {{host}}/{{parentPath}}/{{cityId}}/offers?limit=10 HTTP/1.1
-###
-## Список премиум объявлений
-GET {{host}}/{{parentPath}}/{{cityId}}/offers/premium HTTP/1.1
 ###

@@ -1,21 +1,21 @@
 import { inject, injectable } from 'inversify';
-import { StatusCodes } from 'http-status-codes';
 import { Request, Response } from 'express';
 import { Controller } from '../../core/controller/controller.abstract.js';
 import { AppComponent } from '../../types/app-component.enum.js';
 import { LoggerInterface } from '../../core/logger/logger.interface';
 import { HttpMethod } from '../../types/http-method.enum.js';
-import HttpError from '../../core/errors/http-error.js';
 import { OfferServiceInterface } from './offer-service.interface.js';
 import * as core from 'express-serve-static-core';
 import { fillDTO } from '../../core/helpers/common.js';
-import OfferRdo from './rdo/offer.rdo.js';
+import OfferFullRdo from './rdo/offer-full.rdo.js';
 import CreateOfferDto from './dto/create-offer.dto.js';
 import UpdateOfferDto from './dto/update-offer.dto.js';
 import { ValidateObjectIdMiddleware } from '../../common/middlewares/validate-objectid.middleware.js';
 import { CityServiceInterface } from '../city/city-service.interface.js';
 import { ValidateDtoMiddleware } from '../../common/middlewares/validate-dto.middleware.js';
 import { DocumentExistsMiddleware } from '../../common/middlewares/document-exists.middleware.js';
+import { RequestQuery } from '../../types/request-query.type.js';
+import OfferRdo from './rdo/offer.rdo.js';
 import { UploadFileMiddleware } from '../../common/middlewares/upload-file.middleware.js';
 import { ConfigInterface } from '../../core/config/config.interface.js';
 import { RestSchema } from '../../core/config/rest.schema.js';
@@ -23,6 +23,10 @@ import { PrivateRouteMiddleware } from '../../common/middlewares/private-route.m
 
 export type ParamsGetOffer = {
   offerId: string;
+};
+
+type ParamsGetCity = {
+  cityId: string;
 };
 
 @injectable()
@@ -111,6 +115,24 @@ export default class OfferController extends Controller {
         new DocumentExistsMiddleware(this.offerService, 'Offer', 'offerId'),
       ],
     });
+    this.addRoute({
+      path: '/city/:cityId',
+      method: HttpMethod.Get,
+      handler: this.getOffersFromCity,
+      middlewares: [
+        new ValidateObjectIdMiddleware('cityId'),
+        new DocumentExistsMiddleware(this.cityService, 'City', 'cityId'),
+      ],
+    });
+    this.addRoute({
+      path: '/premium/city/:cityId',
+      method: HttpMethod.Get,
+      handler: this.getPremium,
+      middlewares: [
+        new ValidateObjectIdMiddleware('cityId'),
+        new DocumentExistsMiddleware(this.cityService, 'City', 'cityId'),
+      ],
+    });
   }
 
   public async show(
@@ -120,25 +142,25 @@ export default class OfferController extends Controller {
     const { offerId } = params;
     const offer = await this.offerService.findById(offerId);
 
-    this.ok(res, fillDTO(OfferRdo, offer));
+    this.ok(res, fillDTO(OfferFullRdo, offer));
   }
 
-  public async index(_req: Request, res: Response) {
-    const offers = await this.offerService.find();
+  public async index(
+    { query }: Request<core.ParamsDictionary, unknown, unknown, RequestQuery>,
+    res: Response,
+  ) {
+    const { limit, sortType } = query;
+    const offers = await this.offerService.find({ limit, sortType });
     this.ok(res, fillDTO(OfferRdo, offers));
   }
 
   public async create(
-    { body, user }: Request<Record<string, unknown>, Record<string, unknown>, CreateOfferDto>,
+    { body }: Request<Record<string, unknown>, Record<string, unknown>, CreateOfferDto>,
     res: Response,
   ): Promise<void> {
-    const city = await this.cityService.exists(body.city);
-
-    if (!city) {
-      throw new HttpError(StatusCodes.NOT_FOUND, `City with id ${body.city} not found.`, 'OfferController');
-    }
-
-    const result = await this.offerService.create({ ...body, author: user.id });
+    const cityName = body.city;
+    const city = await this.cityService.findByCityNameOrCreate(cityName, { name: cityName });
+    const result = await this.offerService.create({ ...body, city: city.id });
     const offer = await this.offerService.findById(result.id);
     this.created(res, fillDTO(OfferRdo, offer));
   }
@@ -178,5 +200,25 @@ export default class OfferController extends Controller {
     this.created(res, {
       filepath,
     });
+  }
+
+  public async getOffersFromCity(
+    { params, query }: Request<core.ParamsDictionary | ParamsGetCity, unknown, unknown, RequestQuery>,
+    res: Response,
+  ): Promise<void> {
+    const { limit, sortType } = query;
+    const offers = await this.offerService.findByCityId(params.cityId, { limit, sortType });
+    this.ok(res, fillDTO(OfferRdo, offers));
+  }
+
+  public async getPremium(
+    { params, query }: Request<core.ParamsDictionary | ParamsGetCity, unknown, unknown, RequestQuery>,
+    res: Response,
+  ) {
+    const { sortType } = query;
+    const { cityId } = params;
+    const offers = await this.offerService.findPremium(cityId, { sortType });
+
+    this.ok(res, fillDTO(OfferRdo, offers));
   }
 }

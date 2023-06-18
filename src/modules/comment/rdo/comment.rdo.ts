@@ -9,9 +9,12 @@ export default class CommentRdo {
   public text!: string;
 
   @Expose()
-  public createdAt!: string;
+  public rating!: number;
 
   @Expose()
+  public createdAt!: string;
+
+  @Expose({ name: 'userId' })
   @Type(() => UserRdo)
   public author!: UserRdo;
 }

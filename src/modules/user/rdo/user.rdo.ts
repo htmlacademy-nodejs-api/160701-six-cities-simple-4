@@ -3,6 +3,9 @@ import { UserRole } from '../../../types/user.type';
 
 export default class UserRdo {
   @Expose()
+  public id!: string;
+
+  @Expose()
   public firstName!: string;
 
   @Expose()

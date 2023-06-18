@@ -1,5 +1,4 @@
-import { defaultClasses } from '@typegoose/typegoose';
-import typegoose, { getModelForClass } from '@typegoose/typegoose';
+import typegoose, { getModelForClass, defaultClasses } from '@typegoose/typegoose';
 import { City } from '../../types/city.type.js';
 import { Cities, TCities } from '../../types/cities.type.js';
 import { CityV } from '../../const/validation.js';

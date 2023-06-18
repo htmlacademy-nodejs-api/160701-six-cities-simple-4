@@ -6,8 +6,9 @@ import { MiddlewareInterface } from '../../types/middleware.interface.js';
 import HttpError from '../../core/errors/http-error.js';
 import { StatusCodes } from 'http-status-codes';
 
+const FILE_MAX_SIZE = 10 * 1024 * 1024;
 const FileMIMETypes = {
-  image: ['image/jpeg', 'image/png', 'image/webp', 'image/gif'],
+  image: ['image/jpeg', 'image/png'],
 };
 const className = 'UploadFileMiddleware';
 export class UploadFileMiddleware implements MiddlewareInterface {
@@ -19,6 +20,7 @@ export class UploadFileMiddleware implements MiddlewareInterface {
       param: string;
       postFixDirectory?: string;
       isMulti?: boolean;
+      maxFiles?: number;
     },
   ) {}
 
@@ -30,6 +32,7 @@ export class UploadFileMiddleware implements MiddlewareInterface {
       postFixDirectory = '',
       isMulti = false,
       fileType,
+      maxFiles = Infinity,
     } = this.config;
     const paramId = req.params[param] || '';
     const postFixPath = postFixDirectory ? `/${postFixDirectory}` : '';
@@ -37,12 +40,6 @@ export class UploadFileMiddleware implements MiddlewareInterface {
       destination: `${uploadDirectory}/${paramId}${postFixPath}`,
       filename: (_req, file, callback) => {
         const extension = mime.extension(file.mimetype);
-
-        if (!extension) {
-          return next(
-            new HttpError(StatusCodes.BAD_REQUEST, `Нераспознан тип файла ${file.originalname}`, className),
-          );
-        }
         const filename = nanoid();
         callback(null, `${filename}.${extension}`);
       },
@@ -55,7 +52,7 @@ export class UploadFileMiddleware implements MiddlewareInterface {
         if (isValid) {
           return cb(null, true);
         } else {
-          return cb(
+          return next(
             new HttpError(StatusCodes.BAD_REQUEST, `Only ${types.join(', ')} files are allowed!`, className),
           );
         }
@@ -63,16 +60,25 @@ export class UploadFileMiddleware implements MiddlewareInterface {
 
       return cb(null, true);
     };
-    const uploadFileMiddleware = multer({ storage, fileFilter })[isMulti ? 'array' : 'single'](fieldName);
+    const uploadFileMiddleware = multer({
+      storage,
+      fileFilter,
+      limits: {
+        fileSize: FILE_MAX_SIZE, //TODO разный лимит под разные типы файлов
+        files: isMulti ? maxFiles : 1,
+      },
+    })[isMulti ? 'array' : 'single'](fieldName);
 
     uploadFileMiddleware(req, res, (err: any) => {
       if (err instanceof multer.MulterError) {
         return next(new HttpError(StatusCodes.BAD_REQUEST, err.message, className));
-      } else if (err) {
-        return next(err);
-      } else {
+      }
+
+      if (err) {
         return next();
       }
+
+      return next();
     });
   }
 }

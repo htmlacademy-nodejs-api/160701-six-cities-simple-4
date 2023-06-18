@@ -60,6 +60,6 @@ export default class CommentController extends Controller {
   public async show({ params }: Request<core.ParamsDictionary | ParamsGetOffer>, res: Response) {
     const { offerId } = params;
     const comments = await this.commentService.findByOfferId(offerId);
-    this.created(res, fillDTO(CommentRdo, comments));
+    this.ok(res, fillDTO(CommentRdo, comments));
   }
 }

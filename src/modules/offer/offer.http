@@ -4,13 +4,26 @@
 @host = {{hostname}}:{{port}}
 @parentPath = offers
 @contentType = application/json
-@offerId = 648b4932402001008c8cc789
+@offerId = 648f26b48226774e386b8758
 @cityId = 647f0adebc49a7eb82cd23c1
 @userId = 647cf5d2f10888c3cba7903f
-@token = eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6InRvcmFuczc3N0BvdmVybG9vay5uZXQiLCJpZCI6IjY0OGIzNjFjYzI4MmEyOTU5NTliYmM5MCIsImlhdCI6MTY4Njg0NzgzMiwiZXhwIjoxNjg3MDIwNjMyfQ.jn_DoD5F9sZizHHFaQlNBy25Kb103CopW-vwanzcBzk
+@token =eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6InRvcmFuczc3N0BvdmVybG9vay5uZXQiLCJpZCI6IjY0OGI2ZGM2ZjZkYzY2NTY2ODUxNDg4MiIsImlhdCI6MTY4NzEwMzA3OSwiZXhwIjoxNjg3Mjc1ODc5fQ.DdDoweYEMtu3Iclm0oKIvvjkABXeVXvtsuONHAiFp_8
 
 ## Список объявлений
 GET {{host}}/{{parentPath}} HTTP/1.1
+###
+## Список объявлений с лимитом
+GET {{host}}/{{parentPath}}?limit=2 HTTP/1.1
+###
+## Список объявлений с сортировкой
+# Default | Rated | Popular | PriceTop | PriceDown
+GET {{host}}/{{parentPath}}?sortType=PriceTop HTTP/1.1
+###
+## Список объявлений определённого города
+GET {{host}}/{{parentPath}}/city/{{cityId}}?limit=10 HTTP/1.1
+###
+## Список премиум объявлений
+GET {{host}}/{{parentPath}}/premium/city/{{cityId}}?sortType=Popular HTTP/1.1
 ###
 
 ## Объявление по идентификатору
@@ -22,24 +35,25 @@ Content-Type: {{contentType}}
 Authorization: Bearer {{token}}
 
 {
-  "title": "Билли Саммерс",
+  "title": "Премиум title",
   "description": "Новый детективный роман от короля ужасов.",
-  "postDate": "2022-05-12T11:56:37.573Z",
   "preview": "billy-summers.png",
   "images": ["img1.png","img2.png"],
   "type": "Apartment",
-  "price": 1408,
+  "price": 777,
   "guests": 10,
   "rooms": 1,
-  "features": ["Breakfast","Breakfast"],
-  "city": "{{cityId}}",
+  "features": ["Breakfast"],
+  "city": "Dusseldorf",
   "author": "{{userId}}",
+  "isPremium": true,
   "coordinates":{
     "latitude": 50,
-    "longitude": 51,
-    "sgsgsg": 111
+    "longitude": 0
   }
 }
+###  "sgsgsg": 111,
+###  "10": 10
 ###
 ## Удаление объявления
 

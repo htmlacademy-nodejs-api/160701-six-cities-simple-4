@@ -17,6 +17,7 @@ import {
   IsIn,
   IsOptional,
   IsBoolean,
+  IsInstance,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 
@@ -85,5 +86,6 @@ export default class CreateOfferDto {
   */
   @ValidateNested()
   @Type(() => CreateCoordinateDto)
+  @IsInstance(CreateCoordinateDto)
   public coordinates!: CreateCoordinateDto;
 }

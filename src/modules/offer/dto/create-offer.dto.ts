@@ -36,7 +36,7 @@ export default class CreateOfferDto {
   @MaxLength(OfferV.Description.Max)
   public description!: string;
 
-  // @IsIn(Cities)
+  @IsIn(Cities)
   public city!: TCities;
 
   @IsString()

@@ -154,8 +154,6 @@ export default class OfferController extends Controller {
   ): Promise<void> {
     const cityName = body.city;
     const city = await this.cityService.findByCityNameOrCreate(cityName, { name: cityName });
-    console.log('cityID', city.id);
-
     const result = await this.offerService.create({ ...body, city: city.id });
     const offer = await this.offerService.findById(result.id);
     this.created(res, fillDTO(OfferRdo, offer));

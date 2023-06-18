@@ -1,5 +1,5 @@
 import { OfferV } from '../../../const/validation.js';
-import { TCities } from '../../../types/cities.type.js';
+import { Cities, TCities } from '../../../types/cities.type.js';
 import { Coordinates } from '../../../types/coordinates.type.js';
 import { OfferFeatures, OfferVariants, TOfferFeatures, TOfferVariants } from '../../../types/offer.type.js';
 import {
@@ -14,6 +14,7 @@ import {
   Min,
   MinLength,
   IsOptional,
+  IsIn,
 } from 'class-validator';
 
 export default class UpdateOfferDto {
@@ -32,7 +33,7 @@ export default class UpdateOfferDto {
   public description?: string;
 
   @IsOptional()
-  @IsMongoId({ message: 'city field must be valid an id' })
+  @IsIn(Cities)
   public city?: TCities;
 
   @IsOptional()

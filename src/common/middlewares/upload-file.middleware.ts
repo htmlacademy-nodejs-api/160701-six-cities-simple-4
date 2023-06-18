@@ -32,7 +32,7 @@ export class UploadFileMiddleware implements MiddlewareInterface {
       postFixDirectory = '',
       isMulti = false,
       fileType,
-      maxFiles = Infinity
+      maxFiles = Infinity,
     } = this.config;
     const paramId = req.params[param] || '';
     const postFixPath = postFixDirectory ? `/${postFixDirectory}` : '';
@@ -64,7 +64,7 @@ export class UploadFileMiddleware implements MiddlewareInterface {
       storage,
       fileFilter,
       limits: {
-        fileSize: FILE_MAX_SIZE,
+        fileSize: FILE_MAX_SIZE, //TODO разный лимит под разные типы файлов
         files: isMulti ? maxFiles : 1,
       },
     })[isMulti ? 'array' : 'single'](fieldName);

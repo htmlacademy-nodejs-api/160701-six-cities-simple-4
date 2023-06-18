@@ -27,6 +27,7 @@ class CreateCoordinateDto {
   @IsLongitude()
   public longitude!: number;
 }
+//TODO даёт обновлять объявление авторасчитываемых полей: rating, commentsCount
 export default class CreateOfferDto {
   @MinLength(OfferV.Title.Min)
   @MaxLength(OfferV.Title.Max)
@@ -75,6 +76,13 @@ export default class CreateOfferDto {
   @IsMongoId()
   public author!: string;
 
+  /* TODO пропускает невалидные координаты
+  "coordinates":{
+    "latitude": 50,
+    "longitude": 0,
+    "btbtb":111
+  }
+  */
   @ValidateNested()
   @Type(() => CreateCoordinateDto)
   public coordinates!: CreateCoordinateDto;

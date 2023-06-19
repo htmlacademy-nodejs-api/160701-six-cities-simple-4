@@ -19,8 +19,7 @@ Authorization: Bearer {{token}}
 Content-Type: {{contentType}}
 
 {
-  "text": "Всё супер111!",
-  "userId": "{{userId}}",
-  "rating": 5
+  "text": "Всё no супер!",
+  "rating": 1
 }
 ###

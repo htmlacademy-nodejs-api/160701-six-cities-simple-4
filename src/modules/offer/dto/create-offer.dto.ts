@@ -17,6 +17,7 @@ import {
   IsOptional,
   IsBoolean,
   IsInstance,
+  Equals,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 
@@ -27,7 +28,7 @@ class CreateCoordinateDto {
   @IsLongitude()
   public longitude!: number;
 }
-//TODO даёт обновлять объявление авторасчитываемых полей: rating, commentsCount
+
 export default class CreateOfferDto {
   @MinLength(OfferV.Title.Min)
   @MaxLength(OfferV.Title.Max)
@@ -86,4 +87,12 @@ export default class CreateOfferDto {
   @Type(() => CreateCoordinateDto)
   @IsInstance(CreateCoordinateDto)
   public coordinates!: CreateCoordinateDto;
+
+  @IsOptional()
+  @Equals(0)
+  public rating!: number;
+
+  @IsOptional()
+  @Equals(0)
+  public commentsCount!: number;
 }

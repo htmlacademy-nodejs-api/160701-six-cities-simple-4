@@ -43,6 +43,8 @@ Authorization: Bearer {{token}}
   "price": 777,
   "guests": 10,
   "rooms": 1,
+  "rating":0,
+  "commentsCount": 0,
   "features": ["Breakfast"],
   "city": "Dusseldorf",
   "author": "{{userId}}",
@@ -68,9 +70,10 @@ Content-Type: {{contentType}}
 Authorization: Bearer {{token}}
 
 {
-  "title": "Ночной дозор 3",
+  "title": "Премиум title new",
+  "features": ["Breakfast"],
   "description": "Проверка обновления 1111111",
-  "price": 100
+  "commentsCount": 0
 }
 
 ###

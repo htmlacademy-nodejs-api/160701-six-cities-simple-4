@@ -19,6 +19,11 @@ import { UploadFileMiddleware } from '../../common/middlewares/upload-file.middl
 import { JWT_ALGORITHM } from './user.constant.js';
 import LoggedUserRdo from './rdo/logged-user.rdo.js';
 import { PrivateRouteMiddleware } from '../../common/middlewares/private-route.middleware.js';
+import FavoritesUserRdo from './rdo/favorites-user.rdo.js';
+import { DocumentExistsMiddleware } from '../../common/middlewares/document-exists.middleware.js';
+import { OfferServiceInterface } from '../offer/offer-service.interface.js';
+import { ParamsGetOffer } from '../offer/offer.controller.js';
+import * as core from 'express-serve-static-core';
 
 @injectable()
 export default class UserController extends Controller {
@@ -26,6 +31,7 @@ export default class UserController extends Controller {
     @inject(AppComponent.LoggerInterface) protected readonly logger: LoggerInterface,
     @inject(AppComponent.ConfigInterface) private readonly configService: ConfigInterface<RestSchema>,
     @inject(AppComponent.UserServiceInterface) private readonly userService: UserServiceInterface,
+    @inject(AppComponent.OfferServiceInterface) private readonly offerService: OfferServiceInterface,
   ) {
     super(logger);
     this.logger.info('Register routes for UserController…');
@@ -61,6 +67,32 @@ export default class UserController extends Controller {
           postFixDirectory: 'avatar',
           fileType: 'image',
         }),
+      ],
+    });
+    this.addRoute({
+      path: '/:userId/favorites',
+      method: HttpMethod.Get,
+      handler: this.getFavorites,
+      middlewares: [new PrivateRouteMiddleware(), new ValidateObjectIdMiddleware('userId')],
+    });
+    this.addRoute({
+      path: '/:userId/favorites/add/:offerId',
+      method: HttpMethod.Post,
+      handler: this.addFavorites,
+      middlewares: [
+        new PrivateRouteMiddleware(),
+        new ValidateObjectIdMiddleware('userId'),
+        new DocumentExistsMiddleware(this.offerService, 'Offer', 'offerId'),
+      ],
+    });
+    this.addRoute({
+      path: '/:userId/favorites/remove/:offerId',
+      method: HttpMethod.Delete,
+      handler: this.removeFavorites,
+      middlewares: [
+        new PrivateRouteMiddleware(),
+        new ValidateObjectIdMiddleware('userId'),
+        new DocumentExistsMiddleware(this.offerService, 'Offer', 'offerId'),
       ],
     });
   }
@@ -112,5 +144,35 @@ export default class UserController extends Controller {
     }
 
     this.ok(res, fillDTO(LoggedUserRdo, foundedUser));
+  }
+
+  public async addFavorites(
+    { user: { email }, params }: Request<core.ParamsDictionary | ParamsGetOffer>,
+    res: Response,
+  ) {
+    const { offerId } = params;
+    const favorites = await this.userService.addFavorites(email, offerId);
+
+    this.ok(res, fillDTO(FavoritesUserRdo, favorites));
+  }
+
+  public async removeFavorites(
+    { user: { email }, params }: Request<core.ParamsDictionary | ParamsGetOffer>,
+    res: Response,
+  ) {
+    const { offerId } = params;
+    const favorites = await this.userService.removeFavorites(email, offerId);
+
+    this.ok(res, fillDTO(FavoritesUserRdo, favorites));
+  }
+
+  public async getFavorites(
+    { user: { email }, params }: Request<core.ParamsDictionary | ParamsGetOffer>,
+    res: Response,
+  ) {
+    const { offerId } = params;
+    const favorites = await this.userService.removeFavorites(email, offerId);
+
+    this.ok(res, fillDTO(FavoritesUserRdo, favorites));
   }
 }

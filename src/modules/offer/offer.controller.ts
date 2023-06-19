@@ -20,6 +20,7 @@ import { UploadFileMiddleware } from '../../common/middlewares/upload-file.middl
 import { ConfigInterface } from '../../core/config/config.interface.js';
 import { RestSchema } from '../../core/config/rest.schema.js';
 import { PrivateRouteMiddleware } from '../../common/middlewares/private-route.middleware.js';
+import { UserServiceInterface } from '../user/user-service.interface.js';
 
 export type ParamsGetOffer = {
   offerId: string;
@@ -38,10 +39,19 @@ export default class OfferController extends Controller {
     @inject(AppComponent.OfferServiceInterface) private readonly offerService: OfferServiceInterface,
     @inject(AppComponent.ConfigInterface) private readonly configService: ConfigInterface<RestSchema>,
     @inject(AppComponent.CityServiceInterface) private readonly cityService: CityServiceInterface,
+    @inject(AppComponent.UserServiceInterface) private readonly userService: UserServiceInterface,
   ) {
     super(logger);
     this.uploadDirection = `${this.configService.get('UPLOAD_DIRECTORY')}/offers/`;
     this.logger.info('Register routes for OfferController…');
+
+    this.addRoute({ path: '/', method: HttpMethod.Get, handler: this.index });
+    this.addRoute({
+      path: '/favorites',
+      method: HttpMethod.Get,
+      handler: this.favorites,
+      middlewares: [new PrivateRouteMiddleware()],
+    });
 
     this.addRoute({
       path: '/:offerId',
@@ -52,7 +62,7 @@ export default class OfferController extends Controller {
         new DocumentExistsMiddleware(this.offerService, 'Offer', 'offerId'),
       ],
     });
-    this.addRoute({ path: '/', method: HttpMethod.Get, handler: this.index });
+
     this.addRoute({
       path: '/',
       method: HttpMethod.Post,
@@ -146,11 +156,40 @@ export default class OfferController extends Controller {
   }
 
   public async index(
-    { query }: Request<core.ParamsDictionary, unknown, unknown, RequestQuery>,
+    { query, user }: Request<core.ParamsDictionary, unknown, unknown, RequestQuery>,
     res: Response,
   ) {
     const { limit, sortType } = query;
-    const offers = await this.offerService.find({ limit, sortType });
+    const defaultOffers = await this.offerService.find({ limit, sortType });
+    let favorites: string[] = [];
+
+    if (user) {
+      const { email } = user;
+      favorites = await this.userService.getFavorites(email);
+    }
+
+    const offers = defaultOffers.map((offer) => ({
+      ...offer.toObject(),
+      isFavorite: favorites.includes(offer.id),
+    }));
+
+    this.ok(res, fillDTO(OfferRdo, offers));
+  }
+
+  public async favorites(
+    { query, user }: Request<core.ParamsDictionary, unknown, unknown, RequestQuery>,
+    res: Response,
+  ) {
+    const { limit, sortType } = query;
+
+    const { email } = user;
+    const favorites = await this.userService.getFavorites(email);
+    const defaultOffers = await this.offerService.findFavorites(favorites, { limit, sortType });
+    const offers = defaultOffers.map((offer) => ({
+      ...offer.toObject(),
+      isFavorite: true,
+    }));
+
     this.ok(res, fillDTO(OfferRdo, offers));
   }
 

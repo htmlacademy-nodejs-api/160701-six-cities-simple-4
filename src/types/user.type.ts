@@ -6,6 +6,7 @@ export type User = {
   email: string;
   avatarPath: string;
   type?: UserRole;
+  favorites?: string[];
   password: string;
 };
 

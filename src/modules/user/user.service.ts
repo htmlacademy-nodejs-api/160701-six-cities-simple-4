@@ -48,4 +48,33 @@ export default class UserService implements UserServiceInterface {
 
     return user?.verifyPassword(dto.password, salt) ? user : null;
   }
+
+  public async getFavorites(email: string): Promise<string[]> {
+    const foundedUser = await this.findByEmail(email);
+
+    return foundedUser?.favorites || [];
+  }
+
+  public async addFavorites(email: string, offerId: string): Promise<string[]> {
+    const foundedUser = await this.findByEmail(email);
+    const foundedFavorites = foundedUser?.favorites || [];
+    const newFavorites = Array.from(new Set([...foundedFavorites, offerId]));
+    const newUser = await this.userModel
+      .findByIdAndUpdate(foundedUser?.id, { favorites: newFavorites }, { new: true })
+      .exec();
+
+    return newUser?.favorites || [];
+  }
+
+  public async removeFavorites(email: string, offerId: string): Promise<string[]> {
+    const foundedUser = await this.findByEmail(email);
+    const foundedFavorites = foundedUser?.favorites || [];
+    const newFavorites = foundedFavorites.filter((id) => id !== offerId);
+
+    const newUser = await this.userModel
+      .findByIdAndUpdate(foundedUser?.id, { favorites: newFavorites }, { new: true })
+      .exec();
+
+    return newUser?.favorites || [];
+  }
 }

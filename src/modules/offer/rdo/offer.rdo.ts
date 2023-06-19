@@ -1,9 +1,10 @@
-import { Expose, Type } from 'class-transformer';
+import { Expose, Transform, Type } from 'class-transformer';
 import CityRdo from '../../city/rdo/city.rdo.js';
 import { OfferMin, TOfferVariants } from '../../../types/offer.type.js';
 
 export default class OfferRdo implements OfferMin {
-  @Expose()
+  @Expose({ name: '_id' })
+  @Transform(({ obj }) => obj._id.toString())
   public id!: string;
 
   @Expose()
@@ -33,4 +34,7 @@ export default class OfferRdo implements OfferMin {
 
   @Expose()
   public isPremium!: boolean;
+
+  @Expose()
+  public isFavorite!: boolean;
 }

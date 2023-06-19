@@ -5,14 +5,16 @@
 @parentPath = users
 @contentType = application/json
 @userId= 647f0adebc49a7eb82cd23b1
-@token = eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6InRvcmFuczc3N0BvdmVybG9vay5uZXQiLCJpZCI6IjY0OGIzNjFjYzI4MmEyOTU5NTliYmM5MCIsImlhdCI6MTY4Njg0NzgzMiwiZXhwIjoxNjg3MDIwNjMyfQ.jn_DoD5F9sZizHHFaQlNBy25Kb103CopW-vwanzcBzk
+@offerId= 6490546840fa3a8fda6141ad
+# @offerId= 648ca250ee7ccdb96757b37f
+@token = eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6InRvcmFuczg4OEBvdmVybG9vay5uZXQiLCJpZCI6IjY0OTA1YTI0YTNlNzk0NDQ2ZDgxZWZlZCIsImlhdCI6MTY4NzE4MTg4MCwiZXhwIjoxNjg3MzU0NjgwfQ.Se5XEQpZD2cdEtnSApt9QA9oXPlYdOqwHaAq39TJIwI
 
 ### Регистрация пользователя
 POST {{host}}/{{parentPath}}/register HTTP/1.1
 Content-Type: {{contentType}}
 
 {
-  "email": "torans777@overlook.net",
+  "email": "torans888@overlook.net",
   "avatarPath": "torrance.png",
   "firstName": "Jack",
   "password": "shining",
@@ -27,7 +29,7 @@ POST {{host}}/{{parentPath}}/login HTTP/1.1
 Content-Type: {{contentType}}
 
 {
-  "email": "torans777@overlook.net",
+  "email": "torans888@overlook.net",
   "password": "shining"
 }
 
@@ -35,6 +37,20 @@ Content-Type: {{contentType}}
 ## Проверка авторизации
 
 GET {{host}}/{{parentPath}}/login HTTP/1.1
+Authorization: Bearer {{token}}
+###
+
+
+### Список избранного
+GET {{host}}/{{parentPath}}/{{userId}}/favorites HTTP/1.1
+Authorization: Bearer {{token}}
+###
+### Добавить в избранное
+POST {{host}}/{{parentPath}}/{{userId}}/favorites/add/{{offerId}} HTTP/1.1
+Authorization: Bearer {{token}}
+###
+### Удалить из избранного
+DELETE  {{host}}/{{parentPath}}/{{userId}}/favorites/remove/{{offerId}} HTTP/1.1
 Authorization: Bearer {{token}}
 ###
 

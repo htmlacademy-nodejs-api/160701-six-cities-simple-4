@@ -31,6 +31,12 @@ export class UserEntity extends defaultClasses.TimeStamps implements UserWithout
   })
   public type?: UserRole;
 
+  @prop({
+    type: () => String,
+    default: [],
+  })
+  public favorites!: string[];
+
   @prop({ required: true, default: '' })
   private password?: string;
 

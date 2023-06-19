@@ -68,6 +68,7 @@ Content-Type: {{contentType}}
 
 {
   "title": "Премиум title new",
+  "features": ["Breakfast"],
   "description": "Проверка обновления 1111111",
   "commentsCount": 0
 }

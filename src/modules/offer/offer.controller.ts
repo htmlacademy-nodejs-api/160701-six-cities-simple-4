@@ -20,6 +20,7 @@ import { UploadFileMiddleware } from '../../common/middlewares/upload-file.middl
 import { ConfigInterface } from '../../core/config/config.interface.js';
 import { RestSchema } from '../../core/config/rest.schema.js';
 import { PrivateRouteMiddleware } from '../../common/middlewares/private-route.middleware.js';
+import { CommentServiceInterface } from '../comment/comment-service.interface.js';
 
 export type ParamsGetOffer = {
   offerId: string;
@@ -38,6 +39,7 @@ export default class OfferController extends Controller {
     @inject(AppComponent.OfferServiceInterface) private readonly offerService: OfferServiceInterface,
     @inject(AppComponent.ConfigInterface) private readonly configService: ConfigInterface<RestSchema>,
     @inject(AppComponent.CityServiceInterface) private readonly cityService: CityServiceInterface,
+    @inject(AppComponent.CommentServiceInterface) private readonly commentService: CommentServiceInterface,
   ) {
     super(logger);
     this.uploadDirection = `${this.configService.get('UPLOAD_DIRECTORY')}/offers/`;
@@ -171,6 +173,7 @@ export default class OfferController extends Controller {
   ): Promise<void> {
     const { offerId } = params;
     const offer = await this.offerService.deleteById(offerId);
+    await this.commentService.deleteByOfferId(offerId);
 
     this.noContent(res, offer);
   }

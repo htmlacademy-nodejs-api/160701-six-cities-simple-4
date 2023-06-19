@@ -4,7 +4,7 @@
 @host = {{hostname}}:{{port}}
 @parentPath = offers
 @contentType = application/json
-@offerId = 648f1482dac203e5d29e604d
+@offerId = 64900841fe7241fd0677ab77
 @cityId = 647cf5d2f10888c3cba79052
 @userId = 647cf5d2f10888c3cba7903f
 
@@ -42,6 +42,8 @@ Content-Type: {{contentType}}
   "price": 777,
   "guests": 10,
   "rooms": 1,
+  "rating":0,
+  "commentsCount": 0,
   "features": ["Breakfast"],
   "city": "Dusseldorf",
   "author": "{{userId}}",
@@ -66,7 +68,8 @@ Content-Type: {{contentType}}
 
 {
   "title": "Премиум title new",
-  "description": "Проверка обновления 1111111"
+  "description": "Проверка обновления 1111111",
+  "commentsCount": 0
 }
 
 ###

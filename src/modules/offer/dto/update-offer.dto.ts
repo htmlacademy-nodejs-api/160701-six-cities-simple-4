@@ -15,6 +15,7 @@ import {
   MinLength,
   IsOptional,
   IsIn,
+  Equals,
 } from 'class-validator';
 
 export default class UpdateOfferDto {
@@ -78,4 +79,12 @@ export default class UpdateOfferDto {
   @IsOptional()
   @IsObject({ message: 'Field coordinates must be an object' })
   public coordinates?: Coordinates;
+
+  @IsOptional()
+  @Equals(0)
+  public rating?: number;
+
+  @IsOptional()
+  @Equals(0)
+  public commentsCount?: number;
 }

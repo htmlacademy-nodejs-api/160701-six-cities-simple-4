@@ -213,8 +213,9 @@ export default class OfferController extends Controller {
     const { offerId } = params;
     const offer = await this.offerService.deleteById(offerId);
     await this.commentService.deleteByOfferId(offerId);
+    await this.userService.clearFavorites(offerId);
 
-    this.noContent(res, offer);
+    this.noContent(res, fillDTO(OfferRdo, offer));
   }
 
   public async update(

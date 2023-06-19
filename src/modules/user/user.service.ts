@@ -77,4 +77,12 @@ export default class UserService implements UserServiceInterface {
 
     return newUser?.favorites || [];
   }
+
+  public async clearFavorites(offerId: string): Promise<number> {
+    const result = await this.userModel.updateMany(
+      { favorites: { $exists: true, $ne: [] } },
+      { $pull: { favorites: offerId } },
+    );
+    return result.modifiedCount;
+  }
 }

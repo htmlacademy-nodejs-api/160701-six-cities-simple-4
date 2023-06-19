@@ -13,4 +13,5 @@ export interface UserServiceInterface {
   getFavorites(email: string): Promise<string[]>;
   addFavorites(email: string, offerId: string): Promise<string[]>;
   removeFavorites(email: string, offerId: string): Promise<string[]>;
+  clearFavorites(offerId: string): Promise<number>;
 }

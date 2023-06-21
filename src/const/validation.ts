@@ -48,6 +48,7 @@ export const OfferV = {
     Max: 100_000,
   },
   Rating: {
+    Default: 0,
     Min: 1,
     Max: 5,
   },

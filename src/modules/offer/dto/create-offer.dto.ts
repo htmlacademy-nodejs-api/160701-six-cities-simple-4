@@ -16,59 +16,70 @@ import {
   IsIn,
   IsOptional,
   IsBoolean,
-  IsInstance,
-  Equals,
 } from 'class-validator';
-import { Type } from 'class-transformer';
+import { Expose, Type } from 'class-transformer';
 
-class CreateCoordinateDto {
+export class CreateCoordinateDto {
+  @Expose()
   @IsLatitude()
   public latitude!: number;
 
+  @Expose()
   @IsLongitude()
   public longitude!: number;
 }
 
 export default class CreateOfferDto {
+  @Expose()
   @MinLength(OfferV.Title.Min)
   @MaxLength(OfferV.Title.Max)
   public title!: string;
 
+  @Expose()
   @MinLength(OfferV.Description.Min)
   @MaxLength(OfferV.Description.Max)
   public description!: string;
 
+  @Expose()
   @IsIn(Cities)
   public city!: TCities;
 
+  @Expose()
   @IsString()
   public preview!: string;
 
+  @Expose()
   @IsArray()
   public images!: string[];
 
+  @Expose()
   @IsOptional()
   @IsBoolean()
   public isPremium!: boolean;
 
+  @Expose()
   @IsIn(OfferVariants)
   public type!: TOfferVariants;
 
+  @Expose()
   @IsInt()
   @Min(OfferV.Rooms.Min)
   @Max(OfferV.Rooms.Max)
   public rooms!: number;
 
+  @Expose()
   @IsInt()
   @Min(OfferV.Guests.Min)
   @Max(OfferV.Guests.Max)
   public guests!: number;
 
+  @Expose()
   @IsInt()
   @Min(OfferV.Price.Min)
   @Max(OfferV.Price.Max)
   public price!: number;
 
+  @Expose()
   @IsArray()
   @ArrayUnique()
   @IsIn(OfferFeatures, { each: true })
@@ -76,23 +87,8 @@ export default class CreateOfferDto {
 
   public author!: string;
 
-  /* TODO пропускает невалидные координаты
-  "coordinates":{
-    "latitude": 50,
-    "longitude": 0,
-    "btbtb":111
-  }
-  */
+  @Expose()
   @ValidateNested()
   @Type(() => CreateCoordinateDto)
-  @IsInstance(CreateCoordinateDto)
   public coordinates!: CreateCoordinateDto;
-
-  @IsOptional()
-  @Equals(0)
-  public rating!: number;
-
-  @IsOptional()
-  @Equals(0)
-  public commentsCount!: number;
 }

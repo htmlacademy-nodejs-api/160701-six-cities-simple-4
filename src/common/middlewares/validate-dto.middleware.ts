@@ -1,9 +1,10 @@
 import { NextFunction, Request, Response } from 'express';
 import { ClassConstructor } from 'class-transformer/types/interfaces/class-constructor.type.js';
 import { validate } from 'class-validator';
-import { StatusCodes } from 'http-status-codes';
 import { instanceToPlain, plainToInstance } from 'class-transformer';
 import { MiddlewareInterface } from '../../types/middleware.interface.js';
+import ValidationError from '../../core/errors/validation-error.js';
+import { transformErrors } from '../../core/helpers/index.js';
 
 export class ValidateDtoMiddleware implements MiddlewareInterface {
   constructor(private dto: ClassConstructor<object>) {}
@@ -15,8 +16,7 @@ export class ValidateDtoMiddleware implements MiddlewareInterface {
     const errors = await validate(dtoInstance);
 
     if (errors.length > 0) {
-      res.status(StatusCodes.BAD_REQUEST).send(errors);
-      return;
+      throw new ValidationError(`Validation error: "${req.path}"`, transformErrors(errors));
     }
     req.body = instanceToPlain(dtoInstance);
 

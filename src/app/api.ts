@@ -19,10 +19,14 @@ export default class ApiApplication {
     @inject(AppComponent.ConfigInterface) private readonly config: ConfigInterface<RestSchema>,
     @inject(AppComponent.DatabaseClientInterface) private readonly databaseClient: DatabaseClientInterface,
     @inject(AppComponent.CityController) private readonly cityController: ControllerInterface,
-    @inject(AppComponent.ExceptionFilterInterface) private readonly exceptionFilter: ExceptionFilterInterface,
     @inject(AppComponent.UserController) private readonly userController: ControllerInterface,
     @inject(AppComponent.OfferController) private readonly offerController: ControllerInterface,
     @inject(AppComponent.CommentController) private readonly commentController: ControllerInterface,
+    @inject(AppComponent.BaseExceptionFilter) private readonly baseExceptionFilter: ExceptionFilterInterface,
+    @inject(AppComponent.ValidationExceptionFilter)
+    private readonly validationExceptionFilter: ExceptionFilterInterface,
+    @inject(AppComponent.HttpErrorExceptionFilter)
+    private readonly httpErrorExceptionFilter: ExceptionFilterInterface,
   ) {
     this.expressApplication = express();
   }
@@ -70,7 +74,9 @@ export default class ApiApplication {
 
   private async _initExceptionFilters() {
     this.logger.info('Exception filters initialization');
-    this.expressApplication.use(this.exceptionFilter.catch.bind(this.exceptionFilter));
+    this.expressApplication.use(this.validationExceptionFilter.catch.bind(this.validationExceptionFilter));
+    this.expressApplication.use(this.httpErrorExceptionFilter.catch.bind(this.httpErrorExceptionFilter));
+    this.expressApplication.use(this.baseExceptionFilter.catch.bind(this.baseExceptionFilter));
     this.logger.info('Exception filters completed');
   }
 

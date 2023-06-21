@@ -3,6 +3,7 @@ import * as jose from 'jose';
 import { plainToInstance, ClassConstructor } from 'class-transformer';
 import { ValidationError } from 'class-validator';
 import { ValidationErrorField } from '../../types/validation-error-field.type';
+import { ServiceError } from '../../types/service-error.enum';
 
 export function getErrorMessage(error: unknown): string {
   return error instanceof Error ? error.message : '';
@@ -18,9 +19,12 @@ export function fillDTO<T, V>(someDto: ClassConstructor<T>, plainObject: V) {
   return plainToInstance(someDto, plainObject, { excludeExtraneousValues: true });
 }
 
-export function createErrorObject(message: string) {
+export function createErrorObject(serviceError: ServiceError, message: string, details: ValidationErrorField[] = []) {
   return {
     error: message,
+    errorType: serviceError,
+    message,
+    details: [...details],
   };
 }
 

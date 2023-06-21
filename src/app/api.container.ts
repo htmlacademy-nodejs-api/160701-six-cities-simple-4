@@ -8,26 +8,41 @@ import ConfigService from '../core/config/config.service.js';
 import PinoService from '../core/logger/pino.service.js';
 import { AppComponent } from '../types/app-component.enum.js';
 import ApiApplication from './api.js';
-import ExceptionFilter from '../core/exception-filters/exception-filter.js';
 import { ExceptionFilterInterface } from '../core/exception-filters/exception-filter.interface.js';
+import HttpErrorExceptionFilter from '../core/exception-filters/http-error.exception-filter.js';
+import ValidationExceptionFilter from '../core/exception-filters/validation.exception-filter.js';
+import BaseExceptionFilter from '../core/exception-filters/base.exception-filter.js';
 
 export function createApiApplicationContainer() {
   const apiApplicationContainer = new Container();
 
-  apiApplicationContainer.bind<ApiApplication>(AppComponent.RestApplication)
+  apiApplicationContainer
+    .bind<ApiApplication>(AppComponent.RestApplication)
     .to(ApiApplication)
     .inSingletonScope();
-  apiApplicationContainer.bind<ConfigInterface<RestSchema>>(AppComponent.ConfigInterface)
+  apiApplicationContainer
+    .bind<ConfigInterface<RestSchema>>(AppComponent.ConfigInterface)
     .to(ConfigService)
     .inSingletonScope();
-  apiApplicationContainer.bind<LoggerInterface>(AppComponent.LoggerInterface)
+  apiApplicationContainer
+    .bind<LoggerInterface>(AppComponent.LoggerInterface)
     .to(PinoService)
     .inSingletonScope();
-  apiApplicationContainer.bind<DatabaseClientInterface>(AppComponent.DatabaseClientInterface)
+  apiApplicationContainer
+    .bind<DatabaseClientInterface>(AppComponent.DatabaseClientInterface)
     .to(MongoClientService)
     .inSingletonScope();
-  apiApplicationContainer.bind<ExceptionFilterInterface>(AppComponent.ExceptionFilterInterface)
-    .to(ExceptionFilter)
+  apiApplicationContainer
+    .bind<ExceptionFilterInterface>(AppComponent.HttpErrorExceptionFilter)
+    .to(HttpErrorExceptionFilter)
+    .inSingletonScope();
+  apiApplicationContainer
+    .bind<ExceptionFilterInterface>(AppComponent.ValidationExceptionFilter)
+    .to(ValidationExceptionFilter)
+    .inSingletonScope();
+  apiApplicationContainer
+    .bind<ExceptionFilterInterface>(AppComponent.BaseExceptionFilter)
+    .to(BaseExceptionFilter)
     .inSingletonScope();
 
   return apiApplicationContainer;

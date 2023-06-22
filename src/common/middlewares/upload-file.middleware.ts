@@ -6,17 +6,53 @@ import { MiddlewareInterface } from '../../types/middleware.interface.js';
 import HttpError from '../../core/errors/http-error.js';
 import { StatusCodes } from 'http-status-codes';
 
-const FILE_MAX_SIZE = 10 * 1024 * 1024;
+type TFileType = 'image';
+
 const FileMIMETypes = {
   image: ['image/jpeg', 'image/png'],
 };
+
+export const getFileValidationMessages = ({
+  typeMessage,
+  fileType,
+}: {
+  typeMessage: 'required' | 'notValid';
+  fileType: TFileType;
+}) => {
+  const types = FileMIMETypes[fileType];
+  const typesStr = types.join(', ');
+
+  switch (typeMessage) {
+    case 'required':
+      return `Req must contain file/files: ${typesStr}`;
+
+    case 'notValid':
+      return `Only ${typesStr} files are allowed!`;
+
+    default:
+      return '';
+  }
+};
+
+const getFileMaxSize = (fileType?: TFileType) => {
+  const MB = 1024 * 1024;
+
+  switch (fileType) {
+    case 'image':
+      return 5 * MB;
+
+    default:
+      return 1 * MB;
+  }
+};
+
 const className = 'UploadFileMiddleware';
 export class UploadFileMiddleware implements MiddlewareInterface {
   constructor(
     private config: {
       uploadDirectory: string;
       fieldName: string;
-      fileType?: 'image';
+      fileType?: TFileType;
       param: string;
       postFixDirectory?: string;
       isMulti?: boolean;
@@ -53,7 +89,11 @@ export class UploadFileMiddleware implements MiddlewareInterface {
           return cb(null, true);
         } else {
           return next(
-            new HttpError(StatusCodes.BAD_REQUEST, `Only ${types.join(', ')} files are allowed!`, className),
+            new HttpError(
+              StatusCodes.BAD_REQUEST,
+              getFileValidationMessages({ typeMessage: 'notValid', fileType }),
+              className,
+            ),
           );
         }
       }
@@ -64,7 +104,7 @@ export class UploadFileMiddleware implements MiddlewareInterface {
       storage,
       fileFilter,
       limits: {
-        fileSize: FILE_MAX_SIZE, //TODO разный лимит под разные типы файлов
+        fileSize: getFileMaxSize(fileType),
         files: isMulti ? maxFiles : 1,
       },
     })[isMulti ? 'array' : 'single'](fieldName);

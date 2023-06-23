@@ -15,7 +15,10 @@ import CreateUserDto from './dto/create-user.dto.js';
 import LoginUserDto from './dto/login-user.dto.js';
 import { ValidateDtoMiddleware } from '../../common/middlewares/validate-dto.middleware.js';
 import { ValidateObjectIdMiddleware } from '../../common/middlewares/validate-objectid.middleware.js';
-import { UploadFileMiddleware } from '../../common/middlewares/upload-file.middleware.js';
+import {
+  UploadFileMiddleware,
+  getFileValidationMessages,
+} from '../../common/middlewares/upload-file.middleware.js';
 import { JWT_ALGORITHM } from './user.constant.js';
 import LoggedUserRdo from './rdo/logged-user.rdo.js';
 import { PrivateRouteMiddleware } from '../../common/middlewares/private-route.middleware.js';
@@ -24,6 +27,7 @@ import { DocumentExistsMiddleware } from '../../common/middlewares/document-exis
 import { OfferServiceInterface } from '../offer/offer-service.interface.js';
 import { ParamsGetOffer } from '../offer/offer.controller.js';
 import * as core from 'express-serve-static-core';
+import UploadUserAvatarRdo from './rdo/upload-user-avatar.response.js';
 
 @injectable()
 export default class UserController extends Controller {
@@ -54,12 +58,11 @@ export default class UserController extends Controller {
       handler: this.checkAuthenticate,
     });
     this.addRoute({
-      path: '/:userId/avatar',
+      path: '/avatar',
       method: HttpMethod.Post,
       handler: this.uploadAvatar,
       middlewares: [
         new PrivateRouteMiddleware(),
-        new ValidateObjectIdMiddleware('userId'),
         new UploadFileMiddleware({
           fieldName: 'avatar',
           uploadDirectory: `${this.configService.get('UPLOAD_DIRECTORY')}/users`,
@@ -130,10 +133,19 @@ export default class UserController extends Controller {
     this.ok(res, fillDTO(LoggedUserRdo, { ...user.toObject(), token }));
   }
 
-  public async uploadAvatar(req: Request, res: Response) {
-    this.created(res, {
-      filepath: req.file?.path,
-    });
+  public async uploadAvatar({ user, file }: Request, res: Response) {
+    if (!file?.path) {
+      throw new HttpError(
+        StatusCodes.BAD_REQUEST,
+        getFileValidationMessages({ typeMessage: 'required', fileType: 'image' }),
+        'OfferController',
+      );
+    }
+    const { id } = user;
+    const uploadFile = { avatarPath: file?.path };
+    await this.userService.updateById(id, uploadFile);
+
+    this.created(res, fillDTO(UploadUserAvatarRdo, uploadFile));
   }
 
   public async checkAuthenticate({ user }: Request, res: Response) {

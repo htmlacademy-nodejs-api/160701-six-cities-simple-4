@@ -16,7 +16,7 @@ export class ValidateDtoMiddleware implements MiddlewareInterface {
     const errors = await validate(dtoInstance);
 
     if (errors.length > 0) {
-      throw new ValidationError(`Validation error: "${req.path}"`, transformErrors(errors));
+      throw new ValidationError(`Validation error: "${req.originalUrl}"`, transformErrors(errors));
     }
     req.body = instanceToPlain(dtoInstance);
 

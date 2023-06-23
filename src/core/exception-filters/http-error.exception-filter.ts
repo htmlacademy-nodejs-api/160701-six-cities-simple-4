@@ -1,5 +1,4 @@
 import { Request, Response, NextFunction } from 'express';
-import { StatusCodes } from 'http-status-codes';
 import { inject, injectable } from 'inversify';
 import { ExceptionFilterInterface } from './exception-filter.interface.js';
 import { LoggerInterface } from '../logger/logger.interface.js';
@@ -21,6 +20,6 @@ export default class HttpErrorExceptionFilter implements ExceptionFilterInterfac
 
     this.logger.error(`[HttpErrorException]: ${req.path} # ${error.message}`);
 
-    res.status(StatusCodes.BAD_REQUEST).json(createErrorObject(ServiceError.CommonError, error.message));
+    res.status(error.httpStatusCode).json(createErrorObject(ServiceError.CommonError, error.message));
   }
 }

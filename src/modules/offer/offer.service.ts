@@ -33,7 +33,10 @@ export default class OfferService implements OfferServiceInterface {
   }
 
   public async updateById(id: string, dto: UpdateOfferDto): Promise<types.DocumentType<OfferEntity> | null> {
-    return this.offerModel.findByIdAndUpdate(id, dto, { new: true }).populate(['author', 'city']).exec();
+    return this.offerModel
+      .findByIdAndUpdate(id, dto, { new: true, runValidators: true })
+      .populate(['author', 'city'])
+      .exec();
   }
 
   public async findById(id: string): Promise<types.DocumentType<OfferEntity> | null> {

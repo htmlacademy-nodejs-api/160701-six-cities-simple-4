@@ -3,20 +3,20 @@ import { ClassConstructor } from 'class-transformer/types/interfaces/class-const
 import { validate } from 'class-validator';
 import { instanceToPlain, plainToInstance } from 'class-transformer';
 import { MiddlewareInterface } from '../../types/middleware.interface.js';
-import ValidationError from '../../core/errors/validation-error.js';
+import ValidationDtoError from '../../core/errors/validation-error.js';
 import { transformErrors } from '../../core/helpers/index.js';
 
 export class ValidateDtoMiddleware implements MiddlewareInterface {
   constructor(private dto: ClassConstructor<object>) {}
 
-  public async execute(req: Request, res: Response, next: NextFunction): Promise<void> {
+  public async execute(req: Request, _res: Response, next: NextFunction): Promise<void> {
     const dtoInstance = plainToInstance(this.dto, req.body, {
       excludeExtraneousValues: true,
     });
     const errors = await validate(dtoInstance);
 
     if (errors.length > 0) {
-      throw new ValidationError(`Validation error: "${req.originalUrl}"`, transformErrors(errors));
+      throw new ValidationDtoError(transformErrors(errors));
     }
     req.body = instanceToPlain(dtoInstance);
 

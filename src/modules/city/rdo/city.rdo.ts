@@ -9,4 +9,7 @@ export default class CityRdo {
 
   @Expose()
   public offerCount!: number;
+
+  @Expose()
+  public cityImage!: string;
 }

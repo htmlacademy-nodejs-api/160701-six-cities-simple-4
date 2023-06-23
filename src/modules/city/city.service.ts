@@ -6,6 +6,7 @@ import CreateCityDto from './dto/create-city.dto.js';
 import { CityEntity } from './city.entity.js';
 import { types } from '@typegoose/typegoose';
 import { SortType } from '../../types/sort-type.enum.js';
+import { DEFAULT_CITIES_FILE_NAME } from '../../app/app.constant.js';
 
 @injectable()
 export default class CityService implements CityServiceInterface {
@@ -15,7 +16,8 @@ export default class CityService implements CityServiceInterface {
   ) {}
 
   public async create(dto: CreateCityDto): Promise<types.DocumentType<CityEntity>> {
-    const result = await this.cityModel.create(dto);
+    const cityImage = DEFAULT_CITIES_FILE_NAME.find((name) => name.includes(dto.name.toLocaleLowerCase())) || '';
+    const result = await this.cityModel.create({ ...dto, cityImage });
     this.logger.info(`New city created: ${dto.name}`);
 
     return result;

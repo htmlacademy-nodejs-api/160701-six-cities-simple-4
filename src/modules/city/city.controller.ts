@@ -44,11 +44,13 @@ export default class CityController extends Controller {
     { body }: Request<Record<string, unknown>, Record<string, unknown>, CreateCityDto>,
     res: Response,
   ): Promise<void> {
-    const existCity = await this.cityService.findByCityName(body.name);
+    const cityName = body.name;
+    const existCity = await this.cityService.findByCityName(cityName);
 
     if (existCity) {
-      throw new HttpError(StatusCodes.CONFLICT, `City with name «${body.name}» exists.`, 'CityController');
+      throw new HttpError(StatusCodes.CONFLICT, `City with name «${cityName}» exists.`, 'CityController');
     }
+
     const newCity = await this.cityService.create(body);
 
     this.created(res, fillDTO(CityRdo, newCity));

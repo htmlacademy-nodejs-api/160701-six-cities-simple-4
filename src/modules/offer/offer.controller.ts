@@ -22,6 +22,7 @@ import { RestSchema } from '../../core/config/rest.schema.js';
 import { PrivateRouteMiddleware } from '../../common/middlewares/private-route.middleware.js';
 import { UserServiceInterface } from '../user/user-service.interface.js';
 import { CommentServiceInterface } from '../comment/comment-service.interface.js';
+import { UnknownRecord } from '../../types/unknown-record.type.js';
 
 export type ParamsGetOffer = {
   offerId: string;
@@ -196,7 +197,7 @@ export default class OfferController extends Controller {
   }
 
   public async create(
-    { body, user }: Request<Record<string, unknown>, Record<string, unknown>, CreateOfferDto>,
+    { body, user }: Request<UnknownRecord, UnknownRecord, CreateOfferDto>,
     res: Response,
   ): Promise<void> {
     const cityName = body.city;

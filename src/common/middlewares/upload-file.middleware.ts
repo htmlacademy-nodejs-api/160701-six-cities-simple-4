@@ -30,7 +30,7 @@ export const getFileValidationMessages = ({
       return `Only ${typesStr} files are allowed!`;
 
     default:
-      return '';
+      return 'An error has occurred';
   }
 };
 

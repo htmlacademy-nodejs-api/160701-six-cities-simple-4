@@ -1,3 +1,4 @@
+import cors from 'cors';
 import { inject, injectable } from 'inversify';
 import { ConfigInterface } from '../core/config/config.interface.js';
 import { RestSchema } from '../core/config/rest.schema.js';
@@ -77,6 +78,7 @@ export default class ApiApplication {
     this.expressApplication.use('/static', express.static(this.config.get('STATIC_DIRECTORY_PATH')));
     const authentificateMiddleware = new AuthenticateMiddleware(this.config.get('JWT_SECRET'));
     this.expressApplication.use(authentificateMiddleware.execute.bind(authentificateMiddleware));
+    this.expressApplication.use(cors());
     this.logger.info('Global middleware initialization completed');
   }
 

@@ -10,7 +10,10 @@ import { ControllerInterface } from '../../core/controller/controller.interface.
 export function createCityContainer() {
   const cityContainer = new Container();
 
-  cityContainer.bind<CityServiceInterface>(AppComponent.CityServiceInterface).to(CityService);
+  cityContainer
+    .bind<CityServiceInterface>(AppComponent.CityServiceInterface)
+    .to(CityService)
+    .inSingletonScope();
   cityContainer.bind<types.ModelType<CityEntity>>(AppComponent.CityModel).toConstantValue(CityModel);
   cityContainer.bind<ControllerInterface>(AppComponent.CityController).to(CityController).inSingletonScope();
 

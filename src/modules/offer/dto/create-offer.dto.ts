@@ -1,67 +1,100 @@
 import { OfferV } from '../../../const/validation.js';
-import { TCities } from '../../../types/cities.type.js';
-import { Coordinates } from '../../../types/coordinates.type.js';
-import { OfferFeatures, OfferVariants, TOfferFeatures, TOfferVariants } from '../../../types/offer.type.js';
+import { Cities, TCities } from '../../../types/cities.type.js';
+import { OfferVariants, OfferFeatures, TOfferFeatures, TOfferVariants } from '../../../types/offer.type.js';
 import {
   IsArray,
   IsString,
-  IsEnum,
   IsInt,
-  IsObject,
   IsMongoId,
   Max,
   MaxLength,
   Min,
   MinLength,
+  ArrayUnique,
+  ValidateNested,
+  IsLatitude,
+  IsLongitude,
+  IsIn,
+  IsOptional,
+  IsBoolean,
+  IsInstance,
+  Equals,
 } from 'class-validator';
+import { Type } from 'class-transformer';
+
+class CreateCoordinateDto {
+  @IsLatitude()
+  public latitude!: number;
+
+  @IsLongitude()
+  public longitude!: number;
+}
 
 export default class CreateOfferDto {
-  @MinLength(OfferV.Title.Min, { message: `Minimum title length must be ${OfferV.Title.Min}` })
-  @MaxLength(OfferV.Title.Max, { message: `Maximum title length must be ${OfferV.Title.Max}` })
+  @MinLength(OfferV.Title.Min)
+  @MaxLength(OfferV.Title.Max)
   public title!: string;
 
-  @MinLength(OfferV.Description.Min, {
-    message: `Minimum description length must be ${OfferV.Description.Min}`,
-  })
-  @MaxLength(OfferV.Description.Max, {
-    message: `Maximum description length must be ${OfferV.Description.Max}`,
-  })
+  @MinLength(OfferV.Description.Min)
+  @MaxLength(OfferV.Description.Max)
   public description!: string;
 
-  @IsMongoId({ message: 'city field must be valid an id' })
+  @IsIn(Cities)
   public city!: TCities;
 
-  @IsString({ message: 'Field preview must be string' })
+  @IsString()
   public preview!: string;
 
-  @IsArray({ message: 'Field images must be an array' })
+  @IsArray()
   public images!: string[];
 
-  @IsEnum(OfferVariants, { message: OfferV.Variants.Message })
+  @IsOptional()
+  @IsBoolean()
+  public isPremium!: boolean;
+
+  @IsIn(OfferVariants)
   public type!: TOfferVariants;
 
-  @IsInt({ message: 'Rooms must be an integer' })
-  @Min(OfferV.Rooms.Min, { message: `Minimum rooms is ${OfferV.Rooms.Min}` })
-  @Max(OfferV.Rooms.Max, { message: `Maximum rooms is ${OfferV.Rooms.Max}` })
+  @IsInt()
+  @Min(OfferV.Rooms.Min)
+  @Max(OfferV.Rooms.Max)
   public rooms!: number;
 
-  @IsInt({ message: 'Guests must be an integer' })
-  @Min(OfferV.Guests.Min, { message: `Minimum guests is ${OfferV.Guests.Min}` })
-  @Max(OfferV.Guests.Max, { message: `Maximum guests is ${OfferV.Guests.Max}` })
+  @IsInt()
+  @Min(OfferV.Guests.Min)
+  @Max(OfferV.Guests.Max)
   public guests!: number;
 
-  @IsInt({ message: 'Price must be an integer' })
-  @Min(OfferV.Price.Min, { message: `Minimum price is ${OfferV.Price.Min}` })
-  @Max(OfferV.Price.Max, { message: `Maximum price is ${OfferV.Price.Max}` })
+  @IsInt()
+  @Min(OfferV.Price.Min)
+  @Max(OfferV.Price.Max)
   public price!: number;
 
-  @IsArray({ message: 'Field features must be an array' })
-  @IsEnum(OfferFeatures, { message: OfferV.Features.Message, each: true })
+  @IsArray()
+  @ArrayUnique()
+  @IsIn(OfferFeatures, { each: true })
   public features!: TOfferFeatures[];
 
-  @IsMongoId({ message: 'author field must be valid an id' })
+  @IsMongoId()
   public author!: string;
 
-  @IsObject({ message: 'Field coordinates must be an object' })
-  public coordinates!: Coordinates;
+  /* TODO пропускает невалидные координаты
+  "coordinates":{
+    "latitude": 50,
+    "longitude": 0,
+    "btbtb":111
+  }
+  */
+  @ValidateNested()
+  @Type(() => CreateCoordinateDto)
+  @IsInstance(CreateCoordinateDto)
+  public coordinates!: CreateCoordinateDto;
+
+  @IsOptional()
+  @Equals(0)
+  public rating!: number;
+
+  @IsOptional()
+  @Equals(0)
+  public commentsCount!: number;
 }

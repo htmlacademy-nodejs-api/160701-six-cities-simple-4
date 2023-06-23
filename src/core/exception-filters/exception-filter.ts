@@ -6,11 +6,22 @@ import { LoggerInterface } from '../logger/logger.interface.js';
 import { AppComponent } from '../../types/app-component.enum.js';
 import { createErrorObject } from '../helpers/index.js';
 import HttpError from '../errors/http-error.js';
+import mongoose from 'mongoose';
 
 @injectable()
 export default class ExceptionFilter implements ExceptionFilterInterface {
   constructor(@inject(AppComponent.LoggerInterface) private readonly logger: LoggerInterface) {
     this.logger.info('Register ExceptionFilter');
+  }
+
+  private handleValidationError(error: Error, _req: Request, res: Response, _next: NextFunction) {
+    this.logger.error(`[ValidationError]: ${error.message}`);
+    res.status(StatusCodes.BAD_REQUEST).json(createErrorObject(error.message));
+  }
+
+  private handleSintaxError(error: SyntaxError, _req: Request, res: Response, _next: NextFunction) {
+    this.logger.error(`[${error.name}]: ${error.message}`);
+    res.status(StatusCodes.BAD_REQUEST).json(createErrorObject(error.message));
   }
 
   private handleHttpError(error: HttpError, _req: Request, res: Response, _next: NextFunction) {
@@ -24,6 +35,14 @@ export default class ExceptionFilter implements ExceptionFilterInterface {
   }
 
   public catch(error: Error | HttpError, req: Request, res: Response, next: NextFunction): void {
+    if (error instanceof mongoose.Error.ValidationError) {
+      return this.handleValidationError(error, req, res, next);
+    }
+
+    if (error instanceof SyntaxError) {
+      return this.handleSintaxError(error, req, res, next);
+    }
+
     if (error instanceof HttpError) {
       return this.handleHttpError(error, req, res, next);
     }

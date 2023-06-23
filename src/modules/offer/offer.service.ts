@@ -5,8 +5,14 @@ import { LoggerInterface } from '../../core/logger/logger.interface.js';
 import { types } from '@typegoose/typegoose';
 import { OfferEntity } from './offer.entity.js';
 import CreateOfferDto from './dto/create-offer.dto.js';
-import { DEFAULT_OFFER_COUNT, DEFAULT_OFFER_PREMIUM_COUNT, DEFAULT_OFFER_SORT } from './offer.constant.js';
+import {
+  DEFAULT_MAX_OFFER_COUNT,
+  DEFAULT_OFFER_COUNT,
+  DEFAULT_OFFER_PREMIUM_COUNT,
+  OFFER_SORT,
+} from './offer.constant.js';
 import UpdateOfferDto from './dto/update-offer.dto.js';
+import { RequestQuery } from '../../types/request-query.type.js';
 
 @injectable()
 export default class OfferService implements OfferServiceInterface {
@@ -34,24 +40,27 @@ export default class OfferService implements OfferServiceInterface {
     return this.offerModel.findById(id).populate(['author', 'city']).exec();
   }
 
-  public async find(count?: number): Promise<types.DocumentType<OfferEntity>[]> {
-    const limit = count ?? DEFAULT_OFFER_COUNT;
+  public async find(
+    config: RequestQuery,
+    findParam: Record<string, unknown> = {},
+  ): Promise<types.DocumentType<OfferEntity>[]> {
+    const { limit, sortType = 'Default' } = config;
+    let limitValue = limit ?? DEFAULT_OFFER_COUNT;
+    if (limitValue >= DEFAULT_MAX_OFFER_COUNT) {
+      limitValue = DEFAULT_MAX_OFFER_COUNT;
+    }
 
     return this.offerModel
-      .find({}, {}, { limit })
-      .sort(DEFAULT_OFFER_SORT)
+      .find(findParam, {}, { limit: limitValue, sort: OFFER_SORT[sortType] })
       .populate(['author', 'city'])
       .exec();
   }
 
-  public async findByCityId(cityId: string, count?: number): Promise<types.DocumentType<OfferEntity>[]> {
-    const limit = count ?? DEFAULT_OFFER_COUNT;
-
-    return this.offerModel
-      .find({ city: cityId }, {}, { limit })
-      .sort(DEFAULT_OFFER_SORT)
-      .populate(['author', 'city'])
-      .exec();
+  public async findByCityId(
+    cityId: string,
+    config: RequestQuery,
+  ): Promise<types.DocumentType<OfferEntity>[]> {
+    return this.find(config, { city: cityId });
   }
 
   public async exists(documentId: string): Promise<boolean> {
@@ -80,26 +89,15 @@ export default class OfferService implements OfferServiceInterface {
       .exec();
   }
 
-  public async findPremium(cityId: string): Promise<types.DocumentType<OfferEntity>[]> {
-    return this.offerModel
-      .find({
+  public async findPremium(cityId: string, config: RequestQuery): Promise<types.DocumentType<OfferEntity>[]> {
+    return this.find(
+      { ...config, limit: DEFAULT_OFFER_PREMIUM_COUNT },
+      {
         city: {
           _id: cityId,
         },
         isPremium: true,
-      })
-      .limit(DEFAULT_OFFER_PREMIUM_COUNT)
-      .populate(['author', 'city'])
-      .exec();
-  }
-
-  public async findFavorite(count?: number): Promise<types.DocumentType<OfferEntity>[]> {
-    const limit = count ?? DEFAULT_OFFER_COUNT;
-
-    return this.offerModel
-      .find({ isFavorite: true }, { limit })
-      .sort(DEFAULT_OFFER_SORT)
-      .populate(['author', 'city'])
-      .exec();
+      },
+    );
   }
 }

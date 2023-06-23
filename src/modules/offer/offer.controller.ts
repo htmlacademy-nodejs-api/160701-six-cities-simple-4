@@ -28,6 +28,8 @@ import { CommentServiceInterface } from '../comment/comment-service.interface.js
 import { UnknownRecord } from '../../types/unknown-record.type.js';
 import HttpError from '../../core/errors/http-error.js';
 import { StatusCodes } from 'http-status-codes';
+import UploadPreviewRdo from './rdo/upload-preview.rdo.js';
+import UploadImagesRdo from './rdo/upload-images.rdo.js';
 
 export type ParamsGetOffer = {
   offerId: string;
@@ -242,7 +244,10 @@ export default class OfferController extends Controller {
     this.ok(res, fillDTO(OfferRdo, updatedOffer));
   }
 
-  public async uploadPreview({ file }: Request, res: Response) {
+  public async uploadPreview(
+    { file, params }: Request<core.ParamsDictionary | ParamsGetOffer>,
+    res: Response,
+  ) {
     if (!file?.path) {
       throw new HttpError(
         StatusCodes.BAD_REQUEST,
@@ -250,13 +255,19 @@ export default class OfferController extends Controller {
         'OfferController',
       );
     }
+    const { offerId } = params;
 
-    this.created(res, {
-      preview: file.path,
-    });
+    const updateDto = {
+      preview: file?.path,
+    };
+    await this.offerService.updateById(offerId, updateDto);
+    this.created(res, fillDTO(UploadPreviewRdo, { ...updateDto, id: offerId }));
   }
 
-  public async uploadImages({ files }: Request, res: Response) {
+  public async uploadImages(
+    { files, params }: Request<core.ParamsDictionary | ParamsGetOffer>,
+    res: Response,
+  ) {
     if (!Array.isArray(files) || !files.length) {
       throw new HttpError(
         StatusCodes.BAD_REQUEST,
@@ -264,12 +275,15 @@ export default class OfferController extends Controller {
         'OfferController',
       );
     }
-
+    const { offerId } = params;
     const images = files.filter((file) => file?.path).map((file) => file.path);
 
-    this.created(res, {
-      images
-    });
+    const updateDto = {
+      images,
+    };
+
+    await this.offerService.updateById(offerId, updateDto);
+    this.created(res, fillDTO(UploadImagesRdo, { ...updateDto, id: offerId }));
   }
 
   public async getOffersFromCity(

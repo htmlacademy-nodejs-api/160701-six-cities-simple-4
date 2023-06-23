@@ -45,14 +45,6 @@ export default class CreateOfferDto {
   public city!: TCities;
 
   @Expose()
-  @IsString()
-  public preview!: string;
-
-  @Expose()
-  @IsArray()
-  public images!: string[];
-
-  @Expose()
   @IsOptional()
   @IsBoolean()
   public isPremium!: boolean;

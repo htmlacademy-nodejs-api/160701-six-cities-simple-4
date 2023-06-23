@@ -66,7 +66,6 @@ export default class UserController extends Controller {
         new UploadFileMiddleware({
           fieldName: 'avatar',
           uploadDirectory: `${this.configService.get('UPLOAD_DIRECTORY')}/users`,
-          param: 'userId',
           postFixDirectory: 'avatar',
           fileType: 'image',
         }),
@@ -142,9 +141,10 @@ export default class UserController extends Controller {
       );
     }
     const { id } = user;
-    await this.userService.updateById(id, { avatarPath: file?.filename });
+    const updateDto = { avatarPath: file.filename };
+    await this.userService.updateById(id, updateDto);
 
-    this.created(res, fillDTO(UploadUserAvatarRdo, { avatarPath: file?.path }));
+    this.created(res, fillDTO(UploadUserAvatarRdo, updateDto));
   }
 
   public async checkAuthenticate({ user }: Request, res: Response) {

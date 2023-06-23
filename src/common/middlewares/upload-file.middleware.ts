@@ -53,7 +53,7 @@ export class UploadFileMiddleware implements MiddlewareInterface {
       uploadDirectory: string;
       fieldName: string;
       fileType?: TFileType;
-      param: string;
+      param?: string;
       postFixDirectory?: string;
       isMulti?: boolean;
       maxFiles?: number;
@@ -62,7 +62,7 @@ export class UploadFileMiddleware implements MiddlewareInterface {
 
   public async execute(req: Request, res: Response, next: NextFunction): Promise<void> {
     const {
-      param,
+      param = '',
       uploadDirectory,
       fieldName,
       postFixDirectory = '',

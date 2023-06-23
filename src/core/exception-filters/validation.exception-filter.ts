@@ -1,6 +1,5 @@
 import { ExceptionFilterInterface } from './exception-filter.interface.js';
 import { inject, injectable } from 'inversify';
-import { StatusCodes } from 'http-status-codes';
 import { NextFunction, Request, Response } from 'express';
 import { AppComponent } from '../../types/app-component.enum.js';
 import { LoggerInterface } from '../logger/logger.interface.js';
@@ -19,14 +18,14 @@ export default class ValidationExceptionFilter implements ExceptionFilterInterfa
       return next(error);
     }
 
-    this.logger.error(`[ValidationException]: ${error.message}`);
-
-    error.details.forEach((errorField) =>
-      this.logger.error(`[${errorField.property}] — ${errorField.messages}`),
+    const errorDetails = error.details.map(
+      (errorField) => `[${errorField.property}] — ${errorField.messages}`,
     );
 
+    this.logger.error(`[ValidationException]: ${error.message}, Details: [${errorDetails}]`);
+
     res
-      .status(StatusCodes.BAD_REQUEST)
+      .status(error.httpStatusCode)
       .json(createErrorObject(ServiceError.ValidationError, error.message, error.details));
   }
 }

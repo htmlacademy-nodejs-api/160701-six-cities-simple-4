@@ -257,11 +257,16 @@ export default class OfferController extends Controller {
     }
     const { offerId } = params;
 
-    const updateDto = {
-      preview: file?.path,
-    };
-    await this.offerService.updateById(offerId, updateDto);
-    this.created(res, fillDTO(UploadPreviewRdo, { ...updateDto, id: offerId }));
+    await this.offerService.updateById(offerId, {
+      preview: file.filename,
+    });
+    this.created(
+      res,
+      fillDTO(UploadPreviewRdo, {
+        preview: file?.path,
+        id: offerId,
+      }),
+    );
   }
 
   public async uploadImages(
@@ -276,14 +281,11 @@ export default class OfferController extends Controller {
       );
     }
     const { offerId } = params;
-    const images = files.filter((file) => file?.path).map((file) => file.path);
+    const images = files.filter((file) => file?.path).map((file) => file.filename);
+    const imagesPaths = files.map((file) => file?.path);
 
-    const updateDto = {
-      images,
-    };
-
-    await this.offerService.updateById(offerId, updateDto);
-    this.created(res, fillDTO(UploadImagesRdo, { ...updateDto, id: offerId }));
+    await this.offerService.updateById(offerId, { images });
+    this.created(res, fillDTO(UploadImagesRdo, { images: imagesPaths, id: offerId }));
   }
 
   public async getOffersFromCity(

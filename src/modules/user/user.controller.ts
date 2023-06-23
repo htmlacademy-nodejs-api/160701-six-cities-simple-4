@@ -142,10 +142,9 @@ export default class UserController extends Controller {
       );
     }
     const { id } = user;
-    const uploadFile = { avatarPath: file?.path };
-    await this.userService.updateById(id, uploadFile);
+    await this.userService.updateById(id, { avatarPath: file?.filename });
 
-    this.created(res, fillDTO(UploadUserAvatarRdo, uploadFile));
+    this.created(res, fillDTO(UploadUserAvatarRdo, { avatarPath: file?.path }));
   }
 
   public async checkAuthenticate({ user }: Request, res: Response) {

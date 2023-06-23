@@ -40,10 +40,10 @@ export class OfferEntity
   })
   public city!: Ref<CityEntity>;
 
-  @prop({ required: true, default: '' })
+  @prop({ default: '' })
   public preview!: string;
 
-  @prop({ required: true, type: () => [String] })
+  @prop({ type: () => [String], default: [] })
   public images!: string[];
 
   @prop({ required: true, default: false })

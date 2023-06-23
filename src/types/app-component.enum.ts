@@ -18,4 +18,5 @@ export const AppComponent = {
   HttpErrorExceptionFilter: Symbol.for('HttpErrorExceptionFilter'),
   BaseExceptionFilter: Symbol.for('BaseExceptionFilter'),
   ValidationExceptionFilter: Symbol.for('ValidationExceptionFilter'),
+  SyntaxExceptionFilter: Symbol.for('SyntaxExceptionFilter'),
 } as const;

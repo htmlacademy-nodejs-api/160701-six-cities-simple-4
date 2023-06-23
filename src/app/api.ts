@@ -27,6 +27,8 @@ export default class ApiApplication {
     private readonly validationExceptionFilter: ExceptionFilterInterface,
     @inject(AppComponent.HttpErrorExceptionFilter)
     private readonly httpErrorExceptionFilter: ExceptionFilterInterface,
+    @inject(AppComponent.SyntaxExceptionFilter)
+    private readonly syntaxErrorExceptionFilter: ExceptionFilterInterface,
   ) {
     this.expressApplication = express();
   }
@@ -76,6 +78,7 @@ export default class ApiApplication {
     this.logger.info('Exception filters initialization');
     this.expressApplication.use(this.validationExceptionFilter.catch.bind(this.validationExceptionFilter));
     this.expressApplication.use(this.httpErrorExceptionFilter.catch.bind(this.httpErrorExceptionFilter));
+    this.expressApplication.use(this.syntaxErrorExceptionFilter.catch.bind(this.syntaxErrorExceptionFilter));
     this.expressApplication.use(this.baseExceptionFilter.catch.bind(this.baseExceptionFilter));
     this.logger.info('Exception filters completed');
   }

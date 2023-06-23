@@ -12,6 +12,7 @@ import { ExceptionFilterInterface } from '../core/exception-filters/exception-fi
 import HttpErrorExceptionFilter from '../core/exception-filters/http-error.exception-filter.js';
 import ValidationExceptionFilter from '../core/exception-filters/validation.exception-filter.js';
 import BaseExceptionFilter from '../core/exception-filters/base.exception-filter.js';
+import SyntaxExceptionFilter from '../core/exception-filters/syntax.exception-filter.js';
 
 export function createApiApplicationContainer() {
   const apiApplicationContainer = new Container();
@@ -43,6 +44,10 @@ export function createApiApplicationContainer() {
   apiApplicationContainer
     .bind<ExceptionFilterInterface>(AppComponent.BaseExceptionFilter)
     .to(BaseExceptionFilter)
+    .inSingletonScope();
+  apiApplicationContainer
+    .bind<ExceptionFilterInterface>(AppComponent.SyntaxExceptionFilter)
+    .to(SyntaxExceptionFilter)
     .inSingletonScope();
 
   return apiApplicationContainer;

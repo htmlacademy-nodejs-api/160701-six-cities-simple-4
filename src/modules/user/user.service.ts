@@ -6,6 +6,7 @@ import { inject, injectable } from 'inversify';
 import { AppComponent } from '../../types/app-component.enum.js';
 import { LoggerInterface } from '../../core/logger/logger.interface.js';
 import UpdateUserDto from './dto/update-user.dto.js';
+import LoginUserDto from './dto/login-user.dto.js';
 
 @injectable()
 export default class UserService implements UserServiceInterface {
@@ -40,5 +41,48 @@ export default class UserService implements UserServiceInterface {
 
   public async updateById(userId: string, dto: UpdateUserDto): Promise<DocumentType<UserEntity> | null> {
     return this.userModel.findByIdAndUpdate(userId, dto, { new: true }).exec();
+  }
+
+  public async verifyUser(dto: LoginUserDto, salt: string): Promise<DocumentType<UserEntity> | null> {
+    const user = await this.findByEmail(dto.email);
+
+    return user?.verifyPassword(dto.password, salt) ? user : null;
+  }
+
+  public async getFavorites(email: string): Promise<string[]> {
+    const foundedUser = await this.findByEmail(email);
+
+    return foundedUser?.favorites || [];
+  }
+
+  public async addFavorites(email: string, offerId: string): Promise<string[]> {
+    const foundedUser = await this.findByEmail(email);
+    const foundedFavorites = foundedUser?.favorites || [];
+    const newFavorites = Array.from(new Set([...foundedFavorites, offerId]));
+    const newUser = await this.userModel
+      .findByIdAndUpdate(foundedUser?.id, { favorites: newFavorites }, { new: true })
+      .exec();
+
+    return newUser?.favorites || [];
+  }
+
+  public async removeFavorites(email: string, offerId: string): Promise<string[]> {
+    const foundedUser = await this.findByEmail(email);
+    const foundedFavorites = foundedUser?.favorites || [];
+    const newFavorites = foundedFavorites.filter((id) => id !== offerId);
+
+    const newUser = await this.userModel
+      .findByIdAndUpdate(foundedUser?.id, { favorites: newFavorites }, { new: true })
+      .exec();
+
+    return newUser?.favorites || [];
+  }
+
+  public async clearFavorites(offerId: string): Promise<number> {
+    const result = await this.userModel.updateMany(
+      { favorites: { $exists: true, $ne: [] } },
+      { $pull: { favorites: offerId } },
+    );
+    return result.modifiedCount;
   }
 }

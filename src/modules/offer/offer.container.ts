@@ -10,7 +10,10 @@ import OfferController from './offer.controller.js';
 export function createOfferContainer() {
   const offerContainer = new Container();
 
-  offerContainer.bind<OfferServiceInterface>(AppComponent.OfferServiceInterface).to(OfferService);
+  offerContainer
+    .bind<OfferServiceInterface>(AppComponent.OfferServiceInterface)
+    .to(OfferService)
+    .inSingletonScope();
   offerContainer.bind<types.ModelType<OfferEntity>>(AppComponent.OfferModel).toConstantValue(OfferModel);
   offerContainer
     .bind<ControllerInterface>(AppComponent.OfferController)

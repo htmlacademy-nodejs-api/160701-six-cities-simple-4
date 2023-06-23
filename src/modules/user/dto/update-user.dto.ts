@@ -1,31 +1,39 @@
-import { IsEmail, IsEnum, IsString, Length, IsOptional } from 'class-validator';
+import { IsEmail, IsEnum, IsString, Length, IsOptional, IsArray, ArrayUnique } from 'class-validator';
 import { UserV } from '../../../const/validation.js';
 import { UserRole, userRoles } from '../../../types/user.type.js';
+import { Expose } from 'class-transformer';
 
 export default class UpdateUserDto {
+  @Expose()
   @IsOptional()
-  @IsEmail({}, { message: 'email must be valid address' })
+  @IsEmail()
   public email?: string;
 
+  @Expose()
   @IsOptional()
-  @IsString({ message: 'firstname is required' })
-  @Length(UserV.Name.Min, UserV.Name.Max, {
-    message: `Min length is ${UserV.Name.Min}, max is ${UserV.Name.Max}`,
-  })
+  @IsString()
+  @Length(UserV.Name.Min, UserV.Name.Max)
   public firstName?: string;
 
+  @Expose()
   @IsOptional()
-  @IsString({ message: 'avatarPath is required' })
+  @IsString()
   public avatarPath?: string;
 
+  @Expose()
   @IsOptional()
-  @IsString({ message: 'password is required' })
-  @Length(UserV.Password.Min, UserV.Password.Max, {
-    message: `Min length for password is ${UserV.Password.Min}, max is ${UserV.Password.Max}`,
-  })
+  @IsString()
+  @Length(UserV.Password.Min, UserV.Password.Max)
   public password?: string;
 
+  @Expose()
   @IsOptional()
   @IsEnum(userRoles, { message: UserV.Type.Message })
   public type?: UserRole;
+
+  @Expose()
+  @IsOptional()
+  @IsArray()
+  @ArrayUnique()
+  public favorites?: string[];
 }

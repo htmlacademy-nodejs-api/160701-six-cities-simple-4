@@ -9,13 +9,21 @@ import { RestSchema } from '../../core/config/rest.schema.js';
 import { UserServiceInterface } from './user-service.interface.js';
 import HttpError from '../../core/errors/http-error.js';
 import { StatusCodes } from 'http-status-codes';
-import { fillDTO } from '../../core/helpers/common.js';
+import { createJwt, fillDTO } from '../../core/helpers/common.js';
 import UserRdo from './rdo/user.rdo.js';
 import CreateUserDto from './dto/create-user.dto.js';
 import LoginUserDto from './dto/login-user.dto.js';
 import { ValidateDtoMiddleware } from '../../common/middlewares/validate-dto.middleware.js';
 import { ValidateObjectIdMiddleware } from '../../common/middlewares/validate-objectid.middleware.js';
 import { UploadFileMiddleware } from '../../common/middlewares/upload-file.middleware.js';
+import { JWT_ALGORITHM } from './user.constant.js';
+import LoggedUserRdo from './rdo/logged-user.rdo.js';
+import { PrivateRouteMiddleware } from '../../common/middlewares/private-route.middleware.js';
+import FavoritesUserRdo from './rdo/favorites-user.rdo.js';
+import { DocumentExistsMiddleware } from '../../common/middlewares/document-exists.middleware.js';
+import { OfferServiceInterface } from '../offer/offer-service.interface.js';
+import { ParamsGetOffer } from '../offer/offer.controller.js';
+import * as core from 'express-serve-static-core';
 
 @injectable()
 export default class UserController extends Controller {
@@ -23,6 +31,7 @@ export default class UserController extends Controller {
     @inject(AppComponent.LoggerInterface) protected readonly logger: LoggerInterface,
     @inject(AppComponent.ConfigInterface) private readonly configService: ConfigInterface<RestSchema>,
     @inject(AppComponent.UserServiceInterface) private readonly userService: UserServiceInterface,
+    @inject(AppComponent.OfferServiceInterface) private readonly offerService: OfferServiceInterface,
   ) {
     super(logger);
     this.logger.info('Register routes for UserController…');
@@ -40,10 +49,16 @@ export default class UserController extends Controller {
       middlewares: [new ValidateDtoMiddleware(LoginUserDto)],
     });
     this.addRoute({
+      path: '/login',
+      method: HttpMethod.Get,
+      handler: this.checkAuthenticate,
+    });
+    this.addRoute({
       path: '/:userId/avatar',
       method: HttpMethod.Post,
       handler: this.uploadAvatar,
       middlewares: [
+        new PrivateRouteMiddleware(),
         new ValidateObjectIdMiddleware('userId'),
         new UploadFileMiddleware({
           fieldName: 'avatar',
@@ -52,6 +67,32 @@ export default class UserController extends Controller {
           postFixDirectory: 'avatar',
           fileType: 'image',
         }),
+      ],
+    });
+    this.addRoute({
+      path: '/:userId/favorites',
+      method: HttpMethod.Get,
+      handler: this.getFavorites,
+      middlewares: [new PrivateRouteMiddleware(), new ValidateObjectIdMiddleware('userId')],
+    });
+    this.addRoute({
+      path: '/:userId/favorites/add/:offerId',
+      method: HttpMethod.Post,
+      handler: this.addFavorites,
+      middlewares: [
+        new PrivateRouteMiddleware(),
+        new ValidateObjectIdMiddleware('userId'),
+        new DocumentExistsMiddleware(this.offerService, 'Offer', 'offerId'),
+      ],
+    });
+    this.addRoute({
+      path: '/:userId/favorites/remove/:offerId',
+      method: HttpMethod.Delete,
+      handler: this.removeFavorites,
+      middlewares: [
+        new PrivateRouteMiddleware(),
+        new ValidateObjectIdMiddleware('userId'),
+        new DocumentExistsMiddleware(this.offerService, 'Offer', 'offerId'),
       ],
     });
   }
@@ -72,24 +113,66 @@ export default class UserController extends Controller {
 
   public async login(
     { body }: Request<Record<string, unknown>, Record<string, unknown>, LoginUserDto>,
-    _res: Response,
+    res: Response,
   ): Promise<void> {
-    const existsUser = await this.userService.findByEmail(body.email);
+    const user = await this.userService.verifyUser(body, this.configService.get('SALT'));
 
-    if (!existsUser) {
-      throw new HttpError(
-        StatusCodes.UNAUTHORIZED,
-        `User with email ${body.email} not found.`,
-        'UserController',
-      );
+    if (!user) {
+      throw new HttpError(StatusCodes.UNAUTHORIZED, 'Unauthorized', 'UserController');
     }
+    const { email, id } = user;
 
-    throw new HttpError(StatusCodes.NOT_IMPLEMENTED, 'Not implemented', 'UserController');
+    const token = await createJwt(JWT_ALGORITHM, this.configService.get('JWT_SECRET'), {
+      email,
+      id,
+    });
+
+    this.ok(res, fillDTO(LoggedUserRdo, { email, token }));
   }
 
   public async uploadAvatar(req: Request, res: Response) {
     this.created(res, {
       filepath: req.file?.path,
     });
+  }
+
+  public async checkAuthenticate({ user: { email } }: Request, res: Response) {
+    const foundedUser = await this.userService.findByEmail(email);
+
+    if (!foundedUser) {
+      throw new HttpError(StatusCodes.UNAUTHORIZED, 'Unauthorized', 'UserController');
+    }
+
+    this.ok(res, fillDTO(LoggedUserRdo, foundedUser));
+  }
+
+  public async addFavorites(
+    { user: { email }, params }: Request<core.ParamsDictionary | ParamsGetOffer>,
+    res: Response,
+  ) {
+    const { offerId } = params;
+    const favorites = await this.userService.addFavorites(email, offerId);
+
+    this.ok(res, fillDTO(FavoritesUserRdo, favorites));
+  }
+
+  public async removeFavorites(
+    { user: { email }, params }: Request<core.ParamsDictionary | ParamsGetOffer>,
+    res: Response,
+  ) {
+    const { offerId } = params;
+    const favorites = await this.userService.removeFavorites(email, offerId);
+
+    this.ok(res, fillDTO(FavoritesUserRdo, favorites));
+  }
+
+  public async getFavorites(
+    { user: { email }, params }: Request<core.ParamsDictionary | ParamsGetOffer>,
+    res: Response,
+  ) {
+    const { offerId } = params;
+    const favorites = await this.userService.removeFavorites(email, offerId);
+
+    this.ok(res, fillDTO(FavoritesUserRdo, favorites));
   }
 }

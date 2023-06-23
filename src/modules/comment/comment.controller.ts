@@ -13,6 +13,8 @@ import * as core from 'express-serve-static-core';
 import { ParamsGetOffer } from '../offer/offer.controller.js';
 import { ValidateObjectIdMiddleware } from '../../common/middlewares/validate-objectid.middleware.js';
 import { ValidateDtoMiddleware } from '../../common/middlewares/validate-dto.middleware.js';
+import { PrivateRouteMiddleware } from '../../common/middlewares/private-route.middleware.js';
+import { DocumentExistsMiddleware } from '../../common/middlewares/document-exists.middleware.js';
 
 @injectable()
 export default class CommentController extends Controller {
@@ -29,23 +31,33 @@ export default class CommentController extends Controller {
       path: '/:offerId',
       method: HttpMethod.Post,
       handler: this.create,
-      middlewares: [new ValidateDtoMiddleware(CreateCommentDto), new ValidateObjectIdMiddleware('offerId')],
+      middlewares: [
+        new PrivateRouteMiddleware(),
+        new ValidateDtoMiddleware(CreateCommentDto),
+        new ValidateObjectIdMiddleware('offerId'),
+        new DocumentExistsMiddleware(this.offerService, 'Offer', 'offerId'),
+      ],
     });
     this.addRoute({
       path: '/:offerId',
       method: HttpMethod.Get,
       handler: this.show,
-      middlewares: [new ValidateObjectIdMiddleware('offerId')],
+      middlewares: [
+        new ValidateObjectIdMiddleware('offerId'),
+        new DocumentExistsMiddleware(this.offerService, 'Offer', 'offerId'),
+      ],
     });
   }
 
   public async create(
-    { body, params }: Request<core.ParamsDictionary | ParamsGetOffer, object, CreateCommentDto>,
+    { body, params, user }: Request<core.ParamsDictionary | ParamsGetOffer, object, CreateCommentDto>,
     res: Response,
   ) {
     const { rating } = body;
     const { offerId } = params;
-    const comment = await this.commentService.create({ ...body, offerId });
+    const { id } = user;
+
+    const comment = await this.commentService.create({ ...body, offerId, userId: id });
     await this.offerService.incCommentCount(offerId, rating);
     this.created(res, fillDTO(CommentRdo, comment));
   }

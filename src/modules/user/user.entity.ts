@@ -31,6 +31,13 @@ export class UserEntity extends defaultClasses.TimeStamps implements UserWithout
   })
   public type?: UserRole;
 
+  @prop({
+    type: () => String,
+    default: [],
+    required: true,
+  })
+  public favorites!: string[];
+
   @prop({ required: true, default: '' })
   private password?: string;
 
@@ -49,6 +56,11 @@ export class UserEntity extends defaultClasses.TimeStamps implements UserWithout
 
   public getPassword() {
     return this.password;
+  }
+
+  public verifyPassword(password: string, salt: string) {
+    const hashPassword = createSHA256(password, salt);
+    return hashPassword === this.password;
   }
 }
 

@@ -49,7 +49,16 @@ export class OfferEntity
   @prop({ required: true, default: false })
   public isPremium!: boolean;
 
-  @prop({ required: true, default: 0, min: 0, max: OfferV.Rating.Max })
+  @prop({
+    required: true,
+    default: 0,
+    type: () => Number,
+    validate: {
+      validator: (rating: number) =>
+        rating === OfferV.Rating.Default || (rating >= OfferV.Rating.Min && rating <= OfferV.Rating.Max),
+      message: `Min rating is ${OfferV.Rating.Min} and max rating is ${OfferV.Rating.Max}`,
+    },
+  })
   public rating!: number;
 
   @prop({

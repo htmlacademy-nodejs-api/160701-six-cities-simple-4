@@ -2,16 +2,6 @@ import { Cities } from '../types/cities.type.js';
 import { OfferFeatures, OfferVariants } from '../types/offer.type.js';
 import { userRoles } from '../types/user.type.js';
 
-export const enum UserNameLength {
-  Min = 1,
-  Max = 15,
-}
-
-export const enum UserPasswordLength {
-  Min = 6,
-  Max = 12,
-}
-
 export const UserV = {
   Name: {
     Min: 1,
@@ -48,6 +38,7 @@ export const OfferV = {
     Max: 100_000,
   },
   Rating: {
+    Default: 0,
     Min: 1,
     Max: 5,
   },

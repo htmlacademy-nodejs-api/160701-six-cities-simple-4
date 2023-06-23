@@ -1,5 +1,5 @@
 import { inject, injectable } from 'inversify';
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import { Controller } from '../../core/controller/controller.abstract.js';
 import { AppComponent } from '../../types/app-component.enum.js';
 import { LoggerInterface } from '../../core/logger/logger.interface';
@@ -16,9 +16,17 @@ import { ValidateDtoMiddleware } from '../../common/middlewares/validate-dto.mid
 import { DocumentExistsMiddleware } from '../../common/middlewares/document-exists.middleware.js';
 import { RequestQuery } from '../../types/request-query.type.js';
 import OfferRdo from './rdo/offer.rdo.js';
-import { UploadFileMiddleware } from '../../common/middlewares/upload-file.middleware.js';
+import {
+  UploadFileMiddleware,
+  getFileValidationMessages,
+} from '../../common/middlewares/upload-file.middleware.js';
 import { ConfigInterface } from '../../core/config/config.interface.js';
 import { RestSchema } from '../../core/config/rest.schema.js';
+import { PrivateRouteMiddleware } from '../../common/middlewares/private-route.middleware.js';
+import { UserServiceInterface } from '../user/user-service.interface.js';
+import { CommentServiceInterface } from '../comment/comment-service.interface.js';
+import HttpError from '../../core/errors/http-error.js';
+import { StatusCodes } from 'http-status-codes';
 
 export type ParamsGetOffer = {
   offerId: string;
@@ -37,10 +45,21 @@ export default class OfferController extends Controller {
     @inject(AppComponent.OfferServiceInterface) private readonly offerService: OfferServiceInterface,
     @inject(AppComponent.ConfigInterface) private readonly configService: ConfigInterface<RestSchema>,
     @inject(AppComponent.CityServiceInterface) private readonly cityService: CityServiceInterface,
+    @inject(AppComponent.UserServiceInterface) private readonly userService: UserServiceInterface,
+    @inject(AppComponent.CommentServiceInterface) private readonly commentService: CommentServiceInterface,
   ) {
     super(logger);
     this.uploadDirection = `${this.configService.get('UPLOAD_DIRECTORY')}/offers/`;
     this.logger.info('Register routes for OfferController…');
+
+    this.addRoute({ path: '/', method: HttpMethod.Get, handler: this.index });
+    this.addRoute({
+      path: '/favorites',
+      method: HttpMethod.Get,
+      handler: this.favorites,
+      middlewares: [new PrivateRouteMiddleware()],
+    });
+
     this.addRoute({
       path: '/:offerId',
       method: HttpMethod.Get,
@@ -50,18 +69,19 @@ export default class OfferController extends Controller {
         new DocumentExistsMiddleware(this.offerService, 'Offer', 'offerId'),
       ],
     });
-    this.addRoute({ path: '/', method: HttpMethod.Get, handler: this.index });
+
     this.addRoute({
       path: '/',
       method: HttpMethod.Post,
       handler: this.create,
-      middlewares: [new ValidateDtoMiddleware(CreateOfferDto)],
+      middlewares: [new PrivateRouteMiddleware(), new ValidateDtoMiddleware(CreateOfferDto)],
     });
     this.addRoute({
       path: '/:offerId/preview',
       method: HttpMethod.Post,
       handler: this.uploadPreview,
       middlewares: [
+        new PrivateRouteMiddleware(),
         new ValidateObjectIdMiddleware('offerId'),
         new DocumentExistsMiddleware(this.offerService, 'Offer', 'offerId'),
         new UploadFileMiddleware({
@@ -78,6 +98,7 @@ export default class OfferController extends Controller {
       method: HttpMethod.Post,
       handler: this.uploadImages,
       middlewares: [
+        new PrivateRouteMiddleware(),
         new ValidateObjectIdMiddleware('offerId'),
         new DocumentExistsMiddleware(this.offerService, 'Offer', 'offerId'),
         new UploadFileMiddleware({
@@ -95,6 +116,7 @@ export default class OfferController extends Controller {
       method: HttpMethod.Delete,
       handler: this.delete,
       middlewares: [
+        new PrivateRouteMiddleware(),
         new ValidateObjectIdMiddleware('offerId'),
         new DocumentExistsMiddleware(this.offerService, 'Offer', 'offerId'),
       ],
@@ -104,6 +126,7 @@ export default class OfferController extends Controller {
       method: HttpMethod.Patch,
       handler: this.update,
       middlewares: [
+        new PrivateRouteMiddleware(),
         new ValidateObjectIdMiddleware('offerId'),
         new ValidateDtoMiddleware(UpdateOfferDto),
         new DocumentExistsMiddleware(this.offerService, 'Offer', 'offerId'),
@@ -140,21 +163,50 @@ export default class OfferController extends Controller {
   }
 
   public async index(
-    { query }: Request<core.ParamsDictionary, unknown, unknown, RequestQuery>,
+    { query, user }: Request<core.ParamsDictionary, unknown, unknown, RequestQuery>,
     res: Response,
   ) {
     const { limit, sortType } = query;
-    const offers = await this.offerService.find({ limit, sortType });
+    const defaultOffers = await this.offerService.find({ limit, sortType });
+    let favorites: string[] = [];
+
+    if (user) {
+      const { email } = user;
+      favorites = await this.userService.getFavorites(email);
+    }
+
+    const offers = defaultOffers.map((offer) => ({
+      ...offer.toObject(),
+      isFavorite: favorites.includes(offer.id),
+    }));
+
+    this.ok(res, fillDTO(OfferRdo, offers));
+  }
+
+  public async favorites(
+    { query, user }: Request<core.ParamsDictionary, unknown, unknown, RequestQuery>,
+    res: Response,
+  ) {
+    const { limit, sortType } = query;
+
+    const { email } = user;
+    const favorites = await this.userService.getFavorites(email);
+    const defaultOffers = await this.offerService.findFavorites(favorites, { limit, sortType });
+    const offers = defaultOffers.map((offer) => ({
+      ...offer.toObject(),
+      isFavorite: true,
+    }));
+
     this.ok(res, fillDTO(OfferRdo, offers));
   }
 
   public async create(
-    { body }: Request<Record<string, unknown>, Record<string, unknown>, CreateOfferDto>,
+    { body, user }: Request<Record<string, unknown>, Record<string, unknown>, CreateOfferDto>,
     res: Response,
   ): Promise<void> {
     const cityName = body.city;
     const city = await this.cityService.findByCityNameOrCreate(cityName, { name: cityName });
-    const result = await this.offerService.create({ ...body, city: city.id });
+    const result = await this.offerService.create({ ...body, city: city.id, author: user.id });
     const offer = await this.offerService.findById(result.id);
     this.created(res, fillDTO(OfferRdo, offer));
   }
@@ -162,11 +214,19 @@ export default class OfferController extends Controller {
   public async delete(
     { params }: Request<core.ParamsDictionary | ParamsGetOffer>,
     res: Response,
+    next: NextFunction,
   ): Promise<void> {
     const { offerId } = params;
-    const offer = await this.offerService.deleteById(offerId);
 
-    this.noContent(res, offer);
+    Promise.all([
+      this.offerService.deleteById(offerId),
+      this.commentService.deleteByOfferId(offerId),
+      this.userService.clearFavorites(offerId),
+    ])
+      .then(() => {
+        this.noContent(res);
+      })
+      .catch(next);
   }
 
   public async update(
@@ -181,18 +241,33 @@ export default class OfferController extends Controller {
     this.ok(res, fillDTO(OfferRdo, updatedOffer));
   }
 
-  public async uploadPreview(req: Request, res: Response) {
+  public async uploadPreview({ file }: Request, res: Response) {
+    if (!file?.path) {
+      throw new HttpError(
+        StatusCodes.BAD_REQUEST,
+        getFileValidationMessages({ typeMessage: 'required', fileType: 'image' }),
+        'OfferController',
+      );
+    }
+
     this.created(res, {
-      filepath: req.file?.path,
+      preview: file.path,
     });
   }
 
-  public async uploadImages(req: Request, res: Response) {
-    const files = req.files as Express.Multer.File[];
-    const filepath = files.map((file) => file.path);
+  public async uploadImages({ files }: Request, res: Response) {
+    if (!Array.isArray(files) || !files.length) {
+      throw new HttpError(
+        StatusCodes.BAD_REQUEST,
+        getFileValidationMessages({ typeMessage: 'required', fileType: 'image' }),
+        'OfferController',
+      );
+    }
+
+    const images = files.filter((file) => file?.path).map((file) => file.path);
 
     this.created(res, {
-      filepath,
+      images
     });
   }
 

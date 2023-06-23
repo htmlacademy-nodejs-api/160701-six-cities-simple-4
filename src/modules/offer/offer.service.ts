@@ -100,4 +100,16 @@ export default class OfferService implements OfferServiceInterface {
       },
     );
   }
+
+  public async findFavorites(
+    offersId: string[],
+    config: RequestQuery,
+  ): Promise<types.DocumentType<OfferEntity>[]> {
+    return this.find(
+      { ...config },
+      {
+        _id: { $in: offersId },
+      },
+    );
+  }
 }

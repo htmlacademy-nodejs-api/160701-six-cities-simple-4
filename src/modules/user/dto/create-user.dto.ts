@@ -15,10 +15,6 @@ export default class CreateUserDto {
 
   @Expose()
   @IsString()
-  public avatarPath!: string;
-
-  @Expose()
-  @IsString()
   @Length(UserV.Password.Min, UserV.Password.Max)
   public password!: string;
 

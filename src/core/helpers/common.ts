@@ -83,6 +83,12 @@ export function transformObject(
       const value = target[property];
       const rootPath = DEFAULT_STATIC_IMAGES.includes(String(value)) ? staticPath : uploadPath;
       const isArray = Array.isArray(value);
+
+      if (!value) {
+        target[property] = '';
+
+        return;
+      }
       if (isArray) {
         target[property] = value.map((el) => `${rootPath}/${newPath}/${el}`);
       } else {

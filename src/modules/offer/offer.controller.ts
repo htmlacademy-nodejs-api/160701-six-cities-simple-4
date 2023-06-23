@@ -38,12 +38,12 @@ export default class OfferController extends Controller {
   constructor(
     @inject(AppComponent.LoggerInterface) protected readonly logger: LoggerInterface,
     @inject(AppComponent.OfferServiceInterface) private readonly offerService: OfferServiceInterface,
-    @inject(AppComponent.ConfigInterface) private readonly configService: ConfigInterface<RestSchema>,
+    @inject(AppComponent.ConfigInterface) configService: ConfigInterface<RestSchema>,
     @inject(AppComponent.CityServiceInterface) private readonly cityService: CityServiceInterface,
     @inject(AppComponent.UserServiceInterface) private readonly userService: UserServiceInterface,
     @inject(AppComponent.CommentServiceInterface) private readonly commentService: CommentServiceInterface,
   ) {
-    super(logger);
+    super(logger, configService);
     this.uploadDirection = `${this.configService.get('UPLOAD_DIRECTORY')}/offers/`;
     this.logger.info('Register routes for OfferController…');
 

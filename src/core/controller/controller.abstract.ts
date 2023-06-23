@@ -7,6 +7,9 @@ import { StatusCodes } from 'http-status-codes';
 import asyncHandler from 'express-async-handler';
 import { ConfigInterface } from '../../core/config/config.interface.js';
 import { RestSchema } from '../../core/config/rest.schema.js';
+import { UnknownRecord } from '../../types/unknown-record.type.js';
+import { getFullServerPath, transformObject } from '../helpers/index.js';
+import { STATIC_RESOURCE_FIELDS } from '../../app/app.constant.js';
 
 @injectable()
 export abstract class Controller implements ControllerInterface {
@@ -23,6 +26,16 @@ export abstract class Controller implements ControllerInterface {
     return this._router;
   }
 
+  protected addStaticPath(data: UnknownRecord): void {
+    const fullServerPath = getFullServerPath(this.configService.get('HOST'), this.configService.get('PORT'));
+    transformObject(
+      STATIC_RESOURCE_FIELDS,
+      `${fullServerPath}/${this.configService.get('STATIC_DIRECTORY_PATH')}`,
+      `${fullServerPath}/${this.configService.get('UPLOAD_DIRECTORY')}`,
+      data,
+    );
+  }
+
   public addRoute(route: RouteInterface): void {
     const routeHandler = asyncHandler(route.handler.bind(this));
     const middlewares = route.middlewares?.map((middleware) =>
@@ -35,6 +48,8 @@ export abstract class Controller implements ControllerInterface {
   }
 
   public send<T>(res: Response, statusCode: number, data: T): void {
+    this.addStaticPath(data as UnknownRecord);
+
     res.type('application/json').status(statusCode).json(data);
   }
 

@@ -7,7 +7,7 @@ import { AppComponent } from '../../types/app-component.enum.js';
 import { LoggerInterface } from '../../core/logger/logger.interface.js';
 import UpdateUserDto from './dto/update-user.dto.js';
 import LoginUserDto from './dto/login-user.dto.js';
-import { DEFAULT_AVATAR_FILE_NAME } from './user.constant.js';
+import { DEFAULT_AVATAR_FILE_NAME } from '../../app/app.constant.js';
 
 @injectable()
 export default class UserService implements UserServiceInterface {

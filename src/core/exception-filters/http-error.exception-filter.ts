@@ -6,10 +6,12 @@ import { AppComponent } from '../../types/app-component.enum.js';
 import { createErrorObject } from '../helpers/index.js';
 import HttpError from '../errors/http-error.js';
 import { ServiceError } from '../../types/service-error.enum.js';
+import { ExceptionFilter } from './exception-filter.abstract.js';
 
 @injectable()
-export default class HttpErrorExceptionFilter implements ExceptionFilterInterface {
+export default class HttpErrorExceptionFilter extends ExceptionFilter implements ExceptionFilterInterface {
   constructor(@inject(AppComponent.LoggerInterface) private readonly logger: LoggerInterface) {
+    super();
     this.logger.info('Register HttpErrorExceptionFilter');
   }
 
@@ -18,7 +20,8 @@ export default class HttpErrorExceptionFilter implements ExceptionFilterInterfac
       return next(error);
     }
 
-    this.logger.error(`[HttpErrorException]: ${req.path} # ${error.message}`);
+    const message = this.getLoggerMessage({ name: error.name, message: error.message, req });
+    this.logger.error(message);
 
     res.status(error.httpStatusCode).json(createErrorObject(ServiceError.CommonError, error.message));
   }

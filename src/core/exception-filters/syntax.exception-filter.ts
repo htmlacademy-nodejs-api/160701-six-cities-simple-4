@@ -6,18 +6,21 @@ import { AppComponent } from '../../types/app-component.enum.js';
 import { LoggerInterface } from '../logger/logger.interface.js';
 import { createErrorObject } from '../helpers/index.js';
 import { ServiceError } from '../../types/service-error.enum.js';
+import { ExceptionFilter } from './exception-filter.abstract.js';
 
 @injectable()
-export default class SyntaxExceptionFilter implements ExceptionFilterInterface {
+export default class SyntaxExceptionFilter extends ExceptionFilter implements ExceptionFilterInterface {
   constructor(@inject(AppComponent.LoggerInterface) private readonly logger: LoggerInterface) {
+    super();
     this.logger.info('Register SyntaxExceptionFilter');
   }
 
-  public catch(error: Error, _req: Request, res: Response, next: NextFunction) {
+  public catch(error: Error, req: Request, res: Response, next: NextFunction) {
     if (!(error instanceof SyntaxError)) {
       return next(error);
     }
-    this.logger.error(`[${error.name}]: ${error.message}`);
+    const message = this.getLoggerMessage({ name: error.name, message: error.message, req });
+    this.logger.error(message);
 
     res.status(StatusCodes.BAD_REQUEST).json(createErrorObject(ServiceError.SyntaxError, error.message));
   }

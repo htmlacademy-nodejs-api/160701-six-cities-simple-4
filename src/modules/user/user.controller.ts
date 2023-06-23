@@ -127,7 +127,7 @@ export default class UserController extends Controller {
       id,
     });
 
-    this.ok(res, fillDTO(LoggedUserRdo, { email, token }));
+    this.ok(res, fillDTO(LoggedUserRdo, { ...user.toObject(), token }));
   }
 
   public async uploadAvatar(req: Request, res: Response) {
@@ -136,12 +136,12 @@ export default class UserController extends Controller {
     });
   }
 
-  public async checkAuthenticate({ user: { email } }: Request, res: Response) {
-    const foundedUser = await this.userService.findByEmail(email);
-
-    if (!foundedUser) {
+  public async checkAuthenticate({ user }: Request, res: Response) {
+    if (!user) {
       throw new HttpError(StatusCodes.UNAUTHORIZED, 'Unauthorized', 'UserController');
     }
+    const { email } = user;
+    const foundedUser = await this.userService.findByEmail(email);
 
     this.ok(res, fillDTO(LoggedUserRdo, foundedUser));
   }

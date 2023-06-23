@@ -56,7 +56,9 @@ export default class ApiApplication {
     const port = this.config.get('PORT');
     this.expressApplication.listen(port);
 
-    this.logger.info(`🚀Server started on ${getFullServerPath(this.config.get('HOST'), this.config.get('PORT'))}`);
+    this.logger.info(
+      `🚀Server started on ${getFullServerPath(this.config.get('HOST'), this.config.get('PORT'))}`,
+    );
   }
 
   public async _initRoutes() {
@@ -72,6 +74,7 @@ export default class ApiApplication {
     this.logger.info('Global middleware initialization…');
     this.expressApplication.use(express.json());
     this.expressApplication.use('/uploads', express.static(this.config.get('UPLOAD_DIRECTORY')));
+    this.expressApplication.use('/static', express.static(this.config.get('STATIC_DIRECTORY_PATH')));
     const authentificateMiddleware = new AuthenticateMiddleware(this.config.get('JWT_SECRET'));
     this.expressApplication.use(authentificateMiddleware.execute.bind(authentificateMiddleware));
     this.logger.info('Global middleware initialization completed');

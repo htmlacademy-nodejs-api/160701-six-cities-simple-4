@@ -1,5 +1,5 @@
 import { inject, injectable } from 'inversify';
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import { Controller } from '../../core/controller/controller.abstract.js';
 import { AppComponent } from '../../types/app-component.enum.js';
 import { LoggerInterface } from '../../core/logger/logger.interface';
@@ -214,13 +214,19 @@ export default class OfferController extends Controller {
   public async delete(
     { params }: Request<core.ParamsDictionary | ParamsGetOffer>,
     res: Response,
+    next: NextFunction,
   ): Promise<void> {
     const { offerId } = params;
-    const offer = await this.offerService.deleteById(offerId);
-    await this.commentService.deleteByOfferId(offerId);
-    await this.userService.clearFavorites(offerId);
 
-    this.noContent(res, fillDTO(OfferRdo, offer));
+    Promise.all([
+      this.offerService.deleteById(offerId),
+      this.commentService.deleteByOfferId(offerId),
+      this.userService.clearFavorites(offerId),
+    ])
+      .then(() => {
+        this.noContent(res);
+      })
+      .catch(next);
   }
 
   public async update(

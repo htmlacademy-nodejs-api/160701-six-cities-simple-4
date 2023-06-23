@@ -7,7 +7,7 @@ import { DatabaseClientInterface } from '../core/database-client/databese-client
 import { getMongoURI } from '../core/helpers/db.js';
 import express, { Express } from 'express';
 import { ControllerInterface } from '../core/controller/controller.interface.js';
-import { ExceptionFilterInterface } from '../core/exception-filters/exception-filter.interface.js';
+import { ExceptionFilterInterface } from '../core/exception-filters/common/exception-filter.interface.js';
 import { AuthenticateMiddleware } from '../common/middlewares/authenticate.middleware.js';
 
 @injectable()

@@ -1,4 +1,4 @@
-import { ExceptionFilterInterface } from './exception-filter.interface.js';
+import { ExceptionFilterInterface } from './common/exception-filter.interface.js';
 import { inject, injectable } from 'inversify';
 import { NextFunction, Request, Response } from 'express';
 import { AppComponent } from '../../types/app-component.enum.js';
@@ -7,7 +7,7 @@ import { createErrorObject } from '../helpers/index.js';
 import { ServiceError } from '../../types/service-error.enum.js';
 import mongoose from 'mongoose';
 import { StatusCodes } from 'http-status-codes';
-import { ExceptionFilter } from './exception-filter.abstract.js';
+import { ExceptionFilter } from './common/exception-filter.abstract.js';
 
 @injectable()
 export default class ValidationEnityExceptionFilter

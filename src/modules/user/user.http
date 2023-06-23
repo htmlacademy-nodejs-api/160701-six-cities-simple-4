@@ -58,6 +58,7 @@ Authorization: Bearer {{token}}
 ## Отправка аватарки пользователю
 
 POST {{host}}/{{parentPath}}/{{userId}}/avatar HTTP/1.1
+Authorization: Bearer {{token}}
 Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
 
 ------WebKitFormBoundary7MA4YWxkTrZu0gW

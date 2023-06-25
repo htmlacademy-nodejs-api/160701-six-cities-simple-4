@@ -11,3 +11,8 @@ export type User = {
 };
 
 export type UserWithoutPassword = Omit<User, 'password'>;
+
+export type JwtUserPayload = {
+  id: string;
+  email: string;
+}

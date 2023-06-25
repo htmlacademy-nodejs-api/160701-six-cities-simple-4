@@ -79,10 +79,11 @@ export function transformObject(
 ) {
   return properties.forEach(({ property, path }) => {
     transformProperty(property, data, (target: UnknownRecord) => {
-      const newPath = path.replace(':id', String(target.id));
       const value = target[property];
-      const rootPath = DEFAULT_STATIC_IMAGES.includes(String(value)) ? staticPath : uploadPath;
       const isArray = Array.isArray(value);
+      const isStatic = DEFAULT_STATIC_IMAGES.includes(isArray ? value[0] : String(value));
+      const rootPath = isStatic ? staticPath : uploadPath;
+      const newPath = !isStatic ? `${path.replace(':id', String(target.id))}/` : '';
 
       if (!value) {
         target[property] = '';
@@ -90,9 +91,9 @@ export function transformObject(
         return;
       }
       if (isArray) {
-        target[property] = value.map((el) => `${rootPath}/${newPath}/${el}`);
+        target[property] = value.map((el) => `${rootPath}/${newPath}${el}`);
       } else {
-        target[property] = `${rootPath}/${newPath}/${value}`;
+        target[property] = `${rootPath}/${newPath}${value}`;
       }
     });
   });

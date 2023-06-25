@@ -30,6 +30,7 @@ import HttpError from '../../core/errors/http-error.js';
 import { StatusCodes } from 'http-status-codes';
 import UploadPreviewRdo from './rdo/upload-preview.rdo.js';
 import UploadImagesRdo from './rdo/upload-images.rdo.js';
+import { OfferV } from '../../const/validation.js';
 
 export type ParamsGetOffer = {
   offerId: string;
@@ -111,6 +112,7 @@ export default class OfferController extends Controller {
           param: 'offerId',
           postFixDirectory: 'images',
           isMulti: true,
+          maxFiles: OfferV.Images.Max,
         }),
       ],
     });
@@ -209,7 +211,11 @@ export default class OfferController extends Controller {
   ): Promise<void> {
     const cityName = body.city;
     const city = await this.cityService.findByCityNameOrCreate(cityName, { name: cityName });
-    const result = await this.offerService.create({ ...body, city: city.id, author: user.id });
+    const result = await this.offerService.create({
+      ...body,
+      city: city.id,
+      author: user.id,
+    });
     const offer = await this.offerService.findById(result.id);
     this.created(res, fillDTO(OfferRdo, offer));
   }
@@ -278,6 +284,17 @@ export default class OfferController extends Controller {
       throw new HttpError(
         StatusCodes.BAD_REQUEST,
         getFileValidationMessages({ typeMessage: 'required', fileType: 'image' }),
+        'OfferController',
+      );
+    }
+    if (files.length < OfferV.Images.Min) {
+      throw new HttpError(
+        StatusCodes.BAD_REQUEST,
+        getFileValidationMessages({
+          typeMessage: 'minFiles',
+          fileType: 'image',
+          minFiles: OfferV.Images.Min,
+        }),
         'OfferController',
       );
     }

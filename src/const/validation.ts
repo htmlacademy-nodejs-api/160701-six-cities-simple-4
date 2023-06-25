@@ -42,6 +42,10 @@ export const OfferV = {
     Min: 1,
     Max: 5,
   },
+  Images: {
+    Min: 6,
+    Max: 6,
+  },
   Variants: {
     Message: `Тип жилья не входит в список разрешенных: ${OfferVariants.join(', ')}`,
   },

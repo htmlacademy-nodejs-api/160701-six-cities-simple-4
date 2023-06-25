@@ -13,6 +13,7 @@ import {
 } from './offer.constant.js';
 import UpdateOfferDto from './dto/update-offer.dto.js';
 import { RequestQuery } from '../../types/request-query.type.js';
+import { DEFAULT_OFFER_IMAGES_FILE_NAME, DEFAULT_OFFER_PREVIEW_FILE_NAME } from '../../app/app.constant.js';
 
 @injectable()
 export default class OfferService implements OfferServiceInterface {
@@ -22,7 +23,11 @@ export default class OfferService implements OfferServiceInterface {
   ) {}
 
   public async create(dto: CreateOfferDto): Promise<types.DocumentType<OfferEntity>> {
-    const result = await this.offerModel.create(dto);
+    const result = await this.offerModel.create({
+      ...dto,
+      preview: DEFAULT_OFFER_PREVIEW_FILE_NAME,
+      images: Array.from({ length: 6 }).map(() => DEFAULT_OFFER_IMAGES_FILE_NAME),
+    });
     this.logger.info(`New offer created: ${dto.title}`);
 
     return result;

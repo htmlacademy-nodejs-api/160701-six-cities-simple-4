@@ -15,9 +15,11 @@ const FileMIMETypes = {
 export const getFileValidationMessages = ({
   typeMessage,
   fileType,
+  minFiles,
 }: {
-  typeMessage: 'required' | 'notValid';
+  typeMessage: 'required' | 'notValid' | 'minFiles';
   fileType: TFileType;
+  minFiles?: number;
 }) => {
   const types = FileMIMETypes[fileType];
   const typesStr = types.join(', ');
@@ -28,6 +30,9 @@ export const getFileValidationMessages = ({
 
     case 'notValid':
       return `Only ${typesStr} files are allowed!`;
+
+    case 'minFiles':
+      return `Req must contain ${minFiles || 'Infinity'} files!`;
 
     default:
       return 'An error has occurred';

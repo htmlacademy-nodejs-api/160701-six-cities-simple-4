@@ -14,7 +14,6 @@ import UserRdo from './rdo/user.rdo.js';
 import CreateUserDto from './dto/create-user.dto.js';
 import LoginUserDto from './dto/login-user.dto.js';
 import { ValidateDtoMiddleware } from '../../common/middlewares/validate-dto.middleware.js';
-import { ValidateObjectIdMiddleware } from '../../common/middlewares/validate-objectid.middleware.js';
 import {
   UploadFileMiddleware,
   getFileValidationMessages,

@@ -20,8 +20,7 @@ export interface OfferEntity extends defaultClasses.Base {}
 })
 export class OfferEntity
   extends defaultClasses.TimeStamps
-  implements Offer<Ref<UserEntity>, Ref<CityEntity>>
-{
+  implements Offer<Ref<UserEntity>, Ref<CityEntity>> {
   @prop({
     trim: true,
     required: true,

@@ -12,8 +12,7 @@ import { ExceptionFilter } from './common/exception-filter.abstract.js';
 @injectable()
 export default class ValidationEnityExceptionFilter
   extends ExceptionFilter
-  implements ExceptionFilterInterface
-{
+  implements ExceptionFilterInterface {
   constructor(@inject(AppComponent.LoggerInterface) private readonly logger: LoggerInterface) {
     super();
     this.logger.info('Register ValidationEnityExceptionFilter');

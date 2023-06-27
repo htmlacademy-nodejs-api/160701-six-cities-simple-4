@@ -114,7 +114,7 @@ export class UploadFileMiddleware implements MiddlewareInterface {
       },
     })[isMulti ? 'array' : 'single'](fieldName);
 
-    uploadFileMiddleware(req, res, (err: any) => {
+    uploadFileMiddleware(req, res, (err: unknown) => {
       if (err instanceof multer.MulterError) {
         return next(new HttpError(StatusCodes.BAD_REQUEST, err.message, className));
       }

@@ -4,8 +4,9 @@ import { OfferEntity } from './offer.entity.js';
 import UpdateOfferDto from './dto/update-offer.dto.js';
 import { DocumentExistsInterface } from '../../types/document-exists.interface.js';
 import { RequestQuery } from '../../types/request-query.type.js';
+import { DocumentCreatedByUserInterface } from '../../types/document-created-by-user.interface.js';
 
-export interface OfferServiceInterface extends DocumentExistsInterface {
+export interface OfferServiceInterface extends DocumentExistsInterface, DocumentCreatedByUserInterface {
   create(dto: CreateOfferDto): Promise<DocumentType<OfferEntity>>;
   findById(id: string): Promise<DocumentType<OfferEntity> | null>;
   find(config: RequestQuery): Promise<DocumentType<OfferEntity>[]>;

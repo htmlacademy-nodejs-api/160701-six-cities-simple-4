@@ -14,6 +14,7 @@ import {
 import UpdateOfferDto from './dto/update-offer.dto.js';
 import { RequestQuery } from '../../types/request-query.type.js';
 import { DEFAULT_OFFER_IMAGES_FILE_NAME, DEFAULT_OFFER_PREVIEW_FILE_NAME } from '../../app/app.constant.js';
+import { OfferV } from '../../const/validation.js';
 
 @injectable()
 export default class OfferService implements OfferServiceInterface {
@@ -26,7 +27,7 @@ export default class OfferService implements OfferServiceInterface {
     const result = await this.offerModel.create({
       ...dto,
       preview: DEFAULT_OFFER_PREVIEW_FILE_NAME,
-      images: Array.from({ length: 6 }).map(() => DEFAULT_OFFER_IMAGES_FILE_NAME),
+      images: Array.from({ length: OfferV.Images.Min }).map(() => DEFAULT_OFFER_IMAGES_FILE_NAME),
     });
     this.logger.info(`New offer created: ${dto.title}`);
 
@@ -119,5 +120,11 @@ export default class OfferService implements OfferServiceInterface {
         _id: { $in: offersId },
       },
     );
+  }
+
+  public async createdByUser(documentId: string, userId: string): Promise<boolean> {
+    const offer = await this.findById(documentId);
+
+    return offer?.author?.id === userId;
   }
 }

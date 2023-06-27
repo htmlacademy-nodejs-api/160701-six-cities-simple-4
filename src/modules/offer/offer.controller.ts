@@ -31,6 +31,7 @@ import { StatusCodes } from 'http-status-codes';
 import UploadPreviewRdo from './rdo/upload-preview.rdo.js';
 import UploadImagesRdo from './rdo/upload-images.rdo.js';
 import { OfferV } from '../../const/validation.js';
+import { DocumentCreatedByUserMiddleware } from '../../common/middlewares/document-by-user.middleware.js';
 
 export type ParamsGetOffer = {
   offerId: string;
@@ -87,7 +88,7 @@ export default class OfferController extends Controller {
       middlewares: [
         new PrivateRouteMiddleware(),
         new ValidateObjectIdMiddleware('offerId'),
-        new DocumentExistsMiddleware(this.offerService, 'Offer', 'offerId'),
+        new DocumentCreatedByUserMiddleware(this.offerService, 'Offer', 'offerId'),
         new UploadFileMiddleware({
           uploadDirectory: this.uploadDirection,
           fieldName: 'offer-preview',
@@ -104,7 +105,7 @@ export default class OfferController extends Controller {
       middlewares: [
         new PrivateRouteMiddleware(),
         new ValidateObjectIdMiddleware('offerId'),
-        new DocumentExistsMiddleware(this.offerService, 'Offer', 'offerId'),
+        new DocumentCreatedByUserMiddleware(this.offerService, 'Offer', 'offerId'),
         new UploadFileMiddleware({
           uploadDirectory: this.uploadDirection,
           fieldName: 'offer-img',
@@ -123,7 +124,7 @@ export default class OfferController extends Controller {
       middlewares: [
         new PrivateRouteMiddleware(),
         new ValidateObjectIdMiddleware('offerId'),
-        new DocumentExistsMiddleware(this.offerService, 'Offer', 'offerId'),
+        new DocumentCreatedByUserMiddleware(this.offerService, 'Offer', 'offerId'),
       ],
     });
     this.addRoute({
@@ -134,7 +135,7 @@ export default class OfferController extends Controller {
         new PrivateRouteMiddleware(),
         new ValidateObjectIdMiddleware('offerId'),
         new ValidateDtoMiddleware(UpdateOfferDto),
-        new DocumentExistsMiddleware(this.offerService, 'Offer', 'offerId'),
+        new DocumentCreatedByUserMiddleware(this.offerService, 'Offer', 'offerId'),
       ],
     });
     this.addRoute({

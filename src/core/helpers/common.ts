@@ -98,3 +98,7 @@ export function transformObject(
     });
   });
 }
+
+export function isUnknownRecord(value: unknown): value is UnknownRecord {
+  return typeof value === 'object' && value !== null;
+}

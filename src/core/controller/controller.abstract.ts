@@ -8,7 +8,7 @@ import asyncHandler from 'express-async-handler';
 import { ConfigInterface } from '../../core/config/config.interface.js';
 import { RestSchema } from '../../core/config/rest.schema.js';
 import { UnknownRecord } from '../../types/unknown-record.type.js';
-import { getFullServerPath, transformObject } from '../helpers/index.js';
+import { getFullServerPath, isUnknownRecord, transformObject } from '../helpers/index.js';
 import { STATIC_RESOURCE_FIELDS } from '../../app/app.constant.js';
 
 @injectable()
@@ -48,7 +48,9 @@ export abstract class Controller implements ControllerInterface {
   }
 
   public send<T>(res: Response, statusCode: number, data?: T): void {
-    this.addStaticPath(data as UnknownRecord);
+    if (isUnknownRecord(data)) {
+      this.addStaticPath(data);
+    }
     res.type('application/json').status(statusCode).json(data);
   }
 

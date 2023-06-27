@@ -11,6 +11,8 @@ import { ControllerInterface } from '../core/controller/controller.interface.js'
 import { ExceptionFilterInterface } from '../core/exception-filters/common/exception-filter.interface.js';
 import { AuthenticateMiddleware } from '../common/middlewares/authenticate.middleware.js';
 import { getFullServerPath } from '../core/helpers/index.js';
+import HttpError from '../core/errors/http-error.js';
+import { StatusCodes } from 'http-status-codes';
 
 @injectable()
 export default class ApiApplication {
@@ -68,6 +70,9 @@ export default class ApiApplication {
     this.expressApplication.use('/users', this.userController.router);
     this.expressApplication.use('/offers', this.offerController.router);
     this.expressApplication.use('/comments', this.commentController.router);
+    this.expressApplication.all('*', (_req, _res) => {
+      throw new HttpError(StatusCodes.NOT_FOUND, 'Route not found');
+    });
     this.logger.info('Controller initialization completed');
   }
 

@@ -28,6 +28,7 @@ import { OfferServiceInterface } from '../offer/offer-service.interface.js';
 import { ParamsGetOffer } from '../offer/offer.controller.js';
 import * as core from 'express-serve-static-core';
 import UploadUserAvatarRdo from './rdo/upload-user-avatar.response.js';
+import { UserExistsMiddleware } from '../../common/middlewares/user-exists.middleware.js';
 
 @injectable()
 export default class UserController extends Controller {
@@ -72,28 +73,28 @@ export default class UserController extends Controller {
       ],
     });
     this.addRoute({
-      path: '/:userId/favorites',
+      path: '/favorites',
       method: HttpMethod.Get,
       handler: this.getFavorites,
-      middlewares: [new PrivateRouteMiddleware(), new ValidateObjectIdMiddleware('userId')],
+      middlewares: [new PrivateRouteMiddleware(), new UserExistsMiddleware(this.userService)],
     });
     this.addRoute({
-      path: '/:userId/favorites/add/:offerId',
+      path: '/favorites/add/:offerId',
       method: HttpMethod.Post,
       handler: this.addFavorites,
       middlewares: [
         new PrivateRouteMiddleware(),
-        new ValidateObjectIdMiddleware('userId'),
+        new UserExistsMiddleware(this.userService),
         new DocumentExistsMiddleware(this.offerService, 'Offer', 'offerId'),
       ],
     });
     this.addRoute({
-      path: '/:userId/favorites/remove/:offerId',
+      path: '/favorites/remove/:offerId',
       method: HttpMethod.Delete,
       handler: this.removeFavorites,
       middlewares: [
         new PrivateRouteMiddleware(),
-        new ValidateObjectIdMiddleware('userId'),
+        new UserExistsMiddleware(this.userService),
         new DocumentExistsMiddleware(this.offerService, 'Offer', 'offerId'),
       ],
     });

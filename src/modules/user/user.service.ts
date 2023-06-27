@@ -86,4 +86,8 @@ export default class UserService implements UserServiceInterface {
     );
     return result.modifiedCount;
   }
+
+  public async exists(documentId: string): Promise<boolean> {
+    return (await this.userModel.exists({ _id: documentId })) !== null;
+  }
 }

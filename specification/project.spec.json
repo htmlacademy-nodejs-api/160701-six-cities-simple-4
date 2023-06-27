@@ -1,29 +1,33 @@
 {
   "openapi": "3.0.0",
   "info": {
-    "title": "API сервер для проекта «Шесть городов (простой)».",
+    "title": "API сервер для проекта «Шесть городов (простой)». WIP",
     "version": "1.0.0",
     "description": "Список ресурсов и маршрутов сервера «Шесть городов (простой)»."
   },
   "tags": [
     {
       "name": "offers",
-      "description": "Operations related to offers"
+      "description": "Действия с предложениями."
     },
     {
       "name": "comments",
-      "description": "Operations related to comments"
+      "description": "Действия с комментариями."
     },
     {
       "name": "cities",
-      "description": "Operations related to cities"
+      "description": "Действия с городами"
+    },
+    {
+      "name": "users",
+      "description": "Действия с пользователем."
     }
   ],
   "paths": {
     "/users/register": {
       "post": {
         "tags": ["users"],
-        "summary": "Create a new user",
+        "summary": "Регистрация нового пользователя",
         "description": "Creates a new user with the given data",
         "requestBody": {
           "required": true,
@@ -37,17 +41,34 @@
         },
         "responses": {
           "201": {
-            "description": "User created successfully",
+            "description": "Пользователь успешно создан",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/User"
+                  "$ref": "#/components/schemas/UserRdo"
                 }
               }
             }
           },
           "400": {
-            "description": "Invalid request body"
+            "description": "Invalid request body",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDtoObj"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "User with email «sample@sample.net» exists.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorObj"
+                }
+              }
+            }
           }
         }
       }
@@ -55,8 +76,8 @@
     "/users/login": {
       "post": {
         "tags": ["users"],
-        "summary": "Create a new user",
-        "description": "Creates a new user with the given data",
+        "summary": "Авторизация пользователя",
+        "description": "Auth a new user with the given data",
         "requestBody": {
           "required": true,
           "content": {
@@ -85,18 +106,8 @@
       },
       "get": {
         "tags": ["users"],
-        "summary": "Check user",
+        "summary": "Проверка состояния пользователя",
         "description": "Check user",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateUserDto"
-              }
-            }
-          }
-        },
         "responses": {
           "201": {
             "description": "User created successfully",
@@ -292,17 +303,97 @@
         "required": ["email", "firstName", "password"],
         "additionalProperties": false
       },
-      "User": {
+      "LoginUserDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "password": {
+            "type": "string",
+            "minLength": 6,
+            "maxLength": 15
+          }
+        },
+        "required": ["email", "password"]
+      },
+      "UserRdo": {
         "type": "object",
         "properties": {
           "id": {
             "type": "string"
           },
-          "name": {
+          "firstName": {
             "type": "string"
           },
           "email": {
             "type": "string"
+          },
+          "avatarPath": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "enum": ["default", "pro"]
+          }
+        }
+      },
+      "ServiceError": {
+        "type": "string",
+        "enum": [
+          "VALIDATION_ERROR",
+          "VALIDATION_ENTITY_ERROR",
+          "COMMON_ERROR",
+          "SERVICE_ERROR",
+          "SYNTAX_ERROR"
+        ]
+      },
+      "ValidationErrorField": {
+        "type": "object",
+        "properties": {
+          "property": {
+            "type": "string"
+          },
+          "value": {
+            "type": "string"
+          },
+          "messages": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "ErrorDtoObj": {
+        "type": "object",
+        "properties": {
+          "serviceError": {
+            "$ref": "#/components/schemas/ServiceError"
+          },
+          "message": {
+            "type": "string"
+          },
+          "details": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ValidationErrorField"
+            }
+          }
+        }
+      },
+      "ErrorObj": {
+        "type": "object",
+        "properties": {
+          "serviceError": {
+            "$ref": "#/components/schemas/ServiceError"
+          },
+          "message": {
+            "type": "string"
+          },
+          "details": {
+            "type": "array"
           }
         }
       }

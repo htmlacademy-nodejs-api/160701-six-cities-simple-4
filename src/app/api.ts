@@ -13,6 +13,8 @@ import { AuthenticateMiddleware } from '../common/middlewares/authenticate.middl
 import { getFullServerPath } from '../core/helpers/index.js';
 import HttpError from '../core/errors/http-error.js';
 import { StatusCodes } from 'http-status-codes';
+import swaggerUi from 'swagger-ui-express';
+import swaggerDocument from '../../specification/project-copy.spec.json' assert { type: 'json' };
 
 @injectable()
 export default class ApiApplication {
@@ -70,6 +72,7 @@ export default class ApiApplication {
     this.expressApplication.use('/users', this.userController.router);
     this.expressApplication.use('/offers', this.offerController.router);
     this.expressApplication.use('/comments', this.commentController.router);
+    this.expressApplication.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
     this.expressApplication.all('*', (_req, _res) => {
       throw new HttpError(StatusCodes.NOT_FOUND, 'Route not found');
     });

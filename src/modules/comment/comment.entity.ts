@@ -15,8 +15,7 @@ export interface CommentEntity extends defaultClasses.Base {}
 })
 export class CommentEntity
   extends defaultClasses.TimeStamps
-  implements Comment<Ref<OfferEntity>, Ref<UserEntity>>
-{
+  implements Comment<Ref<OfferEntity>, Ref<UserEntity>> {
   @prop({ trim: true, required: true, minlength: CommentV.Text.Min, maxlength: CommentV.Text.Max })
   public text!: string;
 

@@ -1,3 +1,4 @@
+import cors from 'cors';
 import { inject, injectable } from 'inversify';
 import { ConfigInterface } from '../core/config/config.interface.js';
 import { RestSchema } from '../core/config/rest.schema.js';
@@ -7,8 +8,13 @@ import { DatabaseClientInterface } from '../core/database-client/databese-client
 import { getMongoURI } from '../core/helpers/db.js';
 import express, { Express } from 'express';
 import { ControllerInterface } from '../core/controller/controller.interface.js';
-import { ExceptionFilterInterface } from '../core/exception-filters/exception-filter.interface.js';
+import { ExceptionFilterInterface } from '../core/exception-filters/common/exception-filter.interface.js';
 import { AuthenticateMiddleware } from '../common/middlewares/authenticate.middleware.js';
+import { getFullServerPath } from '../core/helpers/index.js';
+import HttpError from '../core/errors/http-error.js';
+import { StatusCodes } from 'http-status-codes';
+import swaggerUi from 'swagger-ui-express';
+import swaggerDocument from '../../specification/project.spec.json' assert { type: 'json' };
 
 @injectable()
 export default class ApiApplication {
@@ -19,10 +25,18 @@ export default class ApiApplication {
     @inject(AppComponent.ConfigInterface) private readonly config: ConfigInterface<RestSchema>,
     @inject(AppComponent.DatabaseClientInterface) private readonly databaseClient: DatabaseClientInterface,
     @inject(AppComponent.CityController) private readonly cityController: ControllerInterface,
-    @inject(AppComponent.ExceptionFilterInterface) private readonly exceptionFilter: ExceptionFilterInterface,
     @inject(AppComponent.UserController) private readonly userController: ControllerInterface,
     @inject(AppComponent.OfferController) private readonly offerController: ControllerInterface,
     @inject(AppComponent.CommentController) private readonly commentController: ControllerInterface,
+    @inject(AppComponent.BaseExceptionFilter) private readonly baseExceptionFilter: ExceptionFilterInterface,
+    @inject(AppComponent.ValidationExceptionFilter)
+    private readonly validationExceptionFilter: ExceptionFilterInterface,
+    @inject(AppComponent.ValidationEntityExceptionFilter)
+    private readonly validationEntityExceptionFilter: ExceptionFilterInterface,
+    @inject(AppComponent.HttpErrorExceptionFilter)
+    private readonly httpErrorExceptionFilter: ExceptionFilterInterface,
+    @inject(AppComponent.SyntaxExceptionFilter)
+    private readonly syntaxErrorExceptionFilter: ExceptionFilterInterface,
   ) {
     this.expressApplication = express();
   }
@@ -47,7 +61,9 @@ export default class ApiApplication {
     const port = this.config.get('PORT');
     this.expressApplication.listen(port);
 
-    this.logger.info(`🚀Server started on http://localhost:${this.config.get('PORT')}`);
+    this.logger.info(
+      `🚀Server started on ${getFullServerPath(this.config.get('HOST'), this.config.get('PORT'))}`,
+    );
   }
 
   public async _initRoutes() {
@@ -56,6 +72,10 @@ export default class ApiApplication {
     this.expressApplication.use('/users', this.userController.router);
     this.expressApplication.use('/offers', this.offerController.router);
     this.expressApplication.use('/comments', this.commentController.router);
+    this.expressApplication.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+    this.expressApplication.all('*', (_req, _res) => {
+      throw new HttpError(StatusCodes.NOT_FOUND, 'Route not found');
+    });
     this.logger.info('Controller initialization completed');
   }
 
@@ -63,14 +83,22 @@ export default class ApiApplication {
     this.logger.info('Global middleware initialization…');
     this.expressApplication.use(express.json());
     this.expressApplication.use('/uploads', express.static(this.config.get('UPLOAD_DIRECTORY')));
+    this.expressApplication.use('/static', express.static(this.config.get('STATIC_DIRECTORY_PATH')));
     const authentificateMiddleware = new AuthenticateMiddleware(this.config.get('JWT_SECRET'));
     this.expressApplication.use(authentificateMiddleware.execute.bind(authentificateMiddleware));
+    this.expressApplication.use(cors());
     this.logger.info('Global middleware initialization completed');
   }
 
   private async _initExceptionFilters() {
     this.logger.info('Exception filters initialization');
-    this.expressApplication.use(this.exceptionFilter.catch.bind(this.exceptionFilter));
+    this.expressApplication.use(this.validationExceptionFilter.catch.bind(this.validationExceptionFilter));
+    this.expressApplication.use(
+      this.validationEntityExceptionFilter.catch.bind(this.validationEntityExceptionFilter),
+    );
+    this.expressApplication.use(this.httpErrorExceptionFilter.catch.bind(this.httpErrorExceptionFilter));
+    this.expressApplication.use(this.syntaxErrorExceptionFilter.catch.bind(this.syntaxErrorExceptionFilter));
+    this.expressApplication.use(this.baseExceptionFilter.catch.bind(this.baseExceptionFilter));
     this.logger.info('Exception filters completed');
   }
 

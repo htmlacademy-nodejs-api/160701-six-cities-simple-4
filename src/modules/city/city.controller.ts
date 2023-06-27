@@ -12,14 +12,17 @@ import HttpError from '../../core/errors/http-error.js';
 import { StatusCodes } from 'http-status-codes';
 import { ValidateDtoMiddleware } from '../../common/middlewares/validate-dto.middleware.js';
 import { PrivateRouteMiddleware } from '../../common/middlewares/private-route.middleware.js';
+import { ConfigInterface } from '../../core/config/config.interface.js';
+import { RestSchema } from '../../core/config/rest.schema.js';
 
 @injectable()
 export default class CityController extends Controller {
   constructor(
     @inject(AppComponent.LoggerInterface) protected readonly logger: LoggerInterface,
     @inject(AppComponent.CityServiceInterface) protected readonly cityService: CityServiceInterface,
+    @inject(AppComponent.ConfigInterface) configService: ConfigInterface<RestSchema>,
   ) {
-    super(logger);
+    super(logger, configService);
     this.logger.info('Register routes for CityController');
 
     this.addRoute({ path: '/', method: HttpMethod.Get, handler: this.index });
@@ -27,7 +30,7 @@ export default class CityController extends Controller {
       path: '/',
       method: HttpMethod.Post,
       handler: this.create,
-      middlewares: [new PrivateRouteMiddleware(),new ValidateDtoMiddleware(CreateCityDto)],
+      middlewares: [new PrivateRouteMiddleware(), new ValidateDtoMiddleware(CreateCityDto)],
     });
   }
 
@@ -41,11 +44,13 @@ export default class CityController extends Controller {
     { body }: Request<Record<string, unknown>, Record<string, unknown>, CreateCityDto>,
     res: Response,
   ): Promise<void> {
-    const existCity = await this.cityService.findByCityName(body.name);
+    const cityName = body.name;
+    const existCity = await this.cityService.findByCityName(cityName);
 
     if (existCity) {
-      throw new HttpError(StatusCodes.CONFLICT, `City with name «${body.name}» exists.`, 'CityController');
+      throw new HttpError(StatusCodes.CONFLICT, `City with name «${cityName}» exists.`, 'CityController');
     }
+
     const newCity = await this.cityService.create(body);
 
     this.created(res, fillDTO(CityRdo, newCity));

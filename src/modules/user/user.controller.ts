@@ -14,8 +14,10 @@ import UserRdo from './rdo/user.rdo.js';
 import CreateUserDto from './dto/create-user.dto.js';
 import LoginUserDto from './dto/login-user.dto.js';
 import { ValidateDtoMiddleware } from '../../common/middlewares/validate-dto.middleware.js';
-import { ValidateObjectIdMiddleware } from '../../common/middlewares/validate-objectid.middleware.js';
-import { UploadFileMiddleware } from '../../common/middlewares/upload-file.middleware.js';
+import {
+  UploadFileMiddleware,
+  getFileValidationMessages,
+} from '../../common/middlewares/upload-file.middleware.js';
 import { JWT_ALGORITHM } from './user.constant.js';
 import LoggedUserRdo from './rdo/logged-user.rdo.js';
 import { PrivateRouteMiddleware } from '../../common/middlewares/private-route.middleware.js';
@@ -24,16 +26,18 @@ import { DocumentExistsMiddleware } from '../../common/middlewares/document-exis
 import { OfferServiceInterface } from '../offer/offer-service.interface.js';
 import { ParamsGetOffer } from '../offer/offer.controller.js';
 import * as core from 'express-serve-static-core';
+import UploadUserAvatarRdo from './rdo/upload-user-avatar.response.js';
+import { UserExistsMiddleware } from '../../common/middlewares/user-exists.middleware.js';
 
 @injectable()
 export default class UserController extends Controller {
   constructor(
     @inject(AppComponent.LoggerInterface) protected readonly logger: LoggerInterface,
-    @inject(AppComponent.ConfigInterface) private readonly configService: ConfigInterface<RestSchema>,
+    @inject(AppComponent.ConfigInterface) configService: ConfigInterface<RestSchema>,
     @inject(AppComponent.UserServiceInterface) private readonly userService: UserServiceInterface,
     @inject(AppComponent.OfferServiceInterface) private readonly offerService: OfferServiceInterface,
   ) {
-    super(logger);
+    super(logger, configService);
     this.logger.info('Register routes for UserController…');
 
     this.addRoute({
@@ -54,53 +58,54 @@ export default class UserController extends Controller {
       handler: this.checkAuthenticate,
     });
     this.addRoute({
-      path: '/:userId/avatar',
+      path: '/avatar',
       method: HttpMethod.Post,
       handler: this.uploadAvatar,
       middlewares: [
         new PrivateRouteMiddleware(),
-        new ValidateObjectIdMiddleware('userId'),
         new UploadFileMiddleware({
           fieldName: 'avatar',
           uploadDirectory: `${this.configService.get('UPLOAD_DIRECTORY')}/users`,
-          param: 'userId',
           postFixDirectory: 'avatar',
           fileType: 'image',
         }),
       ],
     });
     this.addRoute({
-      path: '/:userId/favorites',
+      path: '/favorites',
       method: HttpMethod.Get,
       handler: this.getFavorites,
-      middlewares: [new PrivateRouteMiddleware(), new ValidateObjectIdMiddleware('userId')],
+      middlewares: [new PrivateRouteMiddleware(), new UserExistsMiddleware(this.userService)],
     });
     this.addRoute({
-      path: '/:userId/favorites/add/:offerId',
+      path: '/favorites/add/:offerId',
       method: HttpMethod.Post,
       handler: this.addFavorites,
       middlewares: [
         new PrivateRouteMiddleware(),
-        new ValidateObjectIdMiddleware('userId'),
+        new UserExistsMiddleware(this.userService),
         new DocumentExistsMiddleware(this.offerService, 'Offer', 'offerId'),
       ],
     });
     this.addRoute({
-      path: '/:userId/favorites/remove/:offerId',
+      path: '/favorites/remove/:offerId',
       method: HttpMethod.Delete,
       handler: this.removeFavorites,
       middlewares: [
         new PrivateRouteMiddleware(),
-        new ValidateObjectIdMiddleware('userId'),
+        new UserExistsMiddleware(this.userService),
         new DocumentExistsMiddleware(this.offerService, 'Offer', 'offerId'),
       ],
     });
   }
 
   public async create(
-    { body }: Request<Record<string, unknown>, Record<string, unknown>, CreateUserDto>,
+    { body, user }: Request<Record<string, unknown>, Record<string, unknown>, CreateUserDto>,
     res: Response,
   ): Promise<void> {
+    if (user) {
+      throw new HttpError(StatusCodes.CONFLICT, 'Only for Unauthorized', 'UserController');
+    }
     const existsUser = await this.userService.findByEmail(body.email);
 
     if (existsUser) {
@@ -127,21 +132,30 @@ export default class UserController extends Controller {
       id,
     });
 
-    this.ok(res, fillDTO(LoggedUserRdo, { email, token }));
+    this.ok(res, fillDTO(LoggedUserRdo, { ...user.toObject(), token }));
   }
 
-  public async uploadAvatar(req: Request, res: Response) {
-    this.created(res, {
-      filepath: req.file?.path,
-    });
+  public async uploadAvatar({ user, file }: Request, res: Response) {
+    if (!file?.path) {
+      throw new HttpError(
+        StatusCodes.BAD_REQUEST,
+        getFileValidationMessages({ typeMessage: 'required', fileType: 'image' }),
+        'OfferController',
+      );
+    }
+    const { id } = user;
+    const updateDto = { avatarPath: file.filename };
+    await this.userService.updateById(id, updateDto);
+
+    this.created(res, fillDTO(UploadUserAvatarRdo, updateDto));
   }
 
-  public async checkAuthenticate({ user: { email } }: Request, res: Response) {
-    const foundedUser = await this.userService.findByEmail(email);
-
-    if (!foundedUser) {
+  public async checkAuthenticate({ user }: Request, res: Response) {
+    if (!user) {
       throw new HttpError(StatusCodes.UNAUTHORIZED, 'Unauthorized', 'UserController');
     }
+    const { email } = user;
+    const foundedUser = await this.userService.findByEmail(email);
 
     this.ok(res, fillDTO(LoggedUserRdo, foundedUser));
   }

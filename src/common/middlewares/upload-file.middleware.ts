@@ -15,9 +15,11 @@ const FileMIMETypes = {
 export const getFileValidationMessages = ({
   typeMessage,
   fileType,
+  minFiles,
 }: {
-  typeMessage: 'required' | 'notValid';
+  typeMessage: 'required' | 'notValid' | 'minFiles';
   fileType: TFileType;
+  minFiles?: number;
 }) => {
   const types = FileMIMETypes[fileType];
   const typesStr = types.join(', ');
@@ -28,6 +30,9 @@ export const getFileValidationMessages = ({
 
     case 'notValid':
       return `Only ${typesStr} files are allowed!`;
+
+    case 'minFiles':
+      return `Req must contain ${minFiles || 'Infinity'} files!`;
 
     default:
       return 'An error has occurred';
@@ -53,7 +58,7 @@ export class UploadFileMiddleware implements MiddlewareInterface {
       uploadDirectory: string;
       fieldName: string;
       fileType?: TFileType;
-      param: string;
+      param?: string;
       postFixDirectory?: string;
       isMulti?: boolean;
       maxFiles?: number;
@@ -62,7 +67,7 @@ export class UploadFileMiddleware implements MiddlewareInterface {
 
   public async execute(req: Request, res: Response, next: NextFunction): Promise<void> {
     const {
-      param,
+      param = '',
       uploadDirectory,
       fieldName,
       postFixDirectory = '',
@@ -109,7 +114,7 @@ export class UploadFileMiddleware implements MiddlewareInterface {
       },
     })[isMulti ? 'array' : 'single'](fieldName);
 
-    uploadFileMiddleware(req, res, (err: any) => {
+    uploadFileMiddleware(req, res, (err: unknown) => {
       if (err instanceof multer.MulterError) {
         return next(new HttpError(StatusCodes.BAD_REQUEST, err.message, className));
       }

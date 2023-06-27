@@ -3,20 +3,19 @@
 @port = 7777
 @host = {{hostname}}:{{port}}
 @parentPath = cities
-# @cityId = 647f0adebc49a7eb82cd23c1
-@cityId = 647cf5d2f10888c3cba79052
 @contentType = application/json
-@token = eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6InRvcmFuczc3N0BvdmVybG9vay5uZXQiLCJpZCI6IjY0OGIzNjFjYzI4MmEyOTU5NTliYmM5MCIsImlhdCI6MTY4Njg0NzgzMiwiZXhwIjoxNjg3MDIwNjMyfQ.jn_DoD5F9sZizHHFaQlNBy25Kb103CopW-vwanzcBzk
+@token =eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6InRvcmFuczg4OEBvdmVybG9vay5uZXQiLCJpZCI6IjY0OTBhMjQ3Y2Q0MTQyYTdhOGEzN2NlZSIsImlhdCI6MTY4Nzg3MDMyMywiZXhwIjoxNjg4MDQzMTIzfQ.ypriP-R7_VXCBjN1ulDvqG0KUoVhnq6it7cCCH4lpaQ
 
 
 
 ### Создать город
+# 'Paris', 'Cologne', 'Brussels', 'Amsterdam', 'Hamburg', 'Dusseldorf'
 Post {{host}}/{{parentPath}} HTTP/1.1
 Authorization: Bearer {{token}}
 Content-Type: {{contentType}}
 
 {
-    "name": "Amsterdam"
+    "name": "Brussels"
 }
 ### Получить список городов
 GET {{host}}/{{parentPath}} HTTP/1.1

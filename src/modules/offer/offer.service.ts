@@ -13,6 +13,8 @@ import {
 } from './offer.constant.js';
 import UpdateOfferDto from './dto/update-offer.dto.js';
 import { RequestQuery } from '../../types/request-query.type.js';
+import { DEFAULT_OFFER_IMAGES_FILE_NAME, DEFAULT_OFFER_PREVIEW_FILE_NAME } from '../../app/app.constant.js';
+import { OfferV } from '../../const/validation.js';
 
 @injectable()
 export default class OfferService implements OfferServiceInterface {
@@ -22,7 +24,11 @@ export default class OfferService implements OfferServiceInterface {
   ) {}
 
   public async create(dto: CreateOfferDto): Promise<types.DocumentType<OfferEntity>> {
-    const result = await this.offerModel.create(dto);
+    const result = await this.offerModel.create({
+      ...dto,
+      preview: DEFAULT_OFFER_PREVIEW_FILE_NAME,
+      images: Array.from({ length: OfferV.Images.Min }).map(() => DEFAULT_OFFER_IMAGES_FILE_NAME),
+    });
     this.logger.info(`New offer created: ${dto.title}`);
 
     return result;
@@ -33,7 +39,10 @@ export default class OfferService implements OfferServiceInterface {
   }
 
   public async updateById(id: string, dto: UpdateOfferDto): Promise<types.DocumentType<OfferEntity> | null> {
-    return this.offerModel.findByIdAndUpdate(id, dto, { new: true }).populate(['author', 'city']).exec();
+    return this.offerModel
+      .findByIdAndUpdate(id, dto, { new: true, runValidators: true })
+      .populate(['author', 'city'])
+      .exec();
   }
 
   public async findById(id: string): Promise<types.DocumentType<OfferEntity> | null> {
@@ -111,5 +120,11 @@ export default class OfferService implements OfferServiceInterface {
         _id: { $in: offersId },
       },
     );
+  }
+
+  public async createdByUser(documentId: string, userId: string): Promise<boolean> {
+    const offer = await this.findById(documentId);
+
+    return offer?.author?.id === userId;
   }
 }

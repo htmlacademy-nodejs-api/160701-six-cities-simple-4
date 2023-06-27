@@ -7,6 +7,7 @@ import { AppComponent } from '../../types/app-component.enum.js';
 import { LoggerInterface } from '../../core/logger/logger.interface.js';
 import UpdateUserDto from './dto/update-user.dto.js';
 import LoginUserDto from './dto/login-user.dto.js';
+import { DEFAULT_AVATAR_FILE_NAME } from '../../app/app.constant.js';
 
 @injectable()
 export default class UserService implements UserServiceInterface {
@@ -16,7 +17,7 @@ export default class UserService implements UserServiceInterface {
   ) {}
 
   public async create(dto: CreateUserDto, salt: string): Promise<DocumentType<UserEntity>> {
-    const user = new UserEntity(dto);
+    const user = new UserEntity({ ...dto, avatarPath: DEFAULT_AVATAR_FILE_NAME });
     user.setPassword(dto.password, salt);
 
     const result = await this.userModel.create(user);
@@ -40,7 +41,7 @@ export default class UserService implements UserServiceInterface {
   }
 
   public async updateById(userId: string, dto: UpdateUserDto): Promise<DocumentType<UserEntity> | null> {
-    return this.userModel.findByIdAndUpdate(userId, dto, { new: true }).exec();
+    return this.userModel.findByIdAndUpdate(userId, dto, { new: true, runValidators: true }).exec();
   }
 
   public async verifyUser(dto: LoginUserDto, salt: string): Promise<DocumentType<UserEntity> | null> {
@@ -84,5 +85,9 @@ export default class UserService implements UserServiceInterface {
       { $pull: { favorites: offerId } },
     );
     return result.modifiedCount;
+  }
+
+  public async exists(documentId: string): Promise<boolean> {
+    return (await this.userModel.exists({ _id: documentId })) !== null;
   }
 }

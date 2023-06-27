@@ -15,6 +15,8 @@ import {
   IsIn,
   ArrayUnique,
   ValidateNested,
+  ArrayMinSize,
+  ArrayMaxSize,
 } from 'class-validator';
 import { CreateCoordinateDto } from './create-offer.dto.js';
 
@@ -44,6 +46,8 @@ export default class UpdateOfferDto {
   @Expose()
   @IsOptional()
   @IsArray()
+  @ArrayMinSize(OfferV.Images.Min)
+  @ArrayMaxSize(OfferV.Images.Max)
   public images?: string[];
 
   @Expose()

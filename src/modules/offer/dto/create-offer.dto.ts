@@ -3,7 +3,6 @@ import { Cities, TCities } from '../../../types/cities.type.js';
 import { OfferVariants, OfferFeatures, TOfferFeatures, TOfferVariants } from '../../../types/offer.type.js';
 import {
   IsArray,
-  IsString,
   IsInt,
   Max,
   MaxLength,
@@ -43,14 +42,6 @@ export default class CreateOfferDto {
   @Expose()
   @IsIn(Cities)
   public city!: TCities;
-
-  @Expose()
-  @IsString()
-  public preview!: string;
-
-  @Expose()
-  @IsArray()
-  public images!: string[];
 
   @Expose()
   @IsOptional()

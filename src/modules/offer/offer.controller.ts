@@ -25,8 +25,13 @@ import { RestSchema } from '../../core/config/rest.schema.js';
 import { PrivateRouteMiddleware } from '../../common/middlewares/private-route.middleware.js';
 import { UserServiceInterface } from '../user/user-service.interface.js';
 import { CommentServiceInterface } from '../comment/comment-service.interface.js';
+import { UnknownRecord } from '../../types/unknown-record.type.js';
 import HttpError from '../../core/errors/http-error.js';
 import { StatusCodes } from 'http-status-codes';
+import UploadPreviewRdo from './rdo/upload-preview.rdo.js';
+import UploadImagesRdo from './rdo/upload-images.rdo.js';
+import { OfferV } from '../../const/validation.js';
+import { DocumentCreatedByUserMiddleware } from '../../common/middlewares/document-by-user.middleware.js';
 
 export type ParamsGetOffer = {
   offerId: string;
@@ -43,12 +48,12 @@ export default class OfferController extends Controller {
   constructor(
     @inject(AppComponent.LoggerInterface) protected readonly logger: LoggerInterface,
     @inject(AppComponent.OfferServiceInterface) private readonly offerService: OfferServiceInterface,
-    @inject(AppComponent.ConfigInterface) private readonly configService: ConfigInterface<RestSchema>,
+    @inject(AppComponent.ConfigInterface) configService: ConfigInterface<RestSchema>,
     @inject(AppComponent.CityServiceInterface) private readonly cityService: CityServiceInterface,
     @inject(AppComponent.UserServiceInterface) private readonly userService: UserServiceInterface,
     @inject(AppComponent.CommentServiceInterface) private readonly commentService: CommentServiceInterface,
   ) {
-    super(logger);
+    super(logger, configService);
     this.uploadDirection = `${this.configService.get('UPLOAD_DIRECTORY')}/offers/`;
     this.logger.info('Register routes for OfferController…');
 
@@ -83,7 +88,7 @@ export default class OfferController extends Controller {
       middlewares: [
         new PrivateRouteMiddleware(),
         new ValidateObjectIdMiddleware('offerId'),
-        new DocumentExistsMiddleware(this.offerService, 'Offer', 'offerId'),
+        new DocumentCreatedByUserMiddleware(this.offerService, 'Offer', 'offerId'),
         new UploadFileMiddleware({
           uploadDirectory: this.uploadDirection,
           fieldName: 'offer-preview',
@@ -100,7 +105,7 @@ export default class OfferController extends Controller {
       middlewares: [
         new PrivateRouteMiddleware(),
         new ValidateObjectIdMiddleware('offerId'),
-        new DocumentExistsMiddleware(this.offerService, 'Offer', 'offerId'),
+        new DocumentCreatedByUserMiddleware(this.offerService, 'Offer', 'offerId'),
         new UploadFileMiddleware({
           uploadDirectory: this.uploadDirection,
           fieldName: 'offer-img',
@@ -108,6 +113,7 @@ export default class OfferController extends Controller {
           param: 'offerId',
           postFixDirectory: 'images',
           isMulti: true,
+          maxFiles: OfferV.Images.Max,
         }),
       ],
     });
@@ -118,7 +124,7 @@ export default class OfferController extends Controller {
       middlewares: [
         new PrivateRouteMiddleware(),
         new ValidateObjectIdMiddleware('offerId'),
-        new DocumentExistsMiddleware(this.offerService, 'Offer', 'offerId'),
+        new DocumentCreatedByUserMiddleware(this.offerService, 'Offer', 'offerId'),
       ],
     });
     this.addRoute({
@@ -129,7 +135,7 @@ export default class OfferController extends Controller {
         new PrivateRouteMiddleware(),
         new ValidateObjectIdMiddleware('offerId'),
         new ValidateDtoMiddleware(UpdateOfferDto),
-        new DocumentExistsMiddleware(this.offerService, 'Offer', 'offerId'),
+        new DocumentCreatedByUserMiddleware(this.offerService, 'Offer', 'offerId'),
       ],
     });
     this.addRoute({
@@ -201,12 +207,16 @@ export default class OfferController extends Controller {
   }
 
   public async create(
-    { body, user }: Request<Record<string, unknown>, Record<string, unknown>, CreateOfferDto>,
+    { body, user }: Request<UnknownRecord, UnknownRecord, CreateOfferDto>,
     res: Response,
   ): Promise<void> {
     const cityName = body.city;
     const city = await this.cityService.findByCityNameOrCreate(cityName, { name: cityName });
-    const result = await this.offerService.create({ ...body, city: city.id, author: user.id });
+    const result = await this.offerService.create({
+      ...body,
+      city: city.id,
+      author: user.id,
+    });
     const offer = await this.offerService.findById(result.id);
     this.created(res, fillDTO(OfferRdo, offer));
   }
@@ -241,7 +251,10 @@ export default class OfferController extends Controller {
     this.ok(res, fillDTO(OfferRdo, updatedOffer));
   }
 
-  public async uploadPreview({ file }: Request, res: Response) {
+  public async uploadPreview(
+    { file, params }: Request<core.ParamsDictionary | ParamsGetOffer>,
+    res: Response,
+  ) {
     if (!file?.path) {
       throw new HttpError(
         StatusCodes.BAD_REQUEST,
@@ -249,13 +262,25 @@ export default class OfferController extends Controller {
         'OfferController',
       );
     }
+    const { offerId } = params;
+    const updateDto = {
+      preview: file.filename,
+    };
+    await this.offerService.updateById(offerId, updateDto);
 
-    this.created(res, {
-      preview: file.path,
-    });
+    this.created(
+      res,
+      fillDTO(UploadPreviewRdo, {
+        ...updateDto,
+        id: offerId,
+      }),
+    );
   }
 
-  public async uploadImages({ files }: Request, res: Response) {
+  public async uploadImages(
+    { files, params }: Request<core.ParamsDictionary | ParamsGetOffer>,
+    res: Response,
+  ) {
     if (!Array.isArray(files) || !files.length) {
       throw new HttpError(
         StatusCodes.BAD_REQUEST,
@@ -263,12 +288,22 @@ export default class OfferController extends Controller {
         'OfferController',
       );
     }
+    if (files.length < OfferV.Images.Min) {
+      throw new HttpError(
+        StatusCodes.BAD_REQUEST,
+        getFileValidationMessages({
+          typeMessage: 'minFiles',
+          fileType: 'image',
+          minFiles: OfferV.Images.Min,
+        }),
+        'OfferController',
+      );
+    }
+    const { offerId } = params;
+    const images = files.filter((file) => file?.path).map((file) => file.filename);
 
-    const images = files.filter((file) => file?.path).map((file) => file.path);
-
-    this.created(res, {
-      images
-    });
+    await this.offerService.updateById(offerId, { images });
+    this.created(res, fillDTO(UploadImagesRdo, { images, id: offerId }));
   }
 
   public async getOffersFromCity(

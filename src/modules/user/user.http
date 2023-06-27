@@ -4,18 +4,16 @@
 @host = {{hostname}}:{{port}}
 @parentPath = users
 @contentType = application/json
-@userId= 647f0adebc49a7eb82cd23b1
-@offerId= 6490546840fa3a8fda6141ad
-# @offerId= 648ca250ee7ccdb96757b37f
-@token = eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6InRvcmFuczg4OEBvdmVybG9vay5uZXQiLCJpZCI6IjY0OTA1YTI0YTNlNzk0NDQ2ZDgxZWZlZCIsImlhdCI6MTY4NzE4MTg4MCwiZXhwIjoxNjg3MzU0NjgwfQ.Se5XEQpZD2cdEtnSApt9QA9oXPlYdOqwHaAq39TJIwI
+@offerId= 649ae0c5659feceaf79e1280
+
+@token =eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6InRvcmFuczEwQG92ZXJsb29rLm5ldCIsImlkIjoiNjQ5YWUwN2Q2NTlmZWNlYWY3OWUxMjY4IiwiaWF0IjoxNjg3ODcyOTk5LCJleHAiOjE2ODgwNDU3OTl9.DdqkJl2YHE5UFP5atMWci_VYEKLLAVCOAxE5HhpRrYo
 
 ### Регистрация пользователя
 POST {{host}}/{{parentPath}}/register HTTP/1.1
 Content-Type: {{contentType}}
 
 {
-  "email": "torans888@overlook.net",
-  "avatarPath": "torrance.png",
+  "email": "torans10@overlook.net",
   "firstName": "Jack",
   "password": "shining",
   "type": "default"
@@ -29,7 +27,7 @@ POST {{host}}/{{parentPath}}/login HTTP/1.1
 Content-Type: {{contentType}}
 
 {
-  "email": "torans888@overlook.net",
+  "email": "torans10@overlook.net",
   "password": "shining"
 }
 
@@ -42,22 +40,23 @@ Authorization: Bearer {{token}}
 
 
 ### Список избранного
-GET {{host}}/{{parentPath}}/{{userId}}/favorites HTTP/1.1
+GET {{host}}/{{parentPath}}/favorites HTTP/1.1
 Authorization: Bearer {{token}}
 ###
 ### Добавить в избранное
-POST {{host}}/{{parentPath}}/{{userId}}/favorites/add/{{offerId}} HTTP/1.1
+POST {{host}}/{{parentPath}}/favorites/add/{{offerId}} HTTP/1.1
 Authorization: Bearer {{token}}
 ###
 ### Удалить из избранного
-DELETE  {{host}}/{{parentPath}}/{{userId}}/favorites/remove/{{offerId}} HTTP/1.1
+DELETE  {{host}}/{{parentPath}}/favorites/remove/{{offerId}} HTTP/1.1
 Authorization: Bearer {{token}}
 ###
 
 ###
 ## Отправка аватарки пользователю
 
-POST {{host}}/{{parentPath}}/{{userId}}/avatar HTTP/1.1
+POST {{host}}/{{parentPath}}/avatar HTTP/1.1
+Authorization: Bearer {{token}}
 Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
 
 ------WebKitFormBoundary7MA4YWxkTrZu0gW

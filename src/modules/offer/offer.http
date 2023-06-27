@@ -4,10 +4,10 @@
 @host = {{hostname}}:{{port}}
 @parentPath = offers
 @contentType = application/json
-@offerId = 647f0adebc49a7eb82cd23c3
+@offerId = 64985983b6459fb14222a82f
 @cityId = 647f0adebc49a7eb82cd23c1
 @userId = 6490546840fa3a8fda6141ad
-@token = eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6InRvcmFuczg4OEBvdmVybG9vay5uZXQiLCJpZCI6IjY0OTA1YTI0YTNlNzk0NDQ2ZDgxZWZlZCIsImlhdCI6MTY4NzE4MTg4MCwiZXhwIjoxNjg3MzU0NjgwfQ.Se5XEQpZD2cdEtnSApt9QA9oXPlYdOqwHaAq39TJIwI
+@token =eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6InRvcmFuczg4OEBvdmVybG9vay5uZXQiLCJpZCI6IjY0OTNlNDY5OTY0OWQyMDg3MzA1ZWRkZiIsImlhdCI6MTY4Nzc3MDEzNywiZXhwIjoxNjg3OTQyOTM3fQ.xOcrzsDVxhkHWQV0xbUNPgpN563w9-Oz0s_X09K4Xlk
 
 ## Список объявлений
 GET {{host}}/{{parentPath}} HTTP/1.1
@@ -46,8 +46,6 @@ Authorization: Bearer {{token}}
 {
   "title": "Премиум title",
   "description": "Новый детективный роман от короля ужасов.",
-  "preview": "billy-summers.png",
-  "images": ["img1.png","img2.png"],
   "type": "Apartment",
   "price": 777,
   "guests": 10,
@@ -63,8 +61,6 @@ Authorization: Bearer {{token}}
     "longitude": 0
   }
 }
-###  "sgsgsg": 111,
-###  "10": 10
 ###
 ## Удаление объявления
 
@@ -81,7 +77,7 @@ Authorization: Bearer {{token}}
 {
   "title": "Премиум title new",
   "features": ["Breakfast"],
-  "description": "Проверка обновления 1111111",
+  "description": "Проверка обновления",
   "commentsCount": 0
 }
 
@@ -115,6 +111,26 @@ Content-Disposition: form-data; name="offer-img"; filename="preview2.jpg"
 Content-Type: image/jpeg
 
 < /Users/dmitrij/Documents/preview2.jpg
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="offer-img"; filename="preview3.jpg"
+Content-Type: image/jpeg
+
+< /Users/dmitrij/Documents/preview3.jpg
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="offer-img"; filename="preview4.jpg"
+Content-Type: image/jpeg
+
+< /Users/dmitrij/Documents/preview4.jpg
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="offer-img"; filename="preview5.jpg"
+Content-Type: image/jpeg
+
+< /Users/dmitrij/Documents/preview5.jpg
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="offer-img"; filename="preview6.jpg"
+Content-Type: image/jpeg
+
+< /Users/dmitrij/Documents/preview6.jpg
 ------WebKitFormBoundary7MA4YWxkTrZu0gW--
 
 ###

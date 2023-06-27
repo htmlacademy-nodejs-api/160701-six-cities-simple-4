@@ -7,4 +7,6 @@ export default class CreateCityDto {
   @IsString()
   @IsIn(Cities)
   public name!: string;
+
+  public cityImage?: string;
 }

@@ -23,6 +23,9 @@ export class CityEntity extends defaultClasses.TimeStamps implements City {
     },
   })
   public name!: TCities;
+
+  @prop({ required: true, trim: true, default: '' })
+  public cityImage!: string;
 }
 
 export const CityModel = getModelForClass(CityEntity);

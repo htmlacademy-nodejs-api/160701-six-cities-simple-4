@@ -15,7 +15,7 @@ export class ValidateDtoMiddleware implements MiddlewareInterface {
     });
     const errors = await validate(dtoInstance);
 
-    if (errors.length > 0) {
+    if (errors.length) {
       throw new ValidationDtoError(transformErrors(errors));
     }
     req.body = instanceToPlain(dtoInstance);

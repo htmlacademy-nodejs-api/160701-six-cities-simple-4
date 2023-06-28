@@ -30,7 +30,7 @@
           "users"
         ],
         "summary": "Регистрация нового пользователя",
-        "description": "Creates a new user with the given data",
+        "description": "Создает нового пользователя с заданными данными",
         "requestBody": {
           "required": true,
           "content": {
@@ -47,13 +47,13 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/UserRdo"
+                  "$ref": "#/components/schemas/CreatedUserRdo"
                 }
               }
             }
           },
           "400": {
-            "description": "Invalid request body",
+            "description": "Недопустимый body запроса",
             "content": {
               "application/json": {
                 "schema": {
@@ -63,11 +63,11 @@
             }
           },
           "409": {
-            "description": "User with email «sample@sample.net» exists.",
+            "description": "User with email «${email}» exists.",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ErrorObj"
+                  "$ref": "#/components/schemas/ErrorCommonObj"
                 }
               }
             }
@@ -87,7 +87,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/CreateUserDto"
+                "$ref": "#/components/schemas/LoginUserDto"
               }
             }
           }
@@ -98,13 +98,20 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/User"
+                  "$ref": "#/components/schemas/LoggedUserRdo"
                 }
               }
             }
           },
           "400": {
-            "description": "Invalid request body"
+            "description": "Invalid request body",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDtoObj"
+                }
+              }
+            }
           }
         }
       },
@@ -116,102 +123,21 @@
         "description": "Check user",
         "responses": {
           "201": {
-            "description": "User created successfully",
+            "description": "Юзер авторизован",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/User"
+                  "$ref": "#/components/schemas/LoggedUserRdo"
                 }
               }
             }
           },
-          "400": {
-            "description": "Invalid request body"
-          }
-        }
-      }
-    },
-    "/users/favorites": {
-      "get": {
-        "tags": [
-          "users"
-        ],
-        "security": [
-          {
-            "BearerAuth": []
-          }
-        ],
-        "summary": "Список избранного",
-        "description": "Получить список избранного",
-        "responses": {
-          "200": {
-            "description": "Список избранного успешно получен",
+          "401": {
+            "description": "Unauthorized",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Favorites"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/users/favorites/add/{offerId}": {
-      "post": {
-        "tags": [
-          "users"
-        ],
-        "security": [
-          {
-            "BearerAuth": []
-          }
-        ],
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/offerIdParam"
-          }
-        ],
-        "summary": "Добавить в избранное",
-        "description": "Добавляет объявление в список избранного",
-        "responses": {
-          "200": {
-            "description": "Список избранного успешно получен",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Favorites"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/users/favorites/remove/{offerId}": {
-      "delete": {
-        "tags": [
-          "users"
-        ],
-        "security": [
-          {
-            "BearerAuth": []
-          }
-        ],
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/offerIdParam"
-          }
-        ],
-        "summary": "Удалить из избранного",
-        "description": "Удаляет объявление из списока избранного",
-        "responses": {
-          "200": {
-            "description": "Список избранного успешно получен",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Favorites"
+                  "$ref": "#/components/schemas/ErrorDtoObj"
                 }
               }
             }
@@ -260,6 +186,94 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/UploadUserAvatarRdo"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/favorites": {
+      "get": {
+        "tags": [
+          "users"
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "summary": "Список избранного",
+        "description": "Получить список избранного",
+        "responses": {
+          "200": {
+            "description": "Список избранного успешно получен",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FavoritesUserRdo"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/favorites/add/{offerId}": {
+      "post": {
+        "tags": [
+          "users"
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/offerIdParam"
+          }
+        ],
+        "summary": "Добавить в избранное",
+        "description": "Добавляет объявление в список избранного",
+        "responses": {
+          "200": {
+            "description": "Список избранного успешно получен",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FavoritesUserRdo"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/favorites/remove/{offerId}": {
+      "delete": {
+        "tags": [
+          "users"
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/offerIdParam"
+          }
+        ],
+        "summary": "Удалить из избранного",
+        "description": "Удаляет объявление из списока избранного",
+        "responses": {
+          "200": {
+            "description": "Список избранного успешно получен",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FavoritesUserRdo"
                 }
               }
             }
@@ -386,8 +400,8 @@
     },
     "/cities": {
       "get": {
-        "summary": "Get all cities",
-        "description": "Returns a list of all cities",
+        "summary": "Получить все города",
+        "description": "Возвращает список всех городов",
         "tags": [
           "cities"
         ],
@@ -399,8 +413,72 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/City"
+                    "$ref": "#/components/schemas/CityRdo"
                   }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Создание города",
+        "description": "Создаёт город по названию",
+        "tags": [
+          "cities"
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateCityDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CityRdo"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "City with name «${cityName}» exists.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorCommonObj"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDtoObj"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Недопустимый body запроса",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDtoObj"
                 }
               }
             }
@@ -469,7 +547,7 @@
           "password"
         ]
       },
-      "UserRdo": {
+      "CreatedUserRdo": {
         "type": "object",
         "properties": {
           "id": {
@@ -492,6 +570,87 @@
             ]
           }
         }
+      },
+      "LoggedUserRdo": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string"
+          },
+          "token": {
+            "type": "string"
+          },
+          "avatarPath": {
+            "type": "string"
+          },
+          "firstName": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "default",
+              "pro"
+            ]
+          }
+        }
+      },
+      "UploadUserAvatarRdo": {
+        "type": "object",
+        "properties": {
+          "avatarPath": {
+            "type": "string"
+          }
+        }
+      },
+      "FavoritesUserRdo": {
+        "type": "object",
+        "properties": {
+          "favorites": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "CreateCityDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "enum": [
+              "Paris",
+              "Cologne",
+              "Brussels",
+              "Amsterdam",
+              "Hamburg",
+              "Dusseldorf"
+            ]
+          }
+        },
+        "required": [
+          "name"
+        ],
+        "additionalProperties": false
+      },
+      "CityRdo": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "offerCount": {
+            "type": "integer"
+          },
+          "cityImage": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
       },
       "ServiceError": {
         "type": "string",
@@ -524,7 +683,10 @@
         "type": "object",
         "properties": {
           "serviceError": {
-            "$ref": "#/components/schemas/ServiceError"
+            "type": "string",
+            "enum": [
+              "VALIDATION_ERROR"
+            ]
           },
           "message": {
             "type": "string"
@@ -537,11 +699,14 @@
           }
         }
       },
-      "ErrorObj": {
+      "ErrorCommonObj": {
         "type": "object",
         "properties": {
           "serviceError": {
-            "$ref": "#/components/schemas/ServiceError"
+            "type": "string",
+            "enum": [
+              "COMMON_ERROR"
+            ]
           },
           "message": {
             "type": "string"
@@ -550,34 +715,6 @@
             "type": "array"
           }
         }
-      },
-      "Favorites": {
-        "type": "object",
-        "properties": {
-          "favorites": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          }
-        }
-      },
-      "UploadUserAvatarRdo": {
-        "type": "object",
-        "properties": {
-          "avatarPath": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "avatarPath"
-        ]
-      },
-      "Group1": {
-        "$ref": "group1_schemas.json"
-      },
-      "Group2": {
-        "$ref": "group2_schemas.json"
       }
     },
     "parameters": {
@@ -591,16 +728,6 @@
           "pattern": "^[0-9a-fA-F]{24}$",
           "example": "60c8ec478d8eaa001f857197"
         }
-      },
-      "authParam": {
-        "name": "Authorization",
-        "in": "header",
-        "schema": {
-          "type": "string",
-          "minLength": 10
-        },
-        "required": true,
-        "description": "JWT token"
       }
     },
     "responses": {}

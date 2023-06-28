@@ -10,7 +10,7 @@ import { UserServiceInterface } from './user-service.interface.js';
 import HttpError from '../../core/errors/http-error.js';
 import { StatusCodes } from 'http-status-codes';
 import { createJwt, fillDTO } from '../../core/helpers/common.js';
-import UserRdo from './rdo/user.rdo.js';
+import UserRdo from './rdo/created-user.rdo.js';
 import CreateUserDto from './dto/create-user.dto.js';
 import LoginUserDto from './dto/login-user.dto.js';
 import { ValidateDtoMiddleware } from '../../common/middlewares/validate-dto.middleware.js';
@@ -26,7 +26,7 @@ import { DocumentExistsMiddleware } from '../../common/middlewares/document-exis
 import { OfferServiceInterface } from '../offer/offer-service.interface.js';
 import { ParamsGetOffer } from '../offer/offer.controller.js';
 import * as core from 'express-serve-static-core';
-import UploadUserAvatarRdo from './rdo/upload-user-avatar.response.js';
+import UploadUserAvatarRdo from './rdo/upload-user-avatar.rdo.js';
 import { UserExistsMiddleware } from '../../common/middlewares/user-exists.middleware.js';
 
 @injectable()

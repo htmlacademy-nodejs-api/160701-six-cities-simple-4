@@ -26,7 +26,9 @@
   "paths": {
     "/users/register": {
       "post": {
-        "tags": ["users"],
+        "tags": [
+          "users"
+        ],
         "summary": "Регистрация нового пользователя",
         "description": "Creates a new user with the given data",
         "requestBody": {
@@ -75,7 +77,9 @@
     },
     "/users/login": {
       "post": {
-        "tags": ["users"],
+        "tags": [
+          "users"
+        ],
         "summary": "Авторизация пользователя",
         "description": "Auth a new user with the given data",
         "requestBody": {
@@ -105,7 +109,9 @@
         }
       },
       "get": {
-        "tags": ["users"],
+        "tags": [
+          "users"
+        ],
         "summary": "Проверка состояния пользователя",
         "description": "Check user",
         "responses": {
@@ -125,11 +131,149 @@
         }
       }
     },
+    "/users/favorites": {
+      "get": {
+        "tags": [
+          "users"
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "summary": "Список избранного",
+        "description": "Получить список избранного",
+        "responses": {
+          "200": {
+            "description": "Список избранного успешно получен",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Favorites"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/favorites/add/{offerId}": {
+      "post": {
+        "tags": [
+          "users"
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/offerIdParam"
+          }
+        ],
+        "summary": "Добавить в избранное",
+        "description": "Добавляет объявление в список избранного",
+        "responses": {
+          "200": {
+            "description": "Список избранного успешно получен",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Favorites"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/favorites/remove/{offerId}": {
+      "delete": {
+        "tags": [
+          "users"
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/offerIdParam"
+          }
+        ],
+        "summary": "Удалить из избранного",
+        "description": "Удаляет объявление из списока избранного",
+        "responses": {
+          "200": {
+            "description": "Список избранного успешно получен",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Favorites"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/avatar": {
+      "post": {
+        "tags": [
+          "users"
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "summary": "Отправка аватарки пользователю",
+        "description": "Отправка аватарки пользователю",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "avatar": {
+                    "type": "string",
+                    "format": "binary",
+                    "x-name": "avatar",
+                    "x-constraints": {
+                      "contentType": [
+                        "image/png",
+                        "image/jpg"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Аватарка успешно получена",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UploadUserAvatarRdo"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/offers": {
       "get": {
         "summary": "Get all offers",
         "description": "Returns a list of all offers",
-        "tags": ["offers"],
+        "tags": [
+          "offers"
+        ],
         "responses": {
           "200": {
             "description": "Successful response",
@@ -149,7 +293,9 @@
       "post": {
         "summary": "Create a new offer",
         "description": "Creates a new offer with the given data",
-        "tags": ["offers"],
+        "tags": [
+          "offers"
+        ],
         "requestBody": {
           "required": true,
           "content": {
@@ -181,7 +327,9 @@
       "get": {
         "summary": "Get all comments",
         "description": "Returns a list of all comments",
-        "tags": ["comments"],
+        "tags": [
+          "comments"
+        ],
         "responses": {
           "200": {
             "description": "Successful response",
@@ -201,22 +349,12 @@
       "post": {
         "summary": "Create a new comment",
         "description": "Creates a new comment with the given data",
-        "tags": ["comments"],
+        "tags": [
+          "comments"
+        ],
         "security": [
           {
-            "api_key": []
-          }
-        ],
-        "parameters": [
-          {
-            "in": "header",
-            "name": "Authorization",
-            "schema": {
-              "type": "string",
-              "minLength": 10
-            },
-            "required": true,
-            "description": "token key"
+            "BearerAuth": []
           }
         ],
         "requestBody": {
@@ -250,7 +388,9 @@
       "get": {
         "summary": "Get all cities",
         "description": "Returns a list of all cities",
-        "tags": ["cities"],
+        "tags": [
+          "cities"
+        ],
         "responses": {
           "200": {
             "description": "Successful response",
@@ -271,10 +411,11 @@
   },
   "components": {
     "securitySchemes": {
-      "api_key": {
+      "BearerAuth": {
         "type": "apiKey",
         "name": "Authorization",
-        "in": "header"
+        "in": "header",
+        "description": "JWT token with Bearer scheme"
       }
     },
     "schemas": {
@@ -297,10 +438,17 @@
           },
           "type": {
             "type": "string",
-            "enum": ["default", "pro"]
+            "enum": [
+              "default",
+              "pro"
+            ]
           }
         },
-        "required": ["email", "firstName", "password"],
+        "required": [
+          "email",
+          "firstName",
+          "password"
+        ],
         "additionalProperties": false
       },
       "LoginUserDto": {
@@ -316,7 +464,10 @@
             "maxLength": 15
           }
         },
-        "required": ["email", "password"]
+        "required": [
+          "email",
+          "password"
+        ]
       },
       "UserRdo": {
         "type": "object",
@@ -335,7 +486,10 @@
           },
           "type": {
             "type": "string",
-            "enum": ["default", "pro"]
+            "enum": [
+              "default",
+              "pro"
+            ]
           }
         }
       },
@@ -396,6 +550,51 @@
             "type": "array"
           }
         }
+      },
+      "Favorites": {
+        "type": "object",
+        "properties": {
+          "favorites": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "UploadUserAvatarRdo": {
+        "type": "object",
+        "properties": {
+          "avatarPath": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "avatarPath"
+        ]
+      }
+    },
+    "parameters": {
+      "offerIdParam": {
+        "name": "offerId",
+        "in": "path",
+        "description": "Уникальный идентификатор объявления",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "pattern": "^[0-9a-fA-F]{24}$",
+          "example": "60c8ec478d8eaa001f857197"
+        }
+      },
+      "authParam": {
+        "name": "Authorization",
+        "in": "header",
+        "schema": {
+          "type": "string",
+          "minLength": 10
+        },
+        "required": true,
+        "description": "JWT token"
       }
     }
   }

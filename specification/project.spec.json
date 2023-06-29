@@ -112,7 +112,14 @@
         }
       },
       "get": {
-        "tags": ["users"],
+        "tags": [
+          "users"
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
         "summary": "Проверка состояния пользователя",
         "description": "Check user",
         "responses": {

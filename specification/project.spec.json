@@ -566,6 +566,107 @@
         }
       }
     },
+    "/offers/{offerId}/images": {
+      "post": {
+        "tags": [
+          "offers"
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "summary": "Отправка images объявления",
+        "description": "Отправка images объявления",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "images": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "binary"
+                    },
+                    "minItems": 6,
+                    "maxItems": 6,
+                    "x-name": "offer-images",
+                    "x-constraints": {
+                      "contentType": [
+                        "image/png",
+                        "image/jpg"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "images объявления успешно получен",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UploadImagesRdo"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/offers/{offerId}/preview": {
+      "post": {
+        "tags": [
+          "offers"
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "summary": "Отправка preview объявления",
+        "description": "Отправка preview объявления",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "preview": {
+                    "type": "string",
+                    "format": "binary",
+                    "x-name": "offer-preview",
+                    "x-constraints": {
+                      "contentType": [
+                        "image/png",
+                        "image/jpg"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Preview объявления успешно получен",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UploadPreviewRdo"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/comments/{offerId}": {
       "get": {
         "summary": "Получить все комментарии к объявлению",
@@ -1177,6 +1278,31 @@
           }
         },
         "additionalProperties": false
+      },
+      "UploadPreviewRdo": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "preview": {
+            "type": "string"
+          }
+        }
+      },
+      "UploadImagesRdo": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "images": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
       },
       "OfferFeatures": {
         "type": "string",

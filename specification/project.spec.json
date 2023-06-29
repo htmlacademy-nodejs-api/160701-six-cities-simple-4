@@ -283,7 +283,7 @@
     },
     "/offers": {
       "get": {
-        "summary": "Список объявлений по аренде",
+        "summary": "Список объявлений",
         "description": "Список объявлений по аренде могут запрашивать анонимные и авторизованные клиенты.По умолчанию сервис возвращает не больше 60 предложений по аренде. Клиент может запросить больше предложений, указав нужное количество в параметре запроса.",
         "tags": [
           "offers"
@@ -349,12 +349,216 @@
               }
             }
           },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommonErrorObj"
+                }
+              }
+            }
+          },
           "400": {
             "description": "Недопустимый body запроса",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ValidationErrorObj"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/offers/city/{cityId}": {
+      "get": {
+        "summary": "Список объявлений определённого города",
+        "description": "Список объявлений по аренде могут запрашивать анонимные и авторизованные клиенты.По умолчанию сервис возвращает не больше 60 предложений по аренде. Клиент может запросить больше предложений, указав нужное количество в параметре запроса.",
+        "tags": [
+          "offers"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/cityIdParam"
+          },
+          {
+            "$ref": "#/components/parameters/sortTypeQuery"
+          },
+          {
+            "$ref": "#/components/parameters/limitQuery"
+          }
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/OfferRdo"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/offers/premium/city/{cityId}": {
+      "get": {
+        "summary": "Список премиум объявлений определённого города",
+        "description": "Возвращает 3 премиум объявления определённого города",
+        "tags": [
+          "offers"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/cityIdParam"
+          },
+          {
+            "$ref": "#/components/parameters/sortTypeQuery"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/OfferRdo"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/offers/{offerId}": {
+      "get": {
+        "summary": "Объявление по идентификатору",
+        "description": "Получение детальной информации по одному предложению",
+        "tags": [
+          "offers"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/offerIdParam"
+          }
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OfferFullRdo"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Обновление объявления",
+        "description": "Обновление объявления с заданными данными",
+        "tags": [
+          "offers"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/offerIdParam"
+          }
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateOfferDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Предложение обновлено успешно",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OfferFullRdo"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommonErrorObj"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Недопустимый body запроса",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationErrorObj"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Удаление объявления",
+        "description": "Удаление объявления",
+        "tags": [
+          "offers"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/offerIdParam"
+          }
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Предложение удалено успешно"
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommonErrorObj"
                 }
               }
             }
@@ -772,6 +976,71 @@
           }
         }
       },
+      "OfferFullRdo": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "city": {
+            "$ref": "#/components/schemas/CityRdo"
+          },
+          "preview": {
+            "type": "string"
+          },
+          "type": {
+            "$ref": "#/components/schemas/OfferVariants"
+          },
+          "price": {
+            "type": "number"
+          },
+          "commentsCount": {
+            "type": "number"
+          },
+          "rating": {
+            "type": "number"
+          },
+          "isPremium": {
+            "type": "boolean"
+          },
+          "isFavorite": {
+            "type": "boolean"
+          },
+          "description": {
+            "type": "string"
+          },
+          "images": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "rooms": {
+            "type": "number"
+          },
+          "guests": {
+            "type": "number"
+          },
+          "features": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/OfferFeatures"
+            }
+          },
+          "author": {
+            "$ref": "#/components/schemas/CreatedUserRdo"
+          },
+          "coordinates": {
+            "$ref": "#/components/schemas/CreateCoordinateDto"
+          }
+        }
+      },
       "CreateCoordinateDto": {
         "type": "object",
         "properties": {
@@ -853,6 +1122,61 @@
           "features",
           "coordinates"
         ]
+      },
+      "UpdateOfferDto": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "minLength": 10,
+            "maxLength": 100
+          },
+          "description": {
+            "type": "string",
+            "minLength": 20,
+            "maxLength": 1024
+          },
+          "city": {
+            "$ref": "#/components/schemas/Cities"
+          },
+          "isPremium": {
+            "type": "boolean"
+          },
+          "type": {
+            "type": "string",
+            "$ref": "#/components/schemas/OfferVariants"
+          },
+          "rooms": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 8
+          },
+          "guests": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 10
+          },
+          "price": {
+            "type": "integer",
+            "minimum": 100,
+            "maximum": 100000
+          },
+          "features": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "$ref": "#/components/schemas/OfferFeatures"
+            },
+            "uniqueItems": true
+          },
+          "author": {
+            "type": "string"
+          },
+          "coordinates": {
+            "$ref": "#/components/schemas/CreateCoordinateDto"
+          }
+        },
+        "additionalProperties": false
       },
       "OfferFeatures": {
         "type": "string",
@@ -957,6 +1281,17 @@
         "name": "offerId",
         "in": "path",
         "description": "Уникальный идентификатор объявления",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "pattern": "^[0-9a-fA-F]{24}$",
+          "example": "60c8ec478d8eaa001f857197"
+        }
+      },
+      "cityIdParam": {
+        "name": "cityId",
+        "in": "path",
+        "description": "Уникальный идентификатор города",
         "required": true,
         "schema": {
           "type": "string",

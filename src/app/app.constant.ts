@@ -1,14 +1,14 @@
 import { Cities } from '../types/cities.type.js';
 
-export const DEFAULT_AVATAR_FILE_NAME = 'default-avatar.jpg';
-export const DEFAULT_OFFER_PREVIEW_FILE_NAME = 'default-preview.jpg';
-export const DEFAULT_OFFER_IMAGES_FILE_NAME = 'default-image.jpg';
+export const DefaultFileName = {
+  AVATAR: 'default-avatar.jpg',
+  OFFER_PREVIEW: 'default-preview.jpg',
+  OFFER_IMAGES: 'default-image.jpg',
+};
 export const DEFAULT_CITIES_FILE_NAME = Cities.map((city) => `city-${city.toLocaleLowerCase()}.jpg`);
 
 export const DEFAULT_STATIC_IMAGES = [
-  DEFAULT_AVATAR_FILE_NAME,
-  DEFAULT_OFFER_PREVIEW_FILE_NAME,
-  DEFAULT_OFFER_IMAGES_FILE_NAME,
+  ...Object.values(DefaultFileName),
   ...DEFAULT_CITIES_FILE_NAME,
 ];
 

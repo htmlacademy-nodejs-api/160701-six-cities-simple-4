@@ -8,7 +8,7 @@
   "tags": [
     {
       "name": "offers",
-      "description": "Действия с предложениями."
+      "description": "Действия с объявлениями."
     },
     {
       "name": "comments",
@@ -57,7 +57,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ErrorDtoObj"
+                  "$ref": "#/components/schemas/ValidationErrorObj"
                 }
               }
             }
@@ -67,7 +67,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ErrorCommonObj"
+                  "$ref": "#/components/schemas/CommonErrorObj"
                 }
               }
             }
@@ -108,7 +108,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ErrorDtoObj"
+                  "$ref": "#/components/schemas/ValidationErrorObj"
                 }
               }
             }
@@ -137,7 +137,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ErrorDtoObj"
+                  "$ref": "#/components/schemas/CommonErrorObj"
                 }
               }
             }
@@ -283,66 +283,23 @@
     },
     "/offers": {
       "get": {
-        "summary": "Get all offers",
-        "description": "Returns a list of all offers",
+        "summary": "Список объявлений по аренде",
+        "description": "Список объявлений по аренде могут запрашивать анонимные и авторизованные клиенты.По умолчанию сервис возвращает не больше 60 предложений по аренде. Клиент может запросить больше предложений, указав нужное количество в параметре запроса.",
         "tags": [
           "offers"
         ],
-        "responses": {
-          "200": {
-            "description": "Successful response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Offer"
-                  }
-                }
-              }
-            }
-          }
-        }
-      },
-      "post": {
-        "summary": "Create a new offer",
-        "description": "Creates a new offer with the given data",
-        "tags": [
-          "offers"
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/OfferInput"
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": "Offer created successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Offer"
-                }
-              }
-            }
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/sortTypeQuery"
           },
-          "400": {
-            "description": "Invalid request body"
+          {
+            "$ref": "#/components/parameters/limitQuery"
           }
-        }
-      }
-    },
-    "/comments": {
-      "get": {
-        "summary": "Get all comments",
-        "description": "Returns a list of all comments",
-        "tags": [
-          "comments"
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
         ],
         "responses": {
           "200": {
@@ -352,7 +309,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/Comment"
+                    "$ref": "#/components/schemas/OfferRdo"
                   }
                 }
               }
@@ -361,10 +318,10 @@
         }
       },
       "post": {
-        "summary": "Create a new comment",
-        "description": "Creates a new comment with the given data",
+        "summary": "Создание нового объявления",
+        "description": "Создает новое объявления с заданными данными",
         "tags": [
-          "comments"
+          "offers"
         ],
         "security": [
           {
@@ -376,18 +333,106 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/CommentInput"
+                "$ref": "#/components/schemas/CreateOfferDto"
               }
             }
           }
         },
         "responses": {
           "201": {
-            "description": "Comment created successfully",
+            "description": "Предложение создано успешно",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Comment"
+                  "$ref": "#/components/schemas/OfferRdo"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Недопустимый body запроса",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationErrorObj"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/comments/{offerId}": {
+      "get": {
+        "summary": "Получить все комментарии к объявлению",
+        "description": "Возвращает список всех комментариев объявления",
+        "tags": [
+          "comments"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/offerIdParam"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CommentRdo"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Offer with {offerId} not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommonErrorObj"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Создание нового комментария",
+        "description": "Создает новый комментарий с заданными данными",
+        "tags": [
+          "comments"
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/offerIdParam"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateCommentDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Комментарий создан успешно",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommentRdo"
                 }
               }
             }
@@ -458,7 +503,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ErrorCommonObj"
+                  "$ref": "#/components/schemas/CommonErrorObj"
                 }
               }
             }
@@ -468,7 +513,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ErrorDtoObj"
+                  "$ref": "#/components/schemas/CommonErrorObj"
                 }
               }
             }
@@ -478,7 +523,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ErrorDtoObj"
+                  "$ref": "#/components/schemas/ValidationErrorObj"
                 }
               }
             }
@@ -618,15 +663,7 @@
         "type": "object",
         "properties": {
           "name": {
-            "type": "string",
-            "enum": [
-              "Paris",
-              "Cologne",
-              "Brussels",
-              "Amsterdam",
-              "Hamburg",
-              "Dusseldorf"
-            ]
+            "$ref": "#/components/schemas/Cities"
           }
         },
         "required": [
@@ -651,6 +688,204 @@
           }
         },
         "additionalProperties": false
+      },
+      "CommentRdo": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "text": {
+            "type": "string"
+          },
+          "rating": {
+            "type": "number"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "author": {
+            "$ref": "#/components/schemas/CreatedUserRdo"
+          }
+        }
+      },
+      "CreateCommentDto": {
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": "string",
+            "minLength": 5,
+            "maxLength": 1024
+          },
+          "offerId": {
+            "type": "string"
+          },
+          "userId": {
+            "type": "string"
+          },
+          "rating": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 5
+          }
+        }
+      },
+      "OfferRdo": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "city": {
+            "$ref": "#/components/schemas/CityRdo"
+          },
+          "preview": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "TOfferVariants"
+            ]
+          },
+          "price": {
+            "type": "number"
+          },
+          "commentsCount": {
+            "type": "number"
+          },
+          "rating": {
+            "type": "number"
+          },
+          "isPremium": {
+            "type": "boolean"
+          },
+          "isFavorite": {
+            "type": "boolean"
+          }
+        }
+      },
+      "CreateCoordinateDto": {
+        "type": "object",
+        "properties": {
+          "latitude": {
+            "type": "number",
+            "format": "double"
+          },
+          "longitude": {
+            "type": "number",
+            "format": "double"
+          }
+        },
+        "required": [
+          "latitude",
+          "longitude"
+        ]
+      },
+      "CreateOfferDto": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "minLength": 10,
+            "maxLength": 100
+          },
+          "description": {
+            "type": "string",
+            "minLength": 20,
+            "maxLength": 1024
+          },
+          "city": {
+            "$ref": "#/components/schemas/Cities"
+          },
+          "isPremium": {
+            "type": "boolean"
+          },
+          "type": {
+            "type": "string",
+            "$ref": "#/components/schemas/OfferVariants"
+          },
+          "rooms": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 8
+          },
+          "guests": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 10
+          },
+          "price": {
+            "type": "integer",
+            "minimum": 100,
+            "maximum": 100000
+          },
+          "features": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "$ref": "#/components/schemas/OfferFeatures"
+            },
+            "uniqueItems": true
+          },
+          "author": {
+            "type": "string"
+          },
+          "coordinates": {
+            "$ref": "#/components/schemas/CreateCoordinateDto"
+          }
+        },
+        "required": [
+          "title",
+          "description",
+          "city",
+          "type",
+          "rooms",
+          "guests",
+          "price",
+          "features",
+          "coordinates"
+        ]
+      },
+      "OfferFeatures": {
+        "type": "string",
+        "enum": [
+          "Breakfast",
+          "Air conditioning",
+          "Laptop friendly workspace",
+          "Workspace",
+          "Baby seat",
+          "Washer",
+          "Towels",
+          "Fridge"
+        ]
+      },
+      "OfferVariants": {
+        "type": "string",
+        "enum": [
+          "Apartment",
+          "House",
+          "Room",
+          "Hotel"
+        ]
+      },
+      "Cities": {
+        "type": "string",
+        "enum": [
+          "Paris",
+          "Cologne",
+          "Brussels",
+          "Amsterdam",
+          "Hamburg",
+          "Dusseldorf"
+        ]
       },
       "ServiceError": {
         "type": "string",
@@ -679,7 +914,7 @@
           }
         }
       },
-      "ErrorDtoObj": {
+      "ValidationErrorObj": {
         "type": "object",
         "properties": {
           "serviceError": {
@@ -699,7 +934,7 @@
           }
         }
       },
-      "ErrorCommonObj": {
+      "CommonErrorObj": {
         "type": "object",
         "properties": {
           "serviceError": {
@@ -727,6 +962,34 @@
           "type": "string",
           "pattern": "^[0-9a-fA-F]{24}$",
           "example": "60c8ec478d8eaa001f857197"
+        }
+      },
+      "sortTypeQuery": {
+        "name": "sortType",
+        "in": "query",
+        "description": "Варианты сортировки",
+        "required": false,
+        "schema": {
+          "type": "string",
+          "default": "DateNew",
+          "enum": [
+            "DateNew",
+            "Rated",
+            "Popular",
+            "PriceTop",
+            "PriceDown"
+          ]
+        }
+      },
+      "limitQuery": {
+        "name": "limit",
+        "in": "query",
+        "description": "Количество сущностей для ответа",
+        "required": false,
+        "schema": {
+          "type": "integer",
+          "format": "int32",
+          "default": 60
         }
       }
     },

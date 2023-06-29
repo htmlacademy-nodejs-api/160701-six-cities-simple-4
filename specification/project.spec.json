@@ -26,9 +26,7 @@
   "paths": {
     "/users/register": {
       "post": {
-        "tags": [
-          "users"
-        ],
+        "tags": ["users"],
         "summary": "Регистрация нового пользователя",
         "description": "Создает нового пользователя с заданными данными",
         "requestBody": {
@@ -77,9 +75,7 @@
     },
     "/users/login": {
       "post": {
-        "tags": [
-          "users"
-        ],
+        "tags": ["users"],
         "summary": "Авторизация пользователя",
         "description": "Auth a new user with the given data",
         "requestBody": {
@@ -116,9 +112,7 @@
         }
       },
       "get": {
-        "tags": [
-          "users"
-        ],
+        "tags": ["users"],
         "summary": "Проверка состояния пользователя",
         "description": "Check user",
         "responses": {
@@ -147,9 +141,7 @@
     },
     "/users/avatar": {
       "post": {
-        "tags": [
-          "users"
-        ],
+        "tags": ["users"],
         "security": [
           {
             "BearerAuth": []
@@ -168,10 +160,7 @@
                     "format": "binary",
                     "x-name": "avatar",
                     "x-constraints": {
-                      "contentType": [
-                        "image/png",
-                        "image/jpg"
-                      ]
+                      "contentType": ["image/png", "image/jpg"]
                     }
                   }
                 }
@@ -195,9 +184,7 @@
     },
     "/users/favorites": {
       "get": {
-        "tags": [
-          "users"
-        ],
+        "tags": ["users"],
         "security": [
           {
             "BearerAuth": []
@@ -207,23 +194,14 @@
         "description": "Получить список избранного",
         "responses": {
           "200": {
-            "description": "Список избранного успешно получен",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/FavoritesUserRdo"
-                }
-              }
-            }
+            "$ref": "#/components/schemas/SuccessFavoritesResponse"
           }
         }
       }
     },
     "/users/favorites/add/{offerId}": {
       "post": {
-        "tags": [
-          "users"
-        ],
+        "tags": ["users"],
         "security": [
           {
             "BearerAuth": []
@@ -238,23 +216,14 @@
         "description": "Добавляет объявление в список избранного",
         "responses": {
           "200": {
-            "description": "Список избранного успешно получен",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/FavoritesUserRdo"
-                }
-              }
-            }
+            "$ref": "#/components/schemas/SuccessFavoritesResponse"
           }
         }
       }
     },
     "/users/favorites/remove/{offerId}": {
       "delete": {
-        "tags": [
-          "users"
-        ],
+        "tags": ["users"],
         "security": [
           {
             "BearerAuth": []
@@ -268,15 +237,8 @@
         "summary": "Удалить из избранного",
         "description": "Удаляет объявление из списока избранного",
         "responses": {
-          "200": {
-            "description": "Список избранного успешно получен",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/FavoritesUserRdo"
-                }
-              }
-            }
+          "204": {
+            "$ref": "#/components/schemas/SuccessFavoritesResponse"
           }
         }
       }
@@ -285,9 +247,7 @@
       "get": {
         "summary": "Список объявлений",
         "description": "Список объявлений по аренде могут запрашивать анонимные и авторизованные клиенты.По умолчанию сервис возвращает не больше 60 предложений по аренде. Клиент может запросить больше предложений, указав нужное количество в параметре запроса.",
-        "tags": [
-          "offers"
-        ],
+        "tags": ["offers"],
         "parameters": [
           {
             "$ref": "#/components/parameters/sortTypeQuery"
@@ -320,9 +280,7 @@
       "post": {
         "summary": "Создание нового объявления",
         "description": "Создает новое объявления с заданными данными",
-        "tags": [
-          "offers"
-        ],
+        "tags": ["offers"],
         "security": [
           {
             "BearerAuth": []
@@ -376,9 +334,7 @@
       "get": {
         "summary": "Список объявлений определённого города",
         "description": "Список объявлений по аренде могут запрашивать анонимные и авторизованные клиенты.По умолчанию сервис возвращает не больше 60 предложений по аренде. Клиент может запросить больше предложений, указав нужное количество в параметре запроса.",
-        "tags": [
-          "offers"
-        ],
+        "tags": ["offers"],
         "parameters": [
           {
             "$ref": "#/components/parameters/cityIdParam"
@@ -416,9 +372,7 @@
       "get": {
         "summary": "Список премиум объявлений определённого города",
         "description": "Возвращает 3 премиум объявления определённого города",
-        "tags": [
-          "offers"
-        ],
+        "tags": ["offers"],
         "parameters": [
           {
             "$ref": "#/components/parameters/cityIdParam"
@@ -448,9 +402,7 @@
       "get": {
         "summary": "Объявление по идентификатору",
         "description": "Получение детальной информации по одному предложению",
-        "tags": [
-          "offers"
-        ],
+        "tags": ["offers"],
         "parameters": [
           {
             "$ref": "#/components/parameters/offerIdParam"
@@ -477,9 +429,7 @@
       "post": {
         "summary": "Обновление объявления",
         "description": "Обновление объявления с заданными данными",
-        "tags": [
-          "offers"
-        ],
+        "tags": ["offers"],
         "parameters": [
           {
             "$ref": "#/components/parameters/offerIdParam"
@@ -536,9 +486,7 @@
       "delete": {
         "summary": "Удаление объявления",
         "description": "Удаление объявления",
-        "tags": [
-          "offers"
-        ],
+        "tags": ["offers"],
         "parameters": [
           {
             "$ref": "#/components/parameters/offerIdParam"
@@ -568,9 +516,7 @@
     },
     "/offers/{offerId}/images": {
       "post": {
-        "tags": [
-          "offers"
-        ],
+        "tags": ["offers"],
         "security": [
           {
             "BearerAuth": []
@@ -594,10 +540,7 @@
                     "maxItems": 6,
                     "x-name": "offer-images",
                     "x-constraints": {
-                      "contentType": [
-                        "image/png",
-                        "image/jpg"
-                      ]
+                      "contentType": ["image/png", "image/jpg"]
                     }
                   }
                 }
@@ -621,9 +564,7 @@
     },
     "/offers/{offerId}/preview": {
       "post": {
-        "tags": [
-          "offers"
-        ],
+        "tags": ["offers"],
         "security": [
           {
             "BearerAuth": []
@@ -642,10 +583,7 @@
                     "format": "binary",
                     "x-name": "offer-preview",
                     "x-constraints": {
-                      "contentType": [
-                        "image/png",
-                        "image/jpg"
-                      ]
+                      "contentType": ["image/png", "image/jpg"]
                     }
                   }
                 }
@@ -671,9 +609,7 @@
       "get": {
         "summary": "Получить все комментарии к объявлению",
         "description": "Возвращает список всех комментариев объявления",
-        "tags": [
-          "comments"
-        ],
+        "tags": ["comments"],
         "parameters": [
           {
             "$ref": "#/components/parameters/offerIdParam"
@@ -708,9 +644,7 @@
       "post": {
         "summary": "Создание нового комментария",
         "description": "Создает новый комментарий с заданными данными",
-        "tags": [
-          "comments"
-        ],
+        "tags": ["comments"],
         "security": [
           {
             "BearerAuth": []
@@ -752,9 +686,7 @@
       "get": {
         "summary": "Получить все города",
         "description": "Возвращает список всех городов",
-        "tags": [
-          "cities"
-        ],
+        "tags": ["cities"],
         "responses": {
           "200": {
             "description": "Successful response",
@@ -774,9 +706,7 @@
       "post": {
         "summary": "Создание города",
         "description": "Создаёт город по названию",
-        "tags": [
-          "cities"
-        ],
+        "tags": ["cities"],
         "security": [
           {
             "BearerAuth": []
@@ -866,17 +796,10 @@
           },
           "type": {
             "type": "string",
-            "enum": [
-              "default",
-              "pro"
-            ]
+            "enum": ["default", "pro"]
           }
         },
-        "required": [
-          "email",
-          "firstName",
-          "password"
-        ],
+        "required": ["email", "firstName", "password"],
         "additionalProperties": false
       },
       "LoginUserDto": {
@@ -892,10 +815,7 @@
             "maxLength": 15
           }
         },
-        "required": [
-          "email",
-          "password"
-        ]
+        "required": ["email", "password"]
       },
       "CreatedUserRdo": {
         "type": "object",
@@ -914,10 +834,7 @@
           },
           "type": {
             "type": "string",
-            "enum": [
-              "default",
-              "pro"
-            ]
+            "enum": ["default", "pro"]
           }
         }
       },
@@ -938,10 +855,7 @@
           },
           "type": {
             "type": "string",
-            "enum": [
-              "default",
-              "pro"
-            ]
+            "enum": ["default", "pro"]
           }
         }
       },
@@ -971,9 +885,7 @@
             "$ref": "#/components/schemas/Cities"
           }
         },
-        "required": [
-          "name"
-        ],
+        "required": ["name"],
         "additionalProperties": false
       },
       "CityRdo": {
@@ -1056,9 +968,7 @@
           },
           "type": {
             "type": "string",
-            "enum": [
-              "TOfferVariants"
-            ]
+            "enum": ["TOfferVariants"]
           },
           "price": {
             "type": "number"
@@ -1154,10 +1064,7 @@
             "format": "double"
           }
         },
-        "required": [
-          "latitude",
-          "longitude"
-        ]
+        "required": ["latitude", "longitude"]
       },
       "CreateOfferDto": {
         "type": "object",
@@ -1319,23 +1226,11 @@
       },
       "OfferVariants": {
         "type": "string",
-        "enum": [
-          "Apartment",
-          "House",
-          "Room",
-          "Hotel"
-        ]
+        "enum": ["Apartment", "House", "Room", "Hotel"]
       },
       "Cities": {
         "type": "string",
-        "enum": [
-          "Paris",
-          "Cologne",
-          "Brussels",
-          "Amsterdam",
-          "Hamburg",
-          "Dusseldorf"
-        ]
+        "enum": ["Paris", "Cologne", "Brussels", "Amsterdam", "Hamburg", "Dusseldorf"]
       },
       "ServiceError": {
         "type": "string",
@@ -1369,9 +1264,7 @@
         "properties": {
           "serviceError": {
             "type": "string",
-            "enum": [
-              "VALIDATION_ERROR"
-            ]
+            "enum": ["VALIDATION_ERROR"]
           },
           "message": {
             "type": "string"
@@ -1389,15 +1282,23 @@
         "properties": {
           "serviceError": {
             "type": "string",
-            "enum": [
-              "COMMON_ERROR"
-            ]
+            "enum": ["COMMON_ERROR"]
           },
           "message": {
             "type": "string"
           },
           "details": {
             "type": "array"
+          }
+        }
+      },
+      "SuccessFavoritesResponse": {
+        "description": "Список избранного успешно получен",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/FavoritesUserRdo"
+            }
           }
         }
       }
@@ -1433,13 +1334,7 @@
         "schema": {
           "type": "string",
           "default": "DateNew",
-          "enum": [
-            "DateNew",
-            "Rated",
-            "Popular",
-            "PriceTop",
-            "PriceDown"
-          ]
+          "enum": ["DateNew", "Rated", "Popular", "PriceTop", "PriceDown"]
         }
       },
       "limitQuery": {

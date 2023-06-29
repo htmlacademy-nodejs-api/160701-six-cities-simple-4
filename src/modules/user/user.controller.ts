@@ -56,6 +56,7 @@ export default class UserController extends Controller {
       path: '/login',
       method: HttpMethod.Get,
       handler: this.checkAuthenticate,
+      middlewares: [new PrivateRouteMiddleware()],
     });
     this.addRoute({
       path: '/avatar',
@@ -151,9 +152,6 @@ export default class UserController extends Controller {
   }
 
   public async checkAuthenticate({ user }: Request, res: Response) {
-    if (!user) {
-      throw new HttpError(StatusCodes.UNAUTHORIZED, 'Unauthorized', 'UserController');
-    }
     const { email } = user;
     const foundedUser = await this.userService.findByEmail(email);
 

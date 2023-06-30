@@ -25,7 +25,7 @@ const CoordinatesValidation = {
 const WeekDay = {
   FIRST: 1,
   LAST: 7,
-};
+} as const;
 export default class OfferGenerator implements OfferGeneratorInterface {
   constructor(private readonly mockData: MockData) {}
 

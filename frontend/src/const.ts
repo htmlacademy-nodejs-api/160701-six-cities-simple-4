@@ -1,13 +1,6 @@
 import { Offer, Location, CityName, SortName } from './types/types';
 
-export const CITIES = [
-  'Paris',
-  'Cologne',
-  'Brussels',
-  'Amsterdam',
-  'Hamburg',
-  'Dusseldorf',
-];
+export const CITIES = ['Paris', 'Cologne', 'Brussels', 'Amsterdam', 'Hamburg', 'Dusseldorf'];
 export const TYPES = ['apartment', 'room', 'house', 'hotel'] as const;
 export const GOODS = [
   'Breakfast',
@@ -43,13 +36,14 @@ export enum AppRoute {
 
 export enum ApiRoute {
   Offers = '/offers',
-  Login = '/login',
-  Logout = '/logout',
-  Register = '/register',
-  Avatar = '/avatar',
+  Login = '/users/login',
+  Register = '/users/register',
+  Avatar = '/users/avatar',
   Comments = '/comments',
-  Favorite = '/favorites',
-  Premium = '/premium',
+  Favorite = '/offers/favorites',
+  Premium = '/offers/premium/city',
+  Cities = '/offers/city/',
+  Logout = '/logout',
 }
 
 export enum AuthorizationStatus {
@@ -67,7 +61,7 @@ export enum Sorting {
 
 export enum UserType {
   Pro = 'pro',
-  Regular = 'regular'
+  Default = 'default',
 }
 
 export enum StoreSlice {
@@ -79,6 +73,10 @@ export enum StoreSlice {
 export enum HttpCode {
   NotFound = 404,
   NoAuth = 401,
+  Ok = 200,
+  Created = 201,
+  BadRequest = 400,
+  Conflict = 409,
 }
 
 export enum SubmitStatus {

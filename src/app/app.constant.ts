@@ -1,10 +1,10 @@
 import { Cities } from '../types/cities.type.js';
 
-export const DefaultFileName = {
-  AVATAR: 'default-avatar.jpg',
-  OFFER_PREVIEW: 'default-preview.jpg',
-  OFFER_IMAGES: 'default-image.jpg',
-} as const;
+export const enum DefaultFileName {
+  AVATAR = 'default-avatar.jpg',
+  OFFER_PREVIEW = 'default-preview.jpg',
+  OFFER_IMAGES = 'default-image.jpg',
+}
 export const DEFAULT_CITIES_FILE_NAME = Cities.map((city) => `city-${city.toLocaleLowerCase()}.jpg`);
 
 export const DEFAULT_STATIC_IMAGES = [...Object.values(DefaultFileName), ...DEFAULT_CITIES_FILE_NAME];

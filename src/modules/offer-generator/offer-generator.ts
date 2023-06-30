@@ -22,10 +22,10 @@ const CoordinatesValidation = {
   MAX_LONGITUDE: 10,
 };
 
-const WeekDay = {
-  FIRST: 1,
-  LAST: 7,
-} as const;
+const enum WeekDay {
+  FIRST = 1,
+  LAST = 7,
+}
 export default class OfferGenerator implements OfferGeneratorInterface {
   constructor(private readonly mockData: MockData) {}
 

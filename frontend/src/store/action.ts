@@ -190,7 +190,8 @@ export const registerUser = createAsyncThunk<void, UserRegister, { extra: Extra 
     Token.save(data.token);
 
     const { avatar } = userData;
-    if (avatar) {
+
+    if (avatar?.name) {
       const payload = new FormData();
       payload.append('avatar', avatar);
       await api.post(ApiRoute.Avatar, payload, { headers: { 'Content-Type': 'multipart/form-data' } });

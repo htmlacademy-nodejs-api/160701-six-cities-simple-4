@@ -6,8 +6,7 @@
 @contentType = application/json
 @offerId = 64985983b6459fb14222a82f
 @cityId = 647f0adebc49a7eb82cd23c1
-@userId = 6490546840fa3a8fda6141ad
-@token =eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6InRvcmFuczg4OEBvdmVybG9vay5uZXQiLCJpZCI6IjY0OTNlNDY5OTY0OWQyMDg3MzA1ZWRkZiIsImlhdCI6MTY4Nzc3MDEzNywiZXhwIjoxNjg3OTQyOTM3fQ.xOcrzsDVxhkHWQV0xbUNPgpN563w9-Oz0s_X09K4Xlk
+@token =eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6IjFAMS5ydSIsImlkIjoiNjQ5ZThiYzc5OWU1ZGI3YjVhNmY2ZmI0IiwiaWF0IjoxNjg4MTEyMzgwLCJleHAiOjE2ODgyODUxODB9.UVljwkuuG2Jk3HZWD6Puz2FULSifhyrat63GPH4JtDc
 
 ## Список объявлений
 GET {{host}}/{{parentPath}} HTTP/1.1
@@ -44,17 +43,16 @@ Content-Type: {{contentType}}
 Authorization: Bearer {{token}}
 
 {
-  "title": "Премиум title",
+  "title": "New Cologne best",
   "description": "Новый детективный роман от короля ужасов.",
-  "type": "Apartment",
-  "price": 777,
-  "guests": 10,
+  "type": "House",
+  "price": 999,
+  "guests": 1,
   "rooms": 1,
   "rating":0,
   "commentsCount": 0,
-  "features": ["Breakfast"],
-  "city": "Dusseldorf",
-  "author": "{{userId}}",
+  "features": ["Breakfast", "Workspace"],
+  "city": "Cologne",
   "isPremium": true,
   "coordinates":{
     "latitude": 50,

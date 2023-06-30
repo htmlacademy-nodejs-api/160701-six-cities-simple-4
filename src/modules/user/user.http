@@ -4,9 +4,9 @@
 @host = {{hostname}}:{{port}}
 @parentPath = users
 @contentType = application/json
-@offerId= 649ae0c5659feceaf79e1280
+@offerId= 649e8d1299e5db7b5a6f6fce
 
-@token =eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6InRvcmFuczEwQG92ZXJsb29rLm5ldCIsImlkIjoiNjQ5YWUwN2Q2NTlmZWNlYWY3OWUxMjY4IiwiaWF0IjoxNjg3ODcyOTk5LCJleHAiOjE2ODgwNDU3OTl9.DdqkJl2YHE5UFP5atMWci_VYEKLLAVCOAxE5HhpRrYo
+@token =eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6IjFAMS5ydSIsImlkIjoiNjQ5ZThiYzc5OWU1ZGI3YjVhNmY2ZmI0IiwiaWF0IjoxNjg4MTEyMzgwLCJleHAiOjE2ODgyODUxODB9.UVljwkuuG2Jk3HZWD6Puz2FULSifhyrat63GPH4JtDc
 
 ### Регистрация пользователя
 POST {{host}}/{{parentPath}}/register HTTP/1.1
@@ -59,6 +59,10 @@ POST {{host}}/{{parentPath}}/avatar HTTP/1.1
 Authorization: Bearer {{token}}
 Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
 
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="username"
+
+JohnDoe
 ------WebKitFormBoundary7MA4YWxkTrZu0gW
 Content-Disposition: form-data; name="avatar"; filename="man.png"
 Content-Type: image/png

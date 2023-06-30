@@ -1,3 +1,5 @@
+import { UserType } from '../../const.js';
+
 export default class CreatedUserRdo {
   public id!: string;
 
@@ -7,5 +9,7 @@ export default class CreatedUserRdo {
 
   public avatarPath!: string;
 
-  public type!: string;
+  public type!: UserType;
+
+  public token!: string;
 }

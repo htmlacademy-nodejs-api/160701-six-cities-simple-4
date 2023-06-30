@@ -3,7 +3,7 @@ export default class UpdateOfferDto {
 
   public description?: string;
 
-  public city?: TCities;
+  public city?: string;
 
   public preview?: string;
 

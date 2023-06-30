@@ -1,3 +1,5 @@
+import { City, Type } from '../../types/types.js';
+
 export default class OfferRdo {
   public id!: string;
 
@@ -5,11 +7,11 @@ export default class OfferRdo {
 
   public title!: string;
 
-  public city!: string;
+  public city!: City;
 
   public preview!: string;
 
-  public type!: string;
+  public type!: Type;
 
   public price!: number;
 

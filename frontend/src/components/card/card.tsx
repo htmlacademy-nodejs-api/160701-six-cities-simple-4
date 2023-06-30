@@ -1,12 +1,12 @@
 import { memo } from 'react';
 import { Link } from 'react-router-dom';
 
-import type { Offer } from '../../types/types';
+import type { OfferMin } from '../../types/types';
 import { AppRoute } from '../../const';
 import { capitalize, getStarsWidth } from '../../utils';
 import Bookmark from '../bookmark/bookmark';
 
-type CardProps = Offer & {
+type CardProps = OfferMin & {
   onMouseEnter?: (id: string) => void;
   onMouseLeave?: () => void;
   isMini?: boolean;
@@ -67,8 +67,7 @@ const Card = ({
               style={{
                 width: getStarsWidth(rating),
               }}
-            >
-            </span>
+            />
             <span className="visually-hidden">Rating</span>
           </div>
         </div>

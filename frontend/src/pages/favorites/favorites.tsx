@@ -3,13 +3,13 @@ import FavoritesEmpty from '../../components/favorites-empty/favorites-empty';
 import Spinner from '../../components/spinner/spinner';
 import { useAppSelector } from '../../hooks';
 import { getFavoriteOffers, getIsFavoriteOffersLoading } from '../../store/site-data/selectors';
-import type { Offer } from '../../types/types';
+import type { OfferMin } from '../../types/types';
 
 const Favorites = (): JSX.Element => {
   const isFavoriteOffersLoading = useAppSelector(getIsFavoriteOffersLoading);
   const favoriteOffers = useAppSelector(getFavoriteOffers);
 
-  const groupedOffersByCity = favoriteOffers.reduce<{ [key: string ]: Offer[] }>((acc, curr) => {
+  const groupedOffersByCity = favoriteOffers.reduce<{ [key: string]: OfferMin[] }>((acc, curr) => {
     if (curr.isFavorite) {
       const city = curr.city.name;
 
@@ -29,8 +29,14 @@ const Favorites = (): JSX.Element => {
 
   return (
     <>
-      <main className={`page__main page__main--favorites${favoriteOffers.length === 0 ? ' page__main--favorites-empty' : ''}`}>
-        {favoriteOffers.length === 0 ? <FavoritesEmpty /> : (
+      <main
+        className={`page__main page__main--favorites${
+          favoriteOffers.length === 0 ? ' page__main--favorites-empty' : ''
+        }`}
+      >
+        {favoriteOffers.length === 0 ? (
+          <FavoritesEmpty />
+        ) : (
           <div className="page__favorites-container container">
             <section className="favorites">
               <h1 className="favorites__title">Saved listing</h1>
@@ -45,13 +51,16 @@ const Favorites = (): JSX.Element => {
                       </div>
                     </div>
                     <div className="favorites__places">
-                      {groupedOffers.map((offer) => <Card key={offer.id} {...offer} classPrefix="favorites" isMini />)}
+                      {groupedOffers.map((offer) => (
+                        <Card key={offer.id} {...offer} classPrefix="favorites" isMini />
+                      ))}
                     </div>
                   </li>
                 ))}
               </ul>
             </section>
-          </div>)}
+          </div>
+        )}
       </main>
       <footer className="footer container">
         <a className="footer__logo-link" href="main.html">

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import type { SortName } from '../../types/types';
 
 import { useState } from 'react';
@@ -39,11 +40,19 @@ const CardList = (): JSX.Element => {
   }
 
   return (
-    <div className={`cities__places-container container${isEmpty ? ' cities__places-container page__main--index-empty' : ''}`}>
-      {isEmpty ? <CardListEmpty city={activeCity.name} /> : (
+    <div
+      className={`cities__places-container container${
+        isEmpty ? ' cities__places-container page__main--index-empty' : ''
+      }`}
+    >
+      {isEmpty ? (
+        <CardListEmpty city={activeCity.name} />
+      ) : (
         <section className="cities__places places">
           <h2 className="visually-hidden">Places</h2>
-          <b className="places__found">{offers.length} places to stay in {activeCity.name}</b>
+          <b className="places__found">
+            {offers.length} places to stay in {activeCity.name}
+          </b>
           <SortingList onChange={onSortingChange} activeSorting={activeSorting} />
           <div className="cities__places-list places__list tabs__content">
             {offers.map((offer) => (
@@ -55,10 +64,17 @@ const CardList = (): JSX.Element => {
               />
             ))}
           </div>
-        </section>)}
-      <div className="cities__right-section">
-        {!isEmpty && <Map locations={offers.map(({ id, location }) => ({ id, ...location }))} city={activeCity} activeOffer={activeOffer} />}
-      </div>
+        </section>
+      )}
+      {/* <div className="cities__right-section">
+        {!isEmpty && (
+          <Map
+            locations={offers.map(({ id, location }) => ({ id, ...location }))}
+            city={activeCity}
+            activeOffer={activeOffer}
+          />
+        )}
+      </div> */}
     </div>
   );
 };

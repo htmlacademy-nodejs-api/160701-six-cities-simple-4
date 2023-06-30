@@ -5,13 +5,7 @@ import ReviewList from '../../components/review-list/review-list';
 import Map from '../../components/map/map';
 import Card from '../../components/card/card';
 import { useAppDispatch, useAppSelector } from '../../hooks';
-import {
-  fetchOffer,
-  fetchPremiumOffers,
-  fetchComments,
-  postComment,
-  deleteOffer,
-} from '../../store/action';
+import { fetchOffer, fetchPremiumOffers, fetchComments, postComment, deleteOffer } from '../../store/action';
 import Spinner from '../../components/spinner/spinner';
 import { capitalize, getStarsWidth, pluralize } from '../../utils';
 import { NewComment } from '../../types/types';
@@ -80,12 +74,9 @@ const Property = (): JSX.Element | null => {
   const isAuthor = host.email === user;
   const isPro = host.type === UserType.Pro;
 
-  const locations = premiumOffers.map(
-    ({ id: premiumId, location: premiumLocation }) => ({
-      id: premiumId,
-      ...premiumLocation,
-    })
-  );
+  const locations = premiumOffers.map(({ id: premiumId }) => ({
+    id: premiumId,
+  }));
   locations.push({ id, ...location });
 
   const handleDeleteClick = () => {
@@ -122,17 +113,10 @@ const Property = (): JSX.Element | null => {
               </div>
               {isAuthor && (
                 <div className="property__controls">
-                  <Link
-                    to={`${AppRoute.Property}/${id}${AppRoute.Edit}`}
-                    className="property__edit-link"
-                  >
+                  <Link to={`${AppRoute.Property}/${id}${AppRoute.Edit}`} className="property__edit-link">
                     Edit
                   </Link>
-                  <button
-                    className="property__delete-button"
-                    type="button"
-                    onClick={handleDeleteClick}
-                  >
+                  <button className="property__delete-button" type="button" onClick={handleDeleteClick}>
                     Delete
                   </button>
                 </div>
@@ -142,14 +126,10 @@ const Property = (): JSX.Element | null => {
                   <span style={{ width: getStarsWidth(rating) }} />
                   <span className="visually-hidden">Rating</span>
                 </div>
-                <span className="property__rating-value rating__value">
-                  {rating}
-                </span>
+                <span className="property__rating-value rating__value">{rating}</span>
               </div>
               <ul className="property__features">
-                <li className="property__feature property__feature--entire">
-                  {capitalize(type)}
-                </li>
+                <li className="property__feature property__feature--entire">{capitalize(type)}</li>
                 <li className="property__feature property__feature--bedrooms">
                   {bedrooms} {pluralize('Bedroom', bedrooms)}
                 </li>
@@ -190,9 +170,7 @@ const Property = (): JSX.Element | null => {
                     />
                   </div>
                   <span className="property__user-name">{host.name}</span>
-                  {isPro && (
-                    <span className="property__user-status">Pro</span>
-                  )}
+                  {isPro && <span className="property__user-status">Pro</span>}
                 </div>
                 <div className="property__description">
                   <p className="property__text">{description}</p>
@@ -206,25 +184,19 @@ const Property = (): JSX.Element | null => {
               />
             </div>
           </div>
-          <Map
+          {/* <Map
             city={city}
             locations={locations}
             activeOffer={id}
             place="property"
-          />
+          /> */}
         </section>
         <div className="container">
           <section className="near-places places">
-            <h2 className="near-places__title">
-              Premium offers
-            </h2>
+            <h2 className="near-places__title">Premium offers</h2>
             <div className="near-places__list places__list">
               {premiumOffers.map((premiumOffer) => (
-                <Card
-                  key={premiumOffer.id}
-                  {...premiumOffer}
-                  classPrefix="near-places"
-                />
+                <Card key={premiumOffer.id} {...premiumOffer} classPrefix="near-places" />
               ))}
             </div>
           </section>

@@ -33,7 +33,9 @@ const Login = (): JSX.Element => {
           <h1 className="login__title">Sign in</h1>
           <form className="login__form form" action="#" method="post" onSubmit={handleFormSubmit}>
             <div className="login__input-wrapper form__input-wrapper">
-              <label className="visually-hidden" htmlFor="email">E-mail</label>
+              <label className="visually-hidden" htmlFor="email">
+                E-mail
+              </label>
               <input
                 id="email"
                 className="login__input form__input"
@@ -41,10 +43,13 @@ const Login = (): JSX.Element => {
                 name="email"
                 placeholder="Email"
                 required
+                // defaultValue={'torans10@overlook.net'}
               />
             </div>
             <div className="login__input-wrapper form__input-wrapper">
-              <label className="visually-hidden" htmlFor="password">Password</label>
+              <label className="visually-hidden" htmlFor="password">
+                Password
+              </label>
               <input
                 id="password"
                 className="login__input form__input"
@@ -52,13 +57,11 @@ const Login = (): JSX.Element => {
                 name="password"
                 placeholder="Password"
                 required
+                // defaultValue={'shining'}
               />
             </div>
-            <button
-              className="login__submit form__submit button"
-              type="submit"
-            >
-                Sign in
+            <button className="login__submit form__submit button" type="submit">
+              Sign in
             </button>
           </form>
         </section>

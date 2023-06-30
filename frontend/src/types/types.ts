@@ -1,7 +1,7 @@
 import { CITIES, Sorting, TYPES, UserType } from '../const';
 
-export type CityName = typeof CITIES[number];
-export type Type = typeof TYPES[number];
+export type CityName = (typeof CITIES)[number];
+export type Type = (typeof TYPES)[number];
 export type SortName = keyof typeof Sorting;
 
 export type Location = {
@@ -47,7 +47,17 @@ export type Offer = {
   images: string[];
   maxAdults: number;
 };
-
+export type OfferMin = {
+  id: string;
+  price: number;
+  rating: number;
+  title: string;
+  isPremium: boolean;
+  isFavorite: boolean;
+  city: City;
+  previewImage: string;
+  type: Type;
+};
 export type NewOffer = {
   title: string;
   description: string;
@@ -65,8 +75,6 @@ export type NewOffer = {
 
 export type NewComment = Pick<Comment, 'comment' | 'rating'>;
 export type UserAuth = Pick<User, 'email'> & { password: string };
-export type CommentAuth = NewComment &
-  Pick<Offer, 'id'>;
+export type CommentAuth = NewComment & Pick<Offer, 'id'>;
 export type FavoriteAuth = Offer['id'];
-export type UserRegister = Omit<User, 'avatarUrl'> &
-  Pick<UserAuth, 'password'> & { avatar?: File };
+export type UserRegister = Omit<User, 'avatarUrl'> & Pick<UserAuth, 'password'> & { avatar?: File };

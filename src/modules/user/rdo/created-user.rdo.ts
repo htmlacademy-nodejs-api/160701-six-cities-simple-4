@@ -16,4 +16,7 @@ export default class CreatedUserRdo implements UserWithoutPassword {
 
   @Expose()
   public type!: UserRole;
+
+  @Expose()
+  public token!: string;
 }

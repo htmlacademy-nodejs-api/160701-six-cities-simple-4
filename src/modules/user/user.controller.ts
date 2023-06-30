@@ -114,7 +114,11 @@ export default class UserController extends Controller {
     }
 
     const result = await this.userService.create(body, this.configService.get('SALT'));
-    this.created(res, fillDTO(UserRdo, result));
+    const token = await createJwt(JWT_ALGORITHM, this.configService.get('JWT_SECRET'), {
+      email: result.email,
+      id: result.id,
+    });
+    this.created(res, fillDTO(UserRdo, { ...result.toObject(), token }));
   }
 
   public async login(

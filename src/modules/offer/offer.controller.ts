@@ -32,14 +32,8 @@ import UploadPreviewRdo from './rdo/upload-preview.rdo.js';
 import UploadImagesRdo from './rdo/upload-images.rdo.js';
 import { OfferV } from '../../const/validation.js';
 import { DocumentCreatedByUserMiddleware } from '../../common/middlewares/document-by-user.middleware.js';
-
-export type ParamsGetOffer = {
-  offerId: string;
-};
-
-type ParamsGetCity = {
-  cityId: string;
-};
+import { ParamsGetCity, ParamsGetOffer, ParamsNames } from '../../types/params.type.js';
+import { EntityNames } from '../../types/entity-names.enum.js';
 
 @injectable()
 export default class OfferController extends Controller {
@@ -70,8 +64,8 @@ export default class OfferController extends Controller {
       method: HttpMethod.Get,
       handler: this.show,
       middlewares: [
-        new ValidateObjectIdMiddleware('offerId'),
-        new DocumentExistsMiddleware(this.offerService, 'Offer', 'offerId'),
+        new ValidateObjectIdMiddleware(ParamsNames.OfferId),
+        new DocumentExistsMiddleware(this.offerService, EntityNames.Offer, ParamsNames.OfferId),
       ],
     });
 
@@ -87,12 +81,12 @@ export default class OfferController extends Controller {
       handler: this.uploadPreview,
       middlewares: [
         new PrivateRouteMiddleware(),
-        new ValidateObjectIdMiddleware('offerId'),
-        new DocumentCreatedByUserMiddleware(this.offerService, 'Offer', 'offerId'),
+        new ValidateObjectIdMiddleware(ParamsNames.OfferId),
+        new DocumentCreatedByUserMiddleware(this.offerService, EntityNames.Offer, ParamsNames.OfferId),
         new UploadFileMiddleware({
           uploadDirectory: this.uploadDirection,
           fieldName: 'offer-preview',
-          param: 'offerId',
+          param: ParamsNames.OfferId,
           postFixDirectory: 'preview',
           fileType: 'image',
         }),
@@ -104,13 +98,13 @@ export default class OfferController extends Controller {
       handler: this.uploadImages,
       middlewares: [
         new PrivateRouteMiddleware(),
-        new ValidateObjectIdMiddleware('offerId'),
-        new DocumentCreatedByUserMiddleware(this.offerService, 'Offer', 'offerId'),
+        new ValidateObjectIdMiddleware(ParamsNames.OfferId),
+        new DocumentCreatedByUserMiddleware(this.offerService, EntityNames.Offer, ParamsNames.OfferId),
         new UploadFileMiddleware({
           uploadDirectory: this.uploadDirection,
           fieldName: 'offer-img',
           fileType: 'image',
-          param: 'offerId',
+          param: ParamsNames.OfferId,
           postFixDirectory: 'images',
           isMulti: true,
           maxFiles: OfferV.Images.Max,
@@ -123,8 +117,8 @@ export default class OfferController extends Controller {
       handler: this.delete,
       middlewares: [
         new PrivateRouteMiddleware(),
-        new ValidateObjectIdMiddleware('offerId'),
-        new DocumentCreatedByUserMiddleware(this.offerService, 'Offer', 'offerId'),
+        new ValidateObjectIdMiddleware(ParamsNames.OfferId),
+        new DocumentCreatedByUserMiddleware(this.offerService, EntityNames.Offer, ParamsNames.OfferId),
       ],
     });
     this.addRoute({
@@ -133,9 +127,9 @@ export default class OfferController extends Controller {
       handler: this.update,
       middlewares: [
         new PrivateRouteMiddleware(),
-        new ValidateObjectIdMiddleware('offerId'),
+        new ValidateObjectIdMiddleware(ParamsNames.OfferId),
         new ValidateDtoMiddleware(UpdateOfferDto),
-        new DocumentCreatedByUserMiddleware(this.offerService, 'Offer', 'offerId'),
+        new DocumentCreatedByUserMiddleware(this.offerService, EntityNames.Offer, ParamsNames.OfferId),
       ],
     });
     this.addRoute({
@@ -143,8 +137,8 @@ export default class OfferController extends Controller {
       method: HttpMethod.Get,
       handler: this.getOffersFromCity,
       middlewares: [
-        new ValidateObjectIdMiddleware('cityId'),
-        new DocumentExistsMiddleware(this.cityService, 'City', 'cityId'),
+        new ValidateObjectIdMiddleware(ParamsNames.CityId),
+        new DocumentExistsMiddleware(this.cityService, EntityNames.City, ParamsNames.CityId),
       ],
     });
     this.addRoute({
@@ -152,8 +146,8 @@ export default class OfferController extends Controller {
       method: HttpMethod.Get,
       handler: this.getPremium,
       middlewares: [
-        new ValidateObjectIdMiddleware('cityId'),
-        new DocumentExistsMiddleware(this.cityService, 'City', 'cityId'),
+        new ValidateObjectIdMiddleware(ParamsNames.CityId),
+        new DocumentExistsMiddleware(this.cityService, EntityNames.City, ParamsNames.CityId),
       ],
     });
   }

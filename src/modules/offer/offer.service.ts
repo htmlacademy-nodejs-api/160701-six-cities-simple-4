@@ -13,7 +13,7 @@ import {
 } from './offer.constant.js';
 import UpdateOfferDto from './dto/update-offer.dto.js';
 import { RequestQuery } from '../../types/request-query.type.js';
-import { DEFAULT_OFFER_IMAGES_FILE_NAME, DEFAULT_OFFER_PREVIEW_FILE_NAME } from '../../app/app.constant.js';
+import { DefaultFileName } from '../../app/app.constant.js';
 import { OfferV } from '../../const/validation.js';
 
 @injectable()
@@ -26,8 +26,8 @@ export default class OfferService implements OfferServiceInterface {
   public async create(dto: CreateOfferDto): Promise<types.DocumentType<OfferEntity>> {
     const result = await this.offerModel.create({
       ...dto,
-      preview: DEFAULT_OFFER_PREVIEW_FILE_NAME,
-      images: Array.from({ length: OfferV.Images.Min }).map(() => DEFAULT_OFFER_IMAGES_FILE_NAME),
+      preview: DefaultFileName.OFFER_PREVIEW,
+      images: Array.from({ length: OfferV.Images.Min }).map(() => DefaultFileName.OFFER_IMAGES),
     });
     this.logger.info(`New offer created: ${dto.title}`);
 

@@ -22,9 +22,10 @@ const CoordinatesValidation = {
   MAX_LONGITUDE: 10,
 };
 
-const FIRST_WEEK_DAY = 1;
-const LAST_WEEK_DAY = 7;
-
+const enum WeekDay {
+  FIRST = 1,
+  LAST = 7,
+}
 export default class OfferGenerator implements OfferGeneratorInterface {
   constructor(private readonly mockData: MockData) {}
 
@@ -52,7 +53,7 @@ export default class OfferGenerator implements OfferGeneratorInterface {
       generateRandomValue(CoordinatesValidation.MIN_LONGITUDE, CoordinatesValidation.MAX_LONGITUDE, 5),
     ];
     const createdDate = dayjs()
-      .subtract(generateRandomValue(FIRST_WEEK_DAY, LAST_WEEK_DAY), 'day')
+      .subtract(generateRandomValue(WeekDay.FIRST, WeekDay.LAST), 'day')
       .toISOString();
 
     return [

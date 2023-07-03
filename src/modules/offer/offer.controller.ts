@@ -242,7 +242,7 @@ export default class OfferController extends Controller {
   ): Promise<void> {
     const { offerId } = params;
     const updatedOffer = await this.offerService.updateById(offerId, body);
-    this.ok(res, fillDTO(OfferRdo, updatedOffer));
+    this.ok(res, fillDTO(OfferFullRdo, updatedOffer));
   }
 
   public async uploadPreview(
@@ -305,7 +305,8 @@ export default class OfferController extends Controller {
     res: Response,
   ): Promise<void> {
     const { limit, sortType } = query;
-    const offers = await this.offerService.findByCityId(params.cityId, { limit, sortType });
+    const { cityId } = params;
+    const offers = await this.offerService.findByCityId(cityId, { limit, sortType });
     this.ok(res, fillDTO(OfferRdo, offers));
   }
 

@@ -10,7 +10,7 @@ import { UserServiceInterface } from './user-service.interface.js';
 import HttpError from '../../core/errors/http-error.js';
 import { StatusCodes } from 'http-status-codes';
 import { createJwt, fillDTO } from '../../core/helpers/common.js';
-import UserRdo from './rdo/user.rdo.js';
+import UserRdo from './rdo/created-user.rdo.js';
 import CreateUserDto from './dto/create-user.dto.js';
 import LoginUserDto from './dto/login-user.dto.js';
 import { ValidateDtoMiddleware } from '../../common/middlewares/validate-dto.middleware.js';
@@ -25,7 +25,7 @@ import FavoritesUserRdo from './rdo/favorites-user.rdo.js';
 import { DocumentExistsMiddleware } from '../../common/middlewares/document-exists.middleware.js';
 import { OfferServiceInterface } from '../offer/offer-service.interface.js';
 import * as core from 'express-serve-static-core';
-import UploadUserAvatarRdo from './rdo/upload-user-avatar.response.js';
+import UploadUserAvatarRdo from './rdo/upload-user-avatar.rdo.js';
 import { UserExistsMiddleware } from '../../common/middlewares/user-exists.middleware.js';
 import { ParamsGetOffer } from '../../types/params.type.js';
 
@@ -56,6 +56,7 @@ export default class UserController extends Controller {
       path: '/login',
       method: HttpMethod.Get,
       handler: this.checkAuthenticate,
+      middlewares: [new PrivateRouteMiddleware()],
     });
     this.addRoute({
       path: '/avatar',
@@ -151,9 +152,6 @@ export default class UserController extends Controller {
   }
 
   public async checkAuthenticate({ user }: Request, res: Response) {
-    if (!user) {
-      throw new HttpError(StatusCodes.UNAUTHORIZED, 'Unauthorized', 'UserController');
-    }
     const { email } = user;
     const foundedUser = await this.userService.findByEmail(email);
 

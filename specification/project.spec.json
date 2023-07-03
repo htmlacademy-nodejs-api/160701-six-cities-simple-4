@@ -8,7 +8,7 @@
   "tags": [
     {
       "name": "offers",
-      "description": "Действия с предложениями."
+      "description": "Действия с объявлениями."
     },
     {
       "name": "comments",
@@ -28,7 +28,7 @@
       "post": {
         "tags": ["users"],
         "summary": "Регистрация нового пользователя",
-        "description": "Creates a new user with the given data",
+        "description": "Создает нового пользователя с заданными данными",
         "requestBody": {
           "required": true,
           "content": {
@@ -45,27 +45,27 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/UserRdo"
+                  "$ref": "#/components/schemas/CreatedUserRdo"
                 }
               }
             }
           },
           "400": {
-            "description": "Invalid request body",
+            "description": "Недопустимый body запроса",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ErrorDtoObj"
+                  "$ref": "#/components/schemas/ValidationErrorObj"
                 }
               }
             }
           },
           "409": {
-            "description": "User with email «sample@sample.net» exists.",
+            "description": "User with email «${email}» exists.",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ErrorObj"
+                  "$ref": "#/components/schemas/CommonErrorObj"
                 }
               }
             }
@@ -83,7 +83,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/CreateUserDto"
+                "$ref": "#/components/schemas/LoginUserDto"
               }
             }
           }
@@ -94,42 +94,180 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/User"
+                  "$ref": "#/components/schemas/LoggedUserRdo"
                 }
               }
             }
           },
           "400": {
-            "description": "Invalid request body"
+            "description": "Invalid request body",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationErrorObj"
+                }
+              }
+            }
           }
         }
       },
       "get": {
-        "tags": ["users"],
+        "tags": [
+          "users"
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
         "summary": "Проверка состояния пользователя",
         "description": "Check user",
         "responses": {
           "201": {
-            "description": "User created successfully",
+            "description": "Юзер авторизован",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/User"
+                  "$ref": "#/components/schemas/LoggedUserRdo"
                 }
               }
             }
           },
-          "400": {
-            "description": "Invalid request body"
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommonErrorObj"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/avatar": {
+      "post": {
+        "tags": ["users"],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "summary": "Отправка аватарки пользователю",
+        "description": "Отправка аватарки пользователю",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "avatar": {
+                    "type": "string",
+                    "format": "binary",
+                    "x-name": "avatar",
+                    "x-constraints": {
+                      "contentType": ["image/png", "image/jpg"]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Аватарка успешно получена",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UploadUserAvatarRdo"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/favorites": {
+      "get": {
+        "tags": ["users"],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "summary": "Список избранного",
+        "description": "Получить список избранного",
+        "responses": {
+          "200": {
+            "$ref": "#/components/schemas/SuccessFavoritesResponse"
+          }
+        }
+      }
+    },
+    "/users/favorites/add/{offerId}": {
+      "post": {
+        "tags": ["users"],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/offerIdParam"
+          }
+        ],
+        "summary": "Добавить в избранное",
+        "description": "Добавляет объявление в список избранного",
+        "responses": {
+          "200": {
+            "$ref": "#/components/schemas/SuccessFavoritesResponse"
+          }
+        }
+      }
+    },
+    "/users/favorites/remove/{offerId}": {
+      "delete": {
+        "tags": ["users"],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/offerIdParam"
+          }
+        ],
+        "summary": "Удалить из избранного",
+        "description": "Удаляет объявление из списока избранного",
+        "responses": {
+          "204": {
+            "$ref": "#/components/schemas/SuccessFavoritesResponse"
           }
         }
       }
     },
     "/offers": {
       "get": {
-        "summary": "Get all offers",
-        "description": "Returns a list of all offers",
+        "summary": "Список объявлений",
+        "description": "Список объявлений по аренде могут запрашивать анонимные и авторизованные клиенты.По умолчанию сервис возвращает не больше 60 предложений по аренде. Клиент может запросить больше предложений, указав нужное количество в параметре запроса.",
         "tags": ["offers"],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/sortTypeQuery"
+          },
+          {
+            "$ref": "#/components/parameters/limitQuery"
+          }
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
         "responses": {
           "200": {
             "description": "Successful response",
@@ -138,7 +276,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/Offer"
+                    "$ref": "#/components/schemas/OfferRdo"
                   }
                 }
               }
@@ -147,41 +285,79 @@
         }
       },
       "post": {
-        "summary": "Create a new offer",
-        "description": "Creates a new offer with the given data",
+        "summary": "Создание нового объявления",
+        "description": "Создает новое объявления с заданными данными",
         "tags": ["offers"],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/OfferInput"
+                "$ref": "#/components/schemas/CreateOfferDto"
               }
             }
           }
         },
         "responses": {
           "201": {
-            "description": "Offer created successfully",
+            "description": "Предложение создано успешно",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Offer"
+                  "$ref": "#/components/schemas/OfferRdo"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommonErrorObj"
                 }
               }
             }
           },
           "400": {
-            "description": "Invalid request body"
+            "description": "Недопустимый body запроса",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationErrorObj"
+                }
+              }
+            }
           }
         }
       }
     },
-    "/comments": {
+    "/offers/city/{cityId}": {
       "get": {
-        "summary": "Get all comments",
-        "description": "Returns a list of all comments",
-        "tags": ["comments"],
+        "summary": "Список объявлений определённого города",
+        "description": "Список объявлений по аренде могут запрашивать анонимные и авторизованные клиенты.По умолчанию сервис возвращает не больше 60 предложений по аренде. Клиент может запросить больше предложений, указав нужное количество в параметре запроса.",
+        "tags": ["offers"],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/cityIdParam"
+          },
+          {
+            "$ref": "#/components/parameters/sortTypeQuery"
+          },
+          {
+            "$ref": "#/components/parameters/limitQuery"
+          }
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
         "responses": {
           "200": {
             "description": "Successful response",
@@ -190,8 +366,67 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/Comment"
+                    "$ref": "#/components/schemas/OfferRdo"
                   }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/offers/premium/city/{cityId}": {
+      "get": {
+        "summary": "Список премиум объявлений определённого города",
+        "description": "Возвращает 3 премиум объявления определённого города",
+        "tags": ["offers"],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/cityIdParam"
+          },
+          {
+            "$ref": "#/components/parameters/sortTypeQuery"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/OfferRdo"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/offers/{offerId}": {
+      "get": {
+        "summary": "Объявление по идентификатору",
+        "description": "Получение детальной информации по одному предложению",
+        "tags": ["offers"],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/offerIdParam"
+          }
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OfferFullRdo"
                 }
               }
             }
@@ -199,24 +434,17 @@
         }
       },
       "post": {
-        "summary": "Create a new comment",
-        "description": "Creates a new comment with the given data",
-        "tags": ["comments"],
-        "security": [
-          {
-            "api_key": []
-          }
-        ],
+        "summary": "Обновление объявления",
+        "description": "Обновление объявления с заданными данными",
+        "tags": ["offers"],
         "parameters": [
           {
-            "in": "header",
-            "name": "Authorization",
-            "schema": {
-              "type": "string",
-              "minLength": 10
-            },
-            "required": true,
-            "description": "token key"
+            "$ref": "#/components/parameters/offerIdParam"
+          }
+        ],
+        "security": [
+          {
+            "BearerAuth": []
           }
         ],
         "requestBody": {
@@ -224,18 +452,233 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/CommentInput"
+                "$ref": "#/components/schemas/UpdateOfferDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Предложение обновлено успешно",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OfferFullRdo"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommonErrorObj"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Недопустимый body запроса",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationErrorObj"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Удаление объявления",
+        "description": "Удаление объявления",
+        "tags": ["offers"],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/offerIdParam"
+          }
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Предложение удалено успешно"
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommonErrorObj"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/offers/{offerId}/images": {
+      "post": {
+        "tags": ["offers"],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "summary": "Отправка images объявления",
+        "description": "Отправка images объявления",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "images": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "binary"
+                    },
+                    "minItems": 6,
+                    "maxItems": 6,
+                    "x-name": "offer-images",
+                    "x-constraints": {
+                      "contentType": ["image/png", "image/jpg"]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "images объявления успешно получен",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UploadImagesRdo"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/offers/{offerId}/preview": {
+      "post": {
+        "tags": ["offers"],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "summary": "Отправка preview объявления",
+        "description": "Отправка preview объявления",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "preview": {
+                    "type": "string",
+                    "format": "binary",
+                    "x-name": "offer-preview",
+                    "x-constraints": {
+                      "contentType": ["image/png", "image/jpg"]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Preview объявления успешно получен",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UploadPreviewRdo"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/comments/{offerId}": {
+      "get": {
+        "summary": "Получить все комментарии к объявлению",
+        "description": "Возвращает список всех комментариев объявления",
+        "tags": ["comments"],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/offerIdParam"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CommentRdo"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Offer with {offerId} not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommonErrorObj"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Создание нового комментария",
+        "description": "Создает новый комментарий с заданными данными",
+        "tags": ["comments"],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/offerIdParam"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateCommentDto"
               }
             }
           }
         },
         "responses": {
           "201": {
-            "description": "Comment created successfully",
+            "description": "Комментарий создан успешно",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Comment"
+                  "$ref": "#/components/schemas/CommentRdo"
                 }
               }
             }
@@ -248,8 +691,8 @@
     },
     "/cities": {
       "get": {
-        "summary": "Get all cities",
-        "description": "Returns a list of all cities",
+        "summary": "Получить все города",
+        "description": "Возвращает список всех городов",
         "tags": ["cities"],
         "responses": {
           "200": {
@@ -259,8 +702,70 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/City"
+                    "$ref": "#/components/schemas/CityRdo"
                   }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Создание города",
+        "description": "Создаёт город по названию",
+        "tags": ["cities"],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateCityDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CityRdo"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "City with name «${cityName}» exists.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommonErrorObj"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommonErrorObj"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Недопустимый body запроса",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationErrorObj"
                 }
               }
             }
@@ -271,10 +776,11 @@
   },
   "components": {
     "securitySchemes": {
-      "api_key": {
+      "BearerAuth": {
         "type": "apiKey",
         "name": "Authorization",
-        "in": "header"
+        "in": "header",
+        "description": "JWT token with Bearer scheme"
       }
     },
     "schemas": {
@@ -318,7 +824,7 @@
         },
         "required": ["email", "password"]
       },
-      "UserRdo": {
+      "CreatedUserRdo": {
         "type": "object",
         "properties": {
           "id": {
@@ -338,6 +844,400 @@
             "enum": ["default", "pro"]
           }
         }
+      },
+      "LoggedUserRdo": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string"
+          },
+          "token": {
+            "type": "string"
+          },
+          "avatarPath": {
+            "type": "string"
+          },
+          "firstName": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "enum": ["default", "pro"]
+          }
+        }
+      },
+      "UploadUserAvatarRdo": {
+        "type": "object",
+        "properties": {
+          "avatarPath": {
+            "type": "string"
+          }
+        }
+      },
+      "FavoritesUserRdo": {
+        "type": "object",
+        "properties": {
+          "favorites": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "CreateCityDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "$ref": "#/components/schemas/Cities"
+          }
+        },
+        "required": ["name"],
+        "additionalProperties": false
+      },
+      "CityRdo": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "offerCount": {
+            "type": "integer"
+          },
+          "cityImage": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "CommentRdo": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "text": {
+            "type": "string"
+          },
+          "rating": {
+            "type": "number"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "author": {
+            "$ref": "#/components/schemas/CreatedUserRdo"
+          }
+        }
+      },
+      "CreateCommentDto": {
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": "string",
+            "minLength": 5,
+            "maxLength": 1024
+          },
+          "offerId": {
+            "type": "string"
+          },
+          "userId": {
+            "type": "string"
+          },
+          "rating": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 5
+          }
+        }
+      },
+      "OfferRdo": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "city": {
+            "$ref": "#/components/schemas/CityRdo"
+          },
+          "preview": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "enum": ["TOfferVariants"]
+          },
+          "price": {
+            "type": "number"
+          },
+          "commentsCount": {
+            "type": "number"
+          },
+          "rating": {
+            "type": "number"
+          },
+          "isPremium": {
+            "type": "boolean"
+          },
+          "isFavorite": {
+            "type": "boolean"
+          }
+        }
+      },
+      "OfferFullRdo": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "city": {
+            "$ref": "#/components/schemas/CityRdo"
+          },
+          "preview": {
+            "type": "string"
+          },
+          "type": {
+            "$ref": "#/components/schemas/OfferVariants"
+          },
+          "price": {
+            "type": "number"
+          },
+          "commentsCount": {
+            "type": "number"
+          },
+          "rating": {
+            "type": "number"
+          },
+          "isPremium": {
+            "type": "boolean"
+          },
+          "isFavorite": {
+            "type": "boolean"
+          },
+          "description": {
+            "type": "string"
+          },
+          "images": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "rooms": {
+            "type": "number"
+          },
+          "guests": {
+            "type": "number"
+          },
+          "features": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/OfferFeatures"
+            }
+          },
+          "author": {
+            "$ref": "#/components/schemas/CreatedUserRdo"
+          },
+          "coordinates": {
+            "$ref": "#/components/schemas/CreateCoordinateDto"
+          }
+        }
+      },
+      "CreateCoordinateDto": {
+        "type": "object",
+        "properties": {
+          "latitude": {
+            "type": "number",
+            "format": "double"
+          },
+          "longitude": {
+            "type": "number",
+            "format": "double"
+          }
+        },
+        "required": ["latitude", "longitude"]
+      },
+      "CreateOfferDto": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "minLength": 10,
+            "maxLength": 100
+          },
+          "description": {
+            "type": "string",
+            "minLength": 20,
+            "maxLength": 1024
+          },
+          "city": {
+            "$ref": "#/components/schemas/Cities"
+          },
+          "isPremium": {
+            "type": "boolean"
+          },
+          "type": {
+            "type": "string",
+            "$ref": "#/components/schemas/OfferVariants"
+          },
+          "rooms": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 8
+          },
+          "guests": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 10
+          },
+          "price": {
+            "type": "integer",
+            "minimum": 100,
+            "maximum": 100000
+          },
+          "features": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "$ref": "#/components/schemas/OfferFeatures"
+            },
+            "uniqueItems": true
+          },
+          "author": {
+            "type": "string"
+          },
+          "coordinates": {
+            "$ref": "#/components/schemas/CreateCoordinateDto"
+          }
+        },
+        "required": [
+          "title",
+          "description",
+          "city",
+          "type",
+          "rooms",
+          "guests",
+          "price",
+          "features",
+          "coordinates"
+        ]
+      },
+      "UpdateOfferDto": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "minLength": 10,
+            "maxLength": 100
+          },
+          "description": {
+            "type": "string",
+            "minLength": 20,
+            "maxLength": 1024
+          },
+          "city": {
+            "$ref": "#/components/schemas/Cities"
+          },
+          "isPremium": {
+            "type": "boolean"
+          },
+          "type": {
+            "type": "string",
+            "$ref": "#/components/schemas/OfferVariants"
+          },
+          "rooms": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 8
+          },
+          "guests": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 10
+          },
+          "price": {
+            "type": "integer",
+            "minimum": 100,
+            "maximum": 100000
+          },
+          "features": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "$ref": "#/components/schemas/OfferFeatures"
+            },
+            "uniqueItems": true
+          },
+          "author": {
+            "type": "string"
+          },
+          "coordinates": {
+            "$ref": "#/components/schemas/CreateCoordinateDto"
+          }
+        },
+        "additionalProperties": false
+      },
+      "UploadPreviewRdo": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "preview": {
+            "type": "string"
+          }
+        }
+      },
+      "UploadImagesRdo": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "images": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "OfferFeatures": {
+        "type": "string",
+        "enum": [
+          "Breakfast",
+          "Air conditioning",
+          "Laptop friendly workspace",
+          "Workspace",
+          "Baby seat",
+          "Washer",
+          "Towels",
+          "Fridge"
+        ]
+      },
+      "OfferVariants": {
+        "type": "string",
+        "enum": ["Apartment", "House", "Room", "Hotel"]
+      },
+      "Cities": {
+        "type": "string",
+        "enum": ["Paris", "Cologne", "Brussels", "Amsterdam", "Hamburg", "Dusseldorf"]
       },
       "ServiceError": {
         "type": "string",
@@ -366,11 +1266,12 @@
           }
         }
       },
-      "ErrorDtoObj": {
+      "ValidationErrorObj": {
         "type": "object",
         "properties": {
           "serviceError": {
-            "$ref": "#/components/schemas/ServiceError"
+            "type": "string",
+            "enum": ["VALIDATION_ERROR"]
           },
           "message": {
             "type": "string"
@@ -383,11 +1284,12 @@
           }
         }
       },
-      "ErrorObj": {
+      "CommonErrorObj": {
         "type": "object",
         "properties": {
           "serviceError": {
-            "$ref": "#/components/schemas/ServiceError"
+            "type": "string",
+            "enum": ["COMMON_ERROR"]
           },
           "message": {
             "type": "string"
@@ -396,7 +1298,64 @@
             "type": "array"
           }
         }
+      },
+      "SuccessFavoritesResponse": {
+        "description": "Список избранного успешно получен",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/FavoritesUserRdo"
+            }
+          }
+        }
       }
-    }
+    },
+    "parameters": {
+      "offerIdParam": {
+        "name": "offerId",
+        "in": "path",
+        "description": "Уникальный идентификатор объявления",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "pattern": "^[0-9a-fA-F]{24}$",
+          "example": "60c8ec478d8eaa001f857197"
+        }
+      },
+      "cityIdParam": {
+        "name": "cityId",
+        "in": "path",
+        "description": "Уникальный идентификатор города",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "pattern": "^[0-9a-fA-F]{24}$",
+          "example": "60c8ec478d8eaa001f857197"
+        }
+      },
+      "sortTypeQuery": {
+        "name": "sortType",
+        "in": "query",
+        "description": "Варианты сортировки",
+        "required": false,
+        "schema": {
+          "type": "string",
+          "default": "DateNew",
+          "enum": ["DateNew", "Rated", "Popular", "PriceTop", "PriceDown"]
+        }
+      },
+      "limitQuery": {
+        "name": "limit",
+        "in": "query",
+        "description": "Количество сущностей для ответа",
+        "required": false,
+        "schema": {
+          "type": "integer",
+          "format": "int32",
+          "default": 60
+        }
+      }
+    },
+    "responses": {}
   }
 }

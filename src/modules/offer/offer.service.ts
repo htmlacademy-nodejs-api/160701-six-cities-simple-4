@@ -53,7 +53,7 @@ export default class OfferService implements OfferServiceInterface {
     config: RequestQuery,
     findParam: Record<string, unknown> = {},
   ): Promise<types.DocumentType<OfferEntity>[]> {
-    const { limit, sortType = 'Default' } = config;
+    const { limit, sortType = 'DateNew' } = config;
     let limitValue = limit ?? DEFAULT_OFFER_COUNT;
     if (limitValue >= DEFAULT_MAX_OFFER_COUNT) {
       limitValue = DEFAULT_MAX_OFFER_COUNT;

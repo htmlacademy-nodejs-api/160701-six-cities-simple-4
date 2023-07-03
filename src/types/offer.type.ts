@@ -5,7 +5,7 @@ import { User } from './user.type.js';
 import { TCities } from './cities.type.js';
 import { CityEntity } from '../modules/city/city.entity.js';
 import CityRdo from '../modules/city/rdo/city.rdo.js';
-import UserRdo from '../modules/user/rdo/user.rdo.js';
+import CreatedUserRdo from '../modules/user/rdo/created-user.rdo.js';
 
 export const OfferVariants = ['Apartment', 'House', 'Room', 'Hotel'] as const;
 export type TOfferVariants = (typeof OfferVariants)[number];
@@ -23,7 +23,7 @@ export const OfferFeatures = [
 export type TOfferFeatures = (typeof OfferFeatures)[number];
 
 export type Offer<
-  T extends User | Ref<UserEntity> | UserRdo,
+  T extends User | Ref<UserEntity> | CreatedUserRdo,
   C extends TCities | Ref<CityEntity> | CityRdo,
 > = {
   title: string;
@@ -45,6 +45,6 @@ export type Offer<
 };
 
 export type OfferMin = Omit<
-  Offer<UserRdo, CityRdo>,
+  Offer<CreatedUserRdo, CityRdo>,
   'description' | 'images' | 'rooms' | 'guests' | 'features' | 'author' | 'coordinates'
 >;

@@ -1,5 +1,5 @@
 import { Expose, Type } from 'class-transformer';
-import UserRdo from '../../user/rdo/user.rdo.js';
+import CreatedUserRdo from '../../user/rdo/created-user.rdo.js';
 
 export default class CommentRdo {
   @Expose()
@@ -15,6 +15,6 @@ export default class CommentRdo {
   public createdAt!: string;
 
   @Expose({ name: 'userId' })
-  @Type(() => UserRdo)
-  public author!: UserRdo;
+  @Type(() => CreatedUserRdo)
+  public author!: CreatedUserRdo;
 }

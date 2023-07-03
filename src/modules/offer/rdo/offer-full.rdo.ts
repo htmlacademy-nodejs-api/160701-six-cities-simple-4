@@ -1,11 +1,11 @@
 import { Expose, Type } from 'class-transformer';
-import UserRdo from '../../user/rdo/user.rdo.js';
+import CreatedUserRdo from '../../user/rdo/created-user.rdo.js';
 import { Offer, OfferMin, TOfferFeatures } from '../../../types/offer.type.js';
 import { Coordinates } from '../../../types/coordinates.type.js';
 import OfferRdo from './offer.rdo.js';
 import CityRdo from '../../city/rdo/city.rdo.js';
 
-export default class OfferFullRdo extends OfferRdo implements OfferMin, Offer<UserRdo, CityRdo> {
+export default class OfferFullRdo extends OfferRdo implements OfferMin, Offer<CreatedUserRdo, CityRdo> {
   @Expose()
   public description!: string;
 
@@ -22,8 +22,8 @@ export default class OfferFullRdo extends OfferRdo implements OfferMin, Offer<Us
   public features!: TOfferFeatures[];
 
   @Expose()
-  @Type(() => UserRdo)
-  public author!: UserRdo;
+  @Type(() => CreatedUserRdo)
+  public author!: CreatedUserRdo;
 
   @Expose()
   public coordinates!: Coordinates;

@@ -1,7 +1,7 @@
 import { Expose } from 'class-transformer';
-import { UserRole } from '../../../types/user.type';
+import { UserRole, UserWithoutPassword } from '../../../types/user.type';
 
-export default class UserRdo {
+export default class CreatedUserRdo implements UserWithoutPassword {
   @Expose()
   public id!: string;
 
@@ -16,4 +16,7 @@ export default class UserRdo {
 
   @Expose()
   public type!: UserRole;
+
+  @Expose()
+  public token!: string;
 }

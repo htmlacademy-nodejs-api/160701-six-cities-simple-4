@@ -24,10 +24,10 @@ import { PrivateRouteMiddleware } from '../../common/middlewares/private-route.m
 import FavoritesUserRdo from './rdo/favorites-user.rdo.js';
 import { DocumentExistsMiddleware } from '../../common/middlewares/document-exists.middleware.js';
 import { OfferServiceInterface } from '../offer/offer-service.interface.js';
-import { ParamsGetOffer } from '../offer/offer.controller.js';
 import * as core from 'express-serve-static-core';
 import UploadUserAvatarRdo from './rdo/upload-user-avatar.rdo.js';
 import { UserExistsMiddleware } from '../../common/middlewares/user-exists.middleware.js';
+import { ParamsGetOffer } from '../../types/params.type.js';
 
 @injectable()
 export default class UserController extends Controller {
